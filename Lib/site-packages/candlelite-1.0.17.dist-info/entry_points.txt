@@ -1,0 +1,2 @@
+[console_scripts]
+candlelite = candlelite.cmdline:cmd
