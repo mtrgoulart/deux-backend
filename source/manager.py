@@ -1,4 +1,4 @@
-from .handler import OKXClient
+from .client import OKXClient
 import threading
 import time
 from .pp import ConfigLoader,Market
@@ -23,6 +23,10 @@ class OKX_interface():
     
     def get_order_status(self,symbol,order_id):
         response = self.okx_client.get_order_status(symbol,order_id)
+        return response
+    
+    def get_last_trade(self,symbol):
+        response = self.okx_client.get_last_trade(symbol)
         return response
     
     def get_balance(self, ccy=None):
@@ -51,20 +55,62 @@ class OKX_interface():
         execution_price = float(order_status['data'][0].get('fillPx', 0))
         return execution_price
 
+class IntervalHandler:
+    def __init__(self,interval,symbol):
+        self.interval = float(interval)
+        self.symbol=symbol
 
+    def get_last_op(self):
+        config=ConfigLoader()
+        client = OKX_interface(config)
+        last_operation = client.get_last_trade(self.symbol)
+        return last_operation
 
+    def check_interval(self):
+        last_operation=self.get_last_op()
+        print(last_operation.order_id)
+
+        if last_operation is not None:
+            valid_interval = self._interval_logic(last_operation)
+            return valid_interval
+        else:
+            True
+
+    def get_application_interval(self,operation):
+        from datetime import datetime
+        if operation:
+            current_time = datetime.now()
+            print(operation)
+            print(current_time)
+            # Calcula a diferença entre o tempo atual e a última operação em minutos
+            return (current_time - operation).total_seconds() / 60
+        else:
+            return None
+        
+    def _interval_logic(self,last_operation):
+        last_operation_interval = self.get_application_interval(last_operation.time)
+        print(f"Intervalo decorrido: {last_operation_interval} minutos")
+        if self.interval==0:
+            return True
+        else:
+            return last_operation_interval >= self.interval
     
 class OperationHandler:
-    def __init__(self, webhook_data_manager,market_manager,condition_handler):
+    def __init__(self, webhook_data_manager,market_manager,condition_handler,interval,symbol):
         self.webhook_data_manager = webhook_data_manager
         self.market_manager=market_manager
         self.stop_event = threading.Event()
         self.condition_handler=condition_handler
+        self.interval=interval
+        self.symbol=symbol
+        self._is_running = False
 
     def start(self):
         self.stop_event.clear()
         self.thread = threading.Thread(target=self.run)
         self.thread.start()
+        self._is_running = True
+        #self.run
 
     def stop(self):
         self.stop_event.set()
@@ -74,13 +120,14 @@ class OperationHandler:
         while not self.stop_event.is_set():
             data = self.webhook_data_manager.get_market_objects()
             filtered_data = [market for market in data if market.operation is None]
-            
+
             # Agrupa os dados por symbol e side
             grouped_data = defaultdict(list)
             for market in filtered_data:
                 grouped_data[(market.symbol, market.side)].append(market)
-            
+
             # Aplica check_conditions para cada grupo
+            operation_performed = False
             for (symbol, side), markets in grouped_data.items():
                 if self.check_conditions(markets) and len(markets) > 1:
                     last_market_data = markets[-1]  # Pega o último do grupo
@@ -92,8 +139,20 @@ class OperationHandler:
                     )
                     self.perform_operation(market_to_operation)
                     self.update_webhook_operation(markets)
-            
+                    operation_performed = True  # Define que a operação foi realizada
+                    
+                    time.sleep(5)
+                    self._is_running = False
+                    break  # Sai do for
+
+            if operation_performed:
+                break
+
             time.sleep(3)
+
+    def is_running(self):
+        """Retorna se a operação ainda está em execução."""
+        return self._is_running
 
     def update_webhook_operation(self, filtered_data):
         for market_object in filtered_data:
@@ -202,7 +261,6 @@ class OperationHandler:
             raise ValueError("Preço de execução não encontrado ou inválido.")
         
         return execution_price
-
 
 class conditionHandler:
     def __init__(self,length_condition):

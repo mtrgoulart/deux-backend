@@ -131,3 +131,20 @@ class WebhookData:
         if n < 1:
             raise ValueError("The number of items to retrieve must be at least 1.")
         return self.market_objects[-n:]
+    
+    def reset_data(self):
+        # Clear both the data_list and market_objects
+        self.data_list.clear()
+        self.market_objects.clear()
+
+
+class LastOperation:
+    def __init__(self, fill_id, order_id, symbol, side, fill_size, fill_price, fee, time):
+        self.fill_id = fill_id
+        self.order_id = order_id
+        self.symbol = symbol
+        self.side = side
+        self.fill_size = fill_size
+        self.fill_price = fill_price
+        self.fee = fee
+        self.time = time  # O tempo da última operação

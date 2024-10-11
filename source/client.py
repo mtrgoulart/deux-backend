@@ -4,6 +4,7 @@ import base64
 import requests
 import json
 from datetime import datetime, timezone
+from .pp import LastOperation
 
 class OKXClient:
     def __init__(self, config_loader, url='https://www.okx.com'):
@@ -82,10 +83,45 @@ class OKXClient:
 
         # Envia a requisição GET com os parâmetros
         return self.send_request('GET', '/api/v5/account/balance', body=params)
+    
+    def get_last_trade(self, symbol):
+        """
+        Retorna a última operação realizada para um determinado símbolo.
+        """
+        # Prepara o corpo da requisição
+        body = {
+            "instId": symbol,
+            "limit": "100"  # Limita a resposta a uma única operação (a mais recente)
+        }
+
+        # Consulta as últimas transações de trading para o símbolo fornecido
+        response = self.send_request('GET', '/api/v5/trade/fills', body)
+        
+
+        # Verifica se há dados retornados
+        if response.get("code") == "0" and response.get("data"):
+            sorted_trades = sorted(response['data'], key=lambda x: x['fillTime'], reverse=True)
+            last_trade_data = sorted_trades[0]
+            
+            fill_time_ms = int(last_trade_data.get('fillTime'))  # Obtém o timestamp em milissegundos
+            fill_time = datetime.fromtimestamp(fill_time_ms / 1000)  # Converte para datetime UTC
+
+            return LastOperation(
+                fill_id=last_trade_data.get('tradeId'),
+                order_id=last_trade_data.get('ordId'),
+                symbol=last_trade_data.get('instId'),
+                side=last_trade_data.get('side'),
+                fill_size=last_trade_data.get('fillSz'),
+                fill_price=last_trade_data.get('fillPx'),
+                fee=last_trade_data.get('fee'),
+                time=fill_time  # Agora convertido para datetime
+            )
+        else:
+            return None  # Retorna None se não houver dados
 
 if __name__=="__main__":
     from pp import ConfigLoader
     config=ConfigLoader(r'C:\Project\okx\venv\config.ini')
     client=OKXClient(config)
-    response=client.get_order_status('BTC-USDT','1785573139386859520')
-    print(response)
+    op=client.get_last_trade('BTC-USDT')
+    print(op.time)
