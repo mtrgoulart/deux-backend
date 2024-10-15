@@ -1,5 +1,7 @@
 import customtkinter as ctk
+from PIL import Image
 from tkinter import messagebox, Scrollbar
+import os
 
 # Configuração inicial do CustomTkinter
 ctk.set_appearance_mode("light")
@@ -20,9 +22,6 @@ class DynamicForm(ctk.CTkFrame):
         self.canvas = ctk.CTkCanvas(self.scroll_frame, height=400)
         self.scrollbar = Scrollbar(self.scroll_frame,orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = ctk.CTkFrame(self.canvas)
-
-        
-
 
         self.scrollable_frame.bind(
             "<Configure>",
@@ -55,53 +54,109 @@ class DynamicForm(ctk.CTkFrame):
 
 
     def add_new_data_set(self):
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(base_path, "img")
+        
         # Frame para o novo conjunto de dados
         data_set_frame = ctk.CTkFrame(self.scrollable_frame)
         data_set_frame.pack(pady=5, padx=5, fill="x")
 
-        # Lista de descrições para as entradas de dados
-        descriptions = ["% Operações", "OP Simul", "Condicionantes", "Delay"]
+        # Lista de descrições para os novos campos
+        descriptions_row1 = ["symbol", "side", "TP", "SL"]
 
-        # Cria os campos de entrada de dados com suas descrições
+        # Frame para a primeira linha de campos (novos campos)
+        row1_frame = ctk.CTkFrame(data_set_frame)
+        row1_frame.pack(pady=5, padx=5, fill="x")
+
+        # Cria os campos de entrada de dados da primeira linha (novos)
         entries = {}
-        for description in descriptions:
-            label = ctk.CTkLabel(data_set_frame, text=description, width=80, height=30)
+        for description in descriptions_row1:
+            label = ctk.CTkLabel(row1_frame, text=description)
             label.pack(side="left", padx=5, pady=5)
             
-            entry = ctk.CTkEntry(data_set_frame, width=80, height=30)
+            entry = ctk.CTkEntry(row1_frame, width=80, height=30)
             entry.pack(side="left", padx=5, pady=5, fill="x", expand=True)
             
             entries[description] = entry
 
-        # Botão de salvar/editar para o conjunto de dados
-        save_button = ctk.CTkButton(data_set_frame, text="Salvar", width=80, height=30,
-                                    command=lambda: self.toggle_edit(entries, save_button))
+        # Lista de descrições para os campos antigos
+        descriptions_row2 = ["% Operações", "OP Simul", "Condicionantes", "Delay"]
+
+        # Frame para a segunda linha de campos (antigos)
+        row2_frame = ctk.CTkFrame(data_set_frame)
+        row2_frame.pack(pady=5, padx=5, fill="x")
+
+        # Cria os campos de entrada de dados da segunda linha (antigos)
+        for description in descriptions_row2:
+            label = ctk.CTkLabel(row2_frame, text=description)
+            label.pack(side="left", padx=5, pady=5)
+            
+            entry = ctk.CTkEntry(row2_frame, width=80, height=30)
+            entry.pack(side="left", padx=5, pady=5, fill="x", expand=True)
+            
+            entries[description] = entry
+
+        save_icon_path = os.path.join(img_path, "save_icon.png")
+        delete_icon_path = os.path.join(img_path, "delete_icon.png")
+        run_icon_path = os.path.join(img_path, "run_icon.png")
+        
+        save_icon = ctk.CTkImage(Image.open(save_icon_path), size=(20, 20))
+        delete_icon = ctk.CTkImage(Image.open(delete_icon_path), size=(20, 20))
+        run_icon = ctk.CTkImage(Image.open(run_icon_path), size=(20, 20))
+
+        # Botão de execução com ícone, desabilitado inicialmente
+        run_button = ctk.CTkButton(data_set_frame, image=run_icon, text="", width=40, height=30, state="disabled",
+                                command=self.run_action)  # Implementar a função run_action
+        run_button.pack(side="right", padx=5, pady=5)
+
+        # Botão de salvar/editar com ícone
+        save_button = ctk.CTkButton(data_set_frame, image=save_icon, text="", width=40, height=30,
+                                    command=lambda: self.toggle_edit(entries, save_button,run_button))
         save_button.pack(side="right", padx=5, pady=5)
 
-        # Botão de excluir para o conjunto de dados
-        delete_button = ctk.CTkButton(data_set_frame, text="Excluir", width=80, height=30,
+        # Botão de excluir com ícone
+        delete_button = ctk.CTkButton(data_set_frame, image=delete_icon, text="", width=40, height=30,
                                     command=lambda: self.delete_data_set(data_set_frame))
         delete_button.pack(side="right", padx=5, pady=5)
+
+        
 
         # Adiciona o novo conjunto ao array
         self.data_entries.append({"entries": entries, "frame": data_set_frame})
 
-    def toggle_edit(self, entry1, entry2, save_button):
-        if entry1.cget("state") == "normal":
-            # Desabilitar os campos de texto após salvar
-            entry1.configure(state="disabled")
-            entry2.configure(state="disabled")
-            save_button.configure(text="Editar")
+    def run_action(self):
+        pass
 
-            # Exemplo de como você pode acessar os valores salvos
-            value1 = entry1.get()
-            value2 = entry2.get()
-            messagebox.showinfo("Dados Salvos", f"Valores: {value1}, {value2}")
+    def toggle_edit(self, entries, save_button,run_button):
+        run_button.configure(state="normal")
+        # Defina os caminhos para os ícones de Salvar e Editar
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(base_path, "img")
+        
+        save_icon_path = os.path.join(img_path, "save_icon.png")
+        edit_icon_path = os.path.join(img_path, "edit_icon.png")
+
+        save_icon = ctk.CTkImage(Image.open(save_icon_path), size=(20, 20))
+        edit_icon = ctk.CTkImage(Image.open(edit_icon_path), size=(20, 20))
+
+        # Pega o estado do primeiro campo de entrada (todos têm o mesmo estado)
+        first_entry = next(iter(entries.values()))  # Pega a primeira entrada do dicionário
+        if first_entry.cget("state") == "normal":
+            # Desabilitar todos os campos de entrada após salvar
+            for entry in entries.values():
+                entry.configure(state="disabled")
+            # Alterar para o ícone de Editar
+            save_button.configure(image=edit_icon)
+
+            # Exemplo de como acessar os valores salvos
+            saved_values = {desc: entry.get() for desc, entry in entries.items()}
+            messagebox.showinfo("Dados Salvos", f"Valores: {saved_values}")
         else:
-            # Habilitar os campos de texto para edição
-            entry1.configure(state="normal")
-            entry2.configure(state="normal")
-            save_button.configure(text="Salvar")
+            # Habilitar todos os campos de entrada para edição
+            for entry in entries.values():
+                entry.configure(state="normal")
+            # Alterar para o ícone de Salvar
+            save_button.configure(image=save_icon)
 
     def delete_data_set(self, frame):
         # Remover o conjunto de dados
