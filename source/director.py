@@ -5,8 +5,8 @@ import time
 import threading
 
 
-class OperationManager:
-    def __init__(self, webhook_url, percent, avaiable_size, condition_limit, interval, symbol):
+class OperationManager():
+    def __init__(self, webhook_url, percent, avaiable_size, condition_limit, interval, symbol,side):
         self.webhook_url = webhook_url
         self.percent = percent
         self.avaiable_size = avaiable_size
@@ -16,6 +16,7 @@ class OperationManager:
         self.operation_active = False  # Flag para saber se a operação está ativa
         self.monitoring_thread = None  # Para armazenar a thread de monitoramento
         self.stop_event = threading.Event()  # Para sinalizar quando parar o monitoramento
+        self.side=side
 
     def start_operation(self):
         # Inicializar o WebhookHandler
@@ -24,7 +25,7 @@ class OperationManager:
 
         # Calcular o unit_size e criar instâncias das classes necessárias
         self.unit_size = float(self.percent) * float(self.avaiable_size)
-        self.market = Market(size=self.unit_size)
+        self.market = Market(side=self.side,size=self.unit_size)
         self.condition_handler = conditionHandler(self.condition_limit)
 
         # Instanciar o OperationHandler, mas não iniciar ainda

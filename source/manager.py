@@ -68,13 +68,14 @@ class IntervalHandler:
 
     def check_interval(self):
         last_operation=self.get_last_op()
-        print(last_operation.order_id)
+        print(last_operation)
 
         if last_operation is not None:
+            print(last_operation.order_id)
             valid_interval = self._interval_logic(last_operation)
             return valid_interval
         else:
-            True
+            return True
 
     def get_application_interval(self,operation):
         from datetime import datetime
@@ -119,7 +120,13 @@ class OperationHandler:
     def run(self):
         while not self.stop_event.is_set():
             data = self.webhook_data_manager.get_market_objects()
-            filtered_data = [market for market in data if market.operation is None]
+            filtered_data = [
+            market for market in data 
+            if market.operation is None and 
+               market.symbol == self.market_manager.symbol and 
+               market.side == self.market_manager.side
+        ]
+
 
             # Agrupa os dados por symbol e side
             grouped_data = defaultdict(list)

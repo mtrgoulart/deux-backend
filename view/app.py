@@ -96,7 +96,7 @@ class App(ctk.CTk):
         coluna3 = ctk.CTkFrame(self)
         coluna3.grid(row=0, column=2, sticky="nsew", padx=10, pady=10)
 
-        self.dynamic_form = DynamicForm(coluna3)
+        self.dynamic_form = DynamicForm(self,coluna3)
         self.dynamic_form.pack(padx=10, pady=10)
 
         self.saldo_label = ctk.CTkLabel(coluna3, text="Saldo: U$ --", font=("Helvetica", 20))
@@ -185,23 +185,32 @@ class App(ctk.CTk):
         else:
             self.status_label.configure(text="Webhook status: Off")
 
+    def iniciar_operation_manager(self,url,percent,saldo,condition,interval,symbol):
+        self.operation_manager = OperationManager(
+            webhook_url=url,
+            percent=percent,
+            avaiable_size=saldo,
+            condition_limit=condition,
+            interval=interval,
+            symbol=symbol
+        )
+        
+
+        self.operation_manager.start_operation()
+        self.webhook_status = True
+
     def ativar_webhook(self):
         print("\nAtivando Webhook...")
 
         self.botao_ativar_webhook.configure(state=tk.DISABLED)
         self.botao_desativar_webhook.configure(state=tk.NORMAL)
         self.update_status_indicator()
-
-        self.operation_manager = OperationManager(
-            webhook_url=self.valor_salvo3,
+        self.iniciar_operation_manager(url=self.valor_salvo3,
             percent=0.01,
-            avaiable_size=self.saldo_value,
-            condition_limit=self.valor_salvo1,
+            saldo=self.saldo_value,
+            condition=self.valor_salvo1,
             interval=self.valor_salvo2,
-            symbol='BTC-USDT'
-        )
-
-        self.operation_manager.start_operation()
+            symbol='BTC-USDT')        
 
         self.webhook_status = True
         self.update_status_indicator()

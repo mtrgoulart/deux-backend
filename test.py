@@ -11,7 +11,7 @@ json_data = '''{
     "side": "buy"
 }'''
 
-str_data='symbol=BTC-USDT, side=buy, indicator=211'
+str_data='symbol=ETH-USDT, side=buy, indicator=1'
 
 
 
