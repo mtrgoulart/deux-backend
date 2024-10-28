@@ -3,6 +3,8 @@ import threading
 import time
 from .pp import ConfigLoader,Market
 from collections import defaultdict
+from datetime import datetime
+
 
 class OKX_interface():
     def __init__(self,config: object):
@@ -56,48 +58,52 @@ class OKX_interface():
         return execution_price
 
 class IntervalHandler:
-    def __init__(self,interval,symbol):
+    def __init__(self, interval, symbol, db_manager,side):
         self.interval = float(interval)
-        self.symbol=symbol
+        self.symbol = symbol
+        self.db_manager = db_manager  # Passa o gerenciador de banco de dados
+        self.side=side
 
     def get_last_op(self):
-        config=ConfigLoader()
-        client = OKX_interface(config)
-        last_operation = client.get_last_trade(self.symbol)
+        """
+        Busca a última operação do banco de dados para o símbolo especificado.
+        """
+        last_operation = self.db_manager.get_last_operation_from_db(self.symbol)
         return last_operation
 
     def check_interval(self):
-        last_operation=self.get_last_op()
-        print(last_operation)
-
+        """
+        Verifica se o intervalo entre a última operação e o horário atual atende ao intervalo mínimo.
+        """
+        last_operation = self.get_last_op()
         if last_operation is not None:
-            print(last_operation.order_id)
-            valid_interval = self._interval_logic(last_operation)
-            return valid_interval
+            if last_operation['side']!=self.side:
+                return True
+            else:
+                valid_interval = self._interval_logic(last_operation['date'])
+                return valid_interval
         else:
             return True
 
-    def get_application_interval(self,operation):
-        from datetime import datetime
-        if operation:
+    def get_application_interval(self, last_operation_time):
+        """
+        Calcula o intervalo em minutos entre a última operação e o horário atual.
+        """
+        if last_operation_time:
             current_time = datetime.now()
-            print(operation)
-            print(current_time)
-            # Calcula a diferença entre o tempo atual e a última operação em minutos
-            return (current_time - operation).total_seconds() / 60
-        else:
-            return None
-        
-    def _interval_logic(self,last_operation):
-        last_operation_interval = self.get_application_interval(last_operation.time)
+            return (current_time - last_operation_time).total_seconds() / 60
+        return None
+
+    def _interval_logic(self, last_operation_time):
+        last_operation_interval = self.get_application_interval(last_operation_time)
         print(f"Intervalo decorrido: {last_operation_interval} minutos")
-        if self.interval==0:
+        if self.interval == 0:
             return True
         else:
             return last_operation_interval >= self.interval
     
 class OperationHandler:
-    def __init__(self, webhook_data_manager,market_manager,condition_handler,interval,symbol):
+    def __init__(self, webhook_data_manager,market_manager,condition_handler,interval,symbol,side):
         self.webhook_data_manager = webhook_data_manager
         self.market_manager=market_manager
         self.stop_event = threading.Event()
@@ -105,52 +111,45 @@ class OperationHandler:
         self.interval=interval
         self.symbol=symbol
         self._is_running = False
+        self.side=side
 
-    def start(self):
+    def start(self, start_date):
         self.stop_event.clear()
-        self.thread = threading.Thread(target=self.run)
+        self.thread = threading.Thread(target=self.run, args=(start_date,))
         self.thread.start()
         self._is_running = True
-        #self.run
 
     def stop(self):
         self.stop_event.set()
         self.thread.join()
 
-    def run(self):
+    def run(self,start_date):
         while not self.stop_event.is_set():
-            data = self.webhook_data_manager.get_market_objects()
-            filtered_data = [
-            market for market in data 
-            if market.operation is None and 
-               market.symbol == self.market_manager.symbol and 
-               market.side == self.market_manager.side
-        ]
+            # Recupera objetos agrupados do banco de dados
+            data = self.webhook_data_manager.get_market_objects_as_models(self.symbol,self.side,start_date)
 
-
-            # Agrupa os dados por symbol e side
-            grouped_data = defaultdict(list)
-            for market in filtered_data:
-                grouped_data[(market.symbol, market.side)].append(market)
-
-            # Aplica check_conditions para cada grupo
             operation_performed = False
-            for (symbol, side), markets in grouped_data.items():
-                if self.check_conditions(markets) and len(markets) > 1:
-                    last_market_data = markets[-1]  # Pega o último do grupo
-                    market_to_operation = Market(
-                        symbol=last_market_data.symbol,
-                        order_type='market',
-                        side=last_market_data.side,
-                        size=self.market_manager.size
-                    )
-                    self.perform_operation(market_to_operation)
-                    self.update_webhook_operation(markets)
-                    operation_performed = True  # Define que a operação foi realizada
-                    
-                    time.sleep(5)
-                    self._is_running = False
-                    break  # Sai do for
+            if self.check_conditions(data) and len(data) > 1:
+                last_market_data = data[-1]  # Pega o último item
+
+                # Cria o objeto Market para realizar a operação
+                market_to_operation = Market(
+                    symbol=last_market_data["symbol"],
+                    order_type='market',
+                    side=last_market_data["side"],
+                    size=self.market_manager.size
+                )
+                self.perform_operation(market_to_operation)
+
+                # Salva a operação no banco e captura o ID
+                operation_id = self.webhook_data_manager.save_operation_to_db(market_to_operation.to_dict())
+
+                # Atualiza o status da operação no banco de dados
+                self.update_webhook_operation(data, operation_id)
+                operation_performed = True
+
+                time.sleep(2)
+                self._is_running = False
 
             if operation_performed:
                 break
@@ -161,29 +160,25 @@ class OperationHandler:
         """Retorna se a operação ainda está em execução."""
         return self._is_running
 
-    def update_webhook_operation(self, filtered_data):
+    def update_webhook_operation(self, filtered_data,operation_id):
         for market_object in filtered_data:
-            # Cria uma cópia do objeto para editar
-            new_market_object = Market(symbol=market_object.symbol,
-                                    order_type=market_object.order_type,
-                                    side=market_object.side,
-                                    size=market_object.size,
-                                    price=market_object.price,
-                                    operation="Done",
-                                    indicator=market_object.indicator)  # Substitua pelo valor desejado
+            # Cria um dicionário de novos dados para a operação "Done"
+            new_data = {
+                "symbol": market_object["symbol"],
+                "side": market_object["side"],
+                "indicator": market_object.get("indicator"),
+                "operation": operation_id  # Define como "Done"
+            }
 
-            # Encontra o índice do market_object na lista original market_objects
+            # Atualiza o banco de dados usando o `id` do objeto
             try:
-                update_index = self.webhook_data_manager.market_objects.index(market_object)
-            except ValueError:
-                continue  # Se o objeto não estiver na lista, pula para o próximo
-
-            # Atualiza o objeto no índice correto
-            self.webhook_data_manager.update_market_object_at_index(update_index, new_market_object)
+                self.webhook_data_manager.update_market_object_at_index(market_object["id"], new_data)
+                print(f"Objeto {market_object['id']} atualizado com sucesso.")
+            except Exception as e:
+                print(f"Erro ao atualizar o objeto {market_object['id']}: {e}")
 
     def check_conditions(self, data):
         return self.condition_handler.check_condition(data)
-
 
     def perform_operation(self, market_data):
         config = ConfigLoader()
@@ -270,26 +265,26 @@ class OperationHandler:
         return execution_price
 
 class conditionHandler:
-    def __init__(self,length_condition):
-        self.length_condition=length_condition
+    def __init__(self, length_condition):
+        self.length_condition = length_condition
     
     def check_condition(self, market_list):
         # Dicionário para armazenar os símbolos e tipos com suas estratégias correspondentes
         symbol_type_dict = {}
 
         for market in market_list:
-            key = (market.symbol, market.side)  # Chave combinada de symbol e type
+            key = (market["symbol"], market["side"])  # Chave combinada de symbol e side
             
             if key not in symbol_type_dict:
                 symbol_type_dict[key] = []  # Inicializa como lista
-        
-            # Verifica se a estratégia já está na lista, se não estiver, adiciona
-            if market.indicator not in symbol_type_dict[key]:
-                symbol_type_dict[key].append(market.indicator)
+            
+            # Verifica se a estratégia (indicator) já está na lista, se não estiver, adiciona
+            if market["indicator"] not in symbol_type_dict[key]:
+                symbol_type_dict[key].append(market["indicator"])
 
-        # Agora verificamos se há pelo menos duas estratégias diferentes para cada combinação de symbol e type
+        # Agora verificamos se há pelo menos duas estratégias diferentes para cada combinação de symbol e side
         for key, strategies in symbol_type_dict.items():
             if len(strategies) < int(self.length_condition):
                 return False  # Se alguma combinação não tiver pelo menos duas estratégias diferentes, retorna False
 
-        return True  # Se todas as combinações tiverem duas ou mais estratégias diferentes, retorna True
+        return True # Se todas as combinações tiverem duas ou mais estratégias diferentes, retorna True

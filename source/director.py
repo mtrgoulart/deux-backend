@@ -1,13 +1,25 @@
 from .manager import OperationHandler,IntervalHandler,conditionHandler,OKX_interface
-from .pp import Market
-from .webhook import WebhookHandler
+from .pp import Market,WebhookData,ConfigLoader
 import time
 import threading
+from datetime import datetime
 
 
 class OperationManager():
-    def __init__(self, webhook_url, percent, avaiable_size, condition_limit, interval, symbol,side):
-        self.webhook_url = webhook_url
+    def __init__(self, percent, avaiable_size, condition_limit, interval, symbol,side):
+        config_loader = ConfigLoader()
+        
+        # Carrega os parâmetros de conexão do banco de dados a partir do config.ini
+        db_params = {
+            'dbname': config_loader.get('database', 'dbname'),
+            'user': config_loader.get('database', 'user'),
+            'password': config_loader.get('database', 'password'),
+            'host': config_loader.get('database', 'host'),
+            'port': config_loader.get('database', 'port')
+        }
+        
+        # Inicializa o WebhookData com os parâmetros do banco de dados
+        self.webhook_data_manager = WebhookData(db_params)
         self.percent = percent
         self.avaiable_size = avaiable_size
         self.condition_limit = condition_limit
@@ -19,21 +31,20 @@ class OperationManager():
         self.side=side
 
     def start_operation(self):
-        # Inicializar o WebhookHandler
-        self.webhook_handler = WebhookHandler(self.webhook_url)
-        self.webhook_handler.run()
+        
 
         # Calcular o unit_size e criar instâncias das classes necessárias
         self.unit_size = float(self.percent) * float(self.avaiable_size)
-        self.market = Market(side=self.side,size=self.unit_size)
+        self.market = Market(symbol=self.symbol,side=self.side,size=self.unit_size)
         self.condition_handler = conditionHandler(self.condition_limit)
 
         # Instanciar o OperationHandler, mas não iniciar ainda
-        self.operation_handler = OperationHandler(self.webhook_handler.webhook_data_manager, 
+        self.operation_handler = OperationHandler(self.webhook_data_manager,
                                                   self.market, 
                                                   self.condition_handler, 
                                                   self.interval, 
-                                                  self.symbol)
+                                                  self.symbol,
+                                                  self.side)
 
         # Iniciar o monitoramento do intervalo em uma thread
         self.start_monitoring()
@@ -46,23 +57,28 @@ class OperationManager():
         self.monitoring_thread.start()
 
     def stop_monitoring(self):
-        """Para o monitoramento do intervalo e a operação."""
+        """Para o monitoramento do intervalo e a operação imediatamente."""
         print("Parando monitoramento do intervalo...")
         self.stop_event.set()  # Aciona o evento para parar a thread de monitoramento
-        if self.monitoring_thread is not None:
-            self.monitoring_thread.join()  # Espera a thread de monitoramento terminar
+        # Remove o join(), pois a thread daemon será finalizada automaticamente
         self.operation_active = False
+
+    
 
     def monitor_interval(self):
         """Método que monitora o intervalo e inicia/paralisa a operação quando necessário."""
-        self.interval_handler = IntervalHandler(self.interval, self.symbol)
+        self.interval_handler = IntervalHandler(self.interval, self.symbol, self.webhook_data_manager,self.side)
 
         while not self.stop_event.is_set():  # Continua enquanto o evento de parada não for acionado
-            last_operation_higher_than_interval=self.interval_handler.check_interval()
+            last_operation_higher_than_interval = self.interval_handler.check_interval()
+            
             if last_operation_higher_than_interval:  # Verifica o intervalo
                 if not self.operation_active:
                     print('\n***********************\n Intervalo válido, iniciando webhook....')
-                    self.operation_handler.start()  # Inicia a operação
+
+                    current_time = datetime.now()
+
+                    self.operation_handler.start(current_time)  # Inicia a operação
                     self.operation_active = True
 
                     # Agora espera até que a operação seja completada no OperationHandler
@@ -70,10 +86,6 @@ class OperationManager():
 
                     # Após a conclusão da operação, volta ao monitoramento
                     self.operation_active = False
-                else:
-                    print("Operação já em andamento.")
-            else:
-                print("Intervalo não atendido, aguardando próximo ciclo...")
 
             time.sleep(3)  # Pausa antes de verificar o intervalo novamente
 

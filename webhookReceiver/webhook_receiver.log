@@ -1,0 +1,114 @@
+2024-10-28 00:46:15 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.0.3:5000
+2024-10-28 00:46:15 [INFO] [33mPress CTRL+C to quit[0m
+2024-10-28 00:46:28 [INFO] Dados válidos recebidos.
+2024-10-28 00:46:28 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1'}
+2024-10-28 00:46:28 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 00:46:28 [INFO] 172.18.0.1 - - [28/Oct/2024 00:46:28] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 00:54:07 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.0.3:5000
+2024-10-28 00:54:07 [INFO] [33mPress CTRL+C to quit[0m
+2024-10-28 00:54:14 [INFO] Dados válidos recebidos.
+2024-10-28 00:54:14 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1'}
+2024-10-28 00:54:14 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 00:54:14 [INFO] 172.18.0.1 - - [28/Oct/2024 00:54:14] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 00:55:21 [INFO] Dados válidos recebidos.
+2024-10-28 00:55:21 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1'}
+2024-10-28 00:55:21 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 00:55:21 [INFO] 172.18.0.1 - - [28/Oct/2024 00:55:21] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 00:55:31 [INFO] Dados válidos recebidos.
+2024-10-28 00:55:31 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '2'}
+2024-10-28 00:55:31 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 00:55:31 [INFO] 172.18.0.1 - - [28/Oct/2024 00:55:31] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 00:56:09 [INFO] Dados válidos recebidos.
+2024-10-28 00:56:09 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'sell', 'indicator': '2'}
+2024-10-28 00:56:09 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 00:56:09 [INFO] 172.18.0.1 - - [28/Oct/2024 00:56:09] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 00:56:16 [INFO] Dados válidos recebidos.
+2024-10-28 00:56:16 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'sell', 'indicator': '1'}
+2024-10-28 00:56:16 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 00:56:16 [INFO] 172.18.0.1 - - [28/Oct/2024 00:56:16] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 00:56:20 [INFO] Dados válidos recebidos.
+2024-10-28 00:56:20 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'sell', 'indicator': '3'}
+2024-10-28 00:56:20 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 00:56:20 [INFO] 172.18.0.1 - - [28/Oct/2024 00:56:20] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 01:35:28 [INFO] Dados válidos recebidos.
+2024-10-28 01:35:28 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '3'}
+2024-10-28 01:35:28 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 01:35:28 [INFO] 172.18.0.1 - - [28/Oct/2024 01:35:28] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 01:35:32 [INFO] Dados válidos recebidos.
+2024-10-28 01:35:32 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '2'}
+2024-10-28 01:35:32 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 01:35:32 [INFO] 172.18.0.1 - - [28/Oct/2024 01:35:32] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 01:36:13 [INFO] Dados válidos recebidos.
+2024-10-28 01:36:13 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '2'}
+2024-10-28 01:36:13 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 01:36:13 [INFO] 172.18.0.1 - - [28/Oct/2024 01:36:13] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 01:36:16 [INFO] Dados válidos recebidos.
+2024-10-28 01:36:16 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '3'}
+2024-10-28 01:36:16 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 01:36:16 [INFO] 172.18.0.1 - - [28/Oct/2024 01:36:16] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 01:36:24 [INFO] Dados válidos recebidos.
+2024-10-28 01:36:24 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '3'}
+2024-10-28 01:36:24 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 01:36:24 [INFO] 172.18.0.1 - - [28/Oct/2024 01:36:24] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 01:36:25 [INFO] Dados válidos recebidos.
+2024-10-28 01:36:25 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '3'}
+2024-10-28 01:36:25 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 01:36:25 [INFO] 172.18.0.1 - - [28/Oct/2024 01:36:25] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 01:36:29 [INFO] Dados válidos recebidos.
+2024-10-28 01:36:29 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '31'}
+2024-10-28 01:36:29 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 01:36:29 [INFO] 172.18.0.1 - - [28/Oct/2024 01:36:29] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 01:36:30 [INFO] Dados válidos recebidos.
+2024-10-28 01:36:30 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '311'}
+2024-10-28 01:36:30 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 01:36:30 [INFO] 172.18.0.1 - - [28/Oct/2024 01:36:30] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 01:36:33 [INFO] Dados válidos recebidos.
+2024-10-28 01:36:33 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '3111'}
+2024-10-28 01:36:33 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 01:36:33 [INFO] 172.18.0.1 - - [28/Oct/2024 01:36:33] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 01:37:06 [INFO] Dados válidos recebidos.
+2024-10-28 01:37:06 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '9'}
+2024-10-28 01:37:06 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 01:37:06 [INFO] 172.18.0.1 - - [28/Oct/2024 01:37:06] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 01:37:08 [INFO] Dados válidos recebidos.
+2024-10-28 01:37:08 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '8'}
+2024-10-28 01:37:09 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 01:37:09 [INFO] 172.18.0.1 - - [28/Oct/2024 01:37:09] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 12:10:24 [INFO] Dados válidos recebidos.
+2024-10-28 12:10:24 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1'}
+2024-10-28 12:10:24 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 12:10:24 [INFO] 172.18.0.1 - - [28/Oct/2024 12:10:24] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 12:10:56 [INFO] Dados válidos recebidos.
+2024-10-28 12:10:56 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '2'}
+2024-10-28 12:10:57 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 12:10:57 [INFO] 172.18.0.1 - - [28/Oct/2024 12:10:57] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 12:11:05 [INFO] Dados válidos recebidos.
+2024-10-28 12:11:05 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '3'}
+2024-10-28 12:11:05 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 12:11:05 [INFO] 172.18.0.1 - - [28/Oct/2024 12:11:05] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 12:14:00 [INFO] Dados válidos recebidos.
+2024-10-28 12:14:00 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'sell', 'indicator': '1'}
+2024-10-28 12:14:00 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 12:14:00 [INFO] 172.18.0.1 - - [28/Oct/2024 12:14:00] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 12:14:30 [INFO] Dados válidos recebidos.
+2024-10-28 12:14:30 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'sell', 'indicator': '2'}
+2024-10-28 12:14:30 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 12:14:30 [INFO] 172.18.0.1 - - [28/Oct/2024 12:14:30] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 12:27:19 [INFO] Dados válidos recebidos.
+2024-10-28 12:27:19 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1'}
+2024-10-28 12:27:19 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 12:27:19 [INFO] 172.18.0.1 - - [28/Oct/2024 12:27:19] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 12:27:23 [INFO] Dados válidos recebidos.
+2024-10-28 12:27:23 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '2'}
+2024-10-28 12:27:23 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 12:27:23 [INFO] 172.18.0.1 - - [28/Oct/2024 12:27:23] "POST /webhook HTTP/1.1" 200 -
+2024-10-28 12:27:27 [INFO] Dados válidos recebidos.
+2024-10-28 12:27:27 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '3'}
+2024-10-28 12:27:27 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-28 12:27:27 [INFO] 172.18.0.1 - - [28/Oct/2024 12:27:27] "POST /webhook HTTP/1.1" 200 -

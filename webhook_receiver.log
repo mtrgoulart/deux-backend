@@ -1,0 +1,9 @@
+2024-10-26 23:31:20 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.17.0.3:5000
+2024-10-26 23:31:20 [INFO] [33mPress CTRL+C to quit[0m
+2024-10-26 23:31:31 [INFO] Dados válidos recebidos.
+2024-10-26 23:31:31 [INFO] Dados modelados com sucesso: {'key': '00xx222903GF', 'symbol': 'ETH-USDT', 'side': 'buy', 'indicator': '1'}
+2024-10-26 23:31:31 [INFO] Dados inseridos com sucesso no banco de dados.
+2024-10-26 23:31:31 [INFO] 172.17.0.1 - - [26/Oct/2024 23:31:31] "POST /webhook HTTP/1.1" 200 -

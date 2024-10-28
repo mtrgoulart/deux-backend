@@ -1,4 +1,8 @@
 import configparser
+import psycopg2
+from .dbmanager import DatabaseClient
+from datetime import datetime
+
 
 class ConfigLoader:
     def __init__(self, config_file='config.ini'):
@@ -10,25 +14,31 @@ class ConfigLoader:
         return self.config.get(section, key)
 
 class Market:
-    def __init__(self,symbol=None,order_type=None,side=None,size=None, price=None,operation=None,indicator=None):
-        self.symbol=symbol
-        self.order_type=order_type
-        self.side=side
-        self.size=size
-        self.price=price
-        self.operation=operation
-        self.indicator=indicator
+    def __init__(self, id=None, key=None, symbol=None, side=None, indicator=None, created_at=None, operation=None, size=None, order_type=None, price=None):
+        self.id = id
+        self.key = key
+        self.symbol = symbol
+        self.side = side
+        self.indicator = indicator
+        self.created_at = created_at
+        self.operation = operation
+        self.size = size
+        self.order_type = order_type
+        self.price = price
 
     def to_dict(self):
         return {
+            "id": self.id,
+            "key": self.key,
             "symbol": self.symbol,
-            "order_type": self.order_type,
-            "size": self.size,
             "side": self.side,
-            "price": self.price,
-            "operation":self.operation
+            "indicator": self.indicator,
+            "created_at": self.created_at,
+            "operation": self.operation,
+            "size": self.size,
+            "order_type": self.order_type,
+            "price": self.price
         }
-    
 
 class Condition:
     def __init__(self,tp,sl,open_operations_condition,size,signals_condition):
@@ -42,47 +52,118 @@ class Condition:
 class WebhookData:
     _instance = None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, db_params):
         if cls._instance is None:
-            cls._instance = super().__new__(cls, *args, **kwargs)
+            cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self):
-        # Initialize an empty list to store multiple data dictionaries
-        if not hasattr(self, 'data_list'):
-            self.data_list = []
-        # Initialize an empty list to store Market objects
-        if not hasattr(self, 'market_objects'):
-            self.market_objects = []
+    def __init__(self, db_params):
+        if not hasattr(self, 'db_client'):
+            self.db_client = psycopg2.connect(**db_params)
+            self.cursor = self.db_client.cursor()
+            print("Conexão com o banco de dados estabelecida.")
+
+    def fetch_data(self, query, params=()):
+        try:
+            self.cursor.execute(query, params)
+            return self.cursor.fetchall()
+        except Exception as e:
+            print(f"Erro ao buscar dados: {e}")
+            self.db_client.rollback()
+            return []
+
+    def execute_query(self, query, params=()):
+        try:
+            self.cursor.execute(query, params)
+            self.db_client.commit()
+        except Exception as e:
+            print(f"Erro ao executar consulta: {e}")
+            self.db_client.rollback()
 
     def add_data(self, data_str):
-        # Parse the input string and append the parsed data to the list
         data_dict = self._parse_data(data_str)
-        self.data_list.append(data_dict)
+        query = """
+            INSERT INTO webhook_data (key, symbol, side, indicator)
+            VALUES (%s, %s, %s, %s)
+        """
+        params = (data_dict["key"], data_dict["symbol"], data_dict["side"], int(data_dict["indicator"]))
+        self.execute_query(query, params)
 
     def add_object(self, market_object):
-        # Add a Market object to the market_objects list
         if isinstance(market_object, Market):
-            self.market_objects.append(market_object)
+            query = """
+                INSERT INTO market_data (symbol, strategy, ...)
+                VALUES (%s, %s, ...)
+            """
+            params = (market_object.symbol, market_object.strategy, ...)
+            self.execute_query(query, params)
         else:
             raise TypeError("Expected an instance of Market class.")
-        
-    def update_data_at_index(self, index, new_data):
-        # Update the data at the given index
-        if index < 0 or index >= len(self.data_list):
-            raise IndexError("Index out of range.")
-        self.data_list[index] = new_data
 
-    def update_market_object_at_index(self, index, new_market_object):
-        # Update the Market object at the given index
-        if index < 0 or index >= len(self.market_objects):
-            raise IndexError("Index out of range.")
-        if not isinstance(new_market_object, Market):
-            raise TypeError("Expected an instance of Market class.")
-        self.market_objects[index] = new_market_object
+    def get_data(self):
+        query = "SELECT * FROM webhook_data"
+        return self.fetch_data(query)
+
+    def get_data_at_index(self, index):
+        query = "SELECT * FROM webhook_data WHERE id = %s"
+        return self.fetch_data(query, (index,))
+
+    def get_market_objects(self, symbol=None, side=None, start_date=None):
+        # Base da consulta
+        query = """
+            SELECT symbol, side, json_agg(row_to_json(webhook_data)) AS markets
+            FROM webhook_data
+            WHERE operation IS NULL
+        """
+        params = []
+
+        # Adiciona filtros se `symbol` e `side` forem fornecidos
+        if symbol:
+            query += " AND symbol = %s"
+            params.append(symbol)
+        if side:
+            query += " AND side = %s"
+            params.append(side)
+        if start_date:
+            query += " AND created_at >= %s"
+            params.append(start_date)
+        
+        # Agrupamento por `symbol` e `side`
+        query += " GROUP BY symbol, side"
+        
+        return self.fetch_data(query, tuple(params))
+
+    def get_market_object_at_index(self, index):
+        query = "SELECT * FROM webhook_data WHERE id = %s"
+        return self.fetch_data(query, (index,))
+
+    def update_data_at_index(self, index, new_data_str):
+        new_data = self._parse_data(new_data_str)
+        query = """
+            UPDATE webhook_data
+            SET key = %s, symbol = %s, side = %s, indicator = %s
+            WHERE id = %s
+        """
+        params = (new_data["key"], new_data["symbol"], new_data["side"], int(new_data["indicator"]), index)
+        self.execute_query(query, params)
+
+    def update_market_object_at_index(self, id, new_data):
+        # Atualiza somente as colunas existentes na tabela webhook_data
+        query = """
+            UPDATE webhook_data
+            SET symbol = %s, side = %s, indicator = %s, operation = %s
+            WHERE id = %s
+        """
+        params = (
+            new_data["symbol"], 
+            new_data["side"],
+            new_data["indicator"], 
+            new_data["operation"], 
+            id
+        )
+        self.execute_query(query, params)
 
     def _parse_data(self, data_str):
-        # Split the string by commas, and then by equals sign to create a dictionary
         data_items = data_str.split(',')
         data_dict = {}
         for item in data_items:
@@ -90,52 +171,71 @@ class WebhookData:
             data_dict[key.strip()] = value.strip()
         return data_dict
 
-    def get_data(self):
-        # Return the list of all data dictionaries
-        return self.data_list
-
-    def get_data_at_index(self, index):
-        # Return the data dictionary at a specific index
-        if index < 0 or index >= len(self.data_list):
-            raise IndexError("Index out of range.")
-        return self.data_list[index]
-
-    def get_market_objects(self):
-        # Return the list of all Market objects
-        return self.market_objects
-
-    def get_market_object_at_index(self, index):
-        # Return the Market object at a specific index
-        if index < 0 or index >= len(self.market_objects):
-            raise IndexError("Index out of range.")
-        return self.market_objects[index]
-
-    def __str__(self):
-        # For printing the object data in a readable format
-        return f"WebhookData(data_list={self.data_list}, market_objects={self.market_objects})"
-
-    def get_value(self, key, index=0):
-        # Get a specific value by key from a specific data dictionary
-        if index < 0 or index >= len(self.data_list):
-            raise IndexError("Index out of range.")
-        return self.data_list[index].get(key, None)
-
-    def get_last_n_data(self, n=2):
-        # Get the last n data dictionaries from the list
-        if n < 1:
-            raise ValueError("The number of items to retrieve must be at least 1.")
-        return self.data_list[-n:]
-    
-    def get_last_n_market(self, n=2):
-        # Get the last n data dictionaries from the list
-        if n < 1:
-            raise ValueError("The number of items to retrieve must be at least 1.")
-        return self.market_objects[-n:]
-    
     def reset_data(self):
-        # Clear both the data_list and market_objects
-        self.data_list.clear()
-        self.market_objects.clear()
+        self.execute_query("DELETE FROM webhook_data")
+        self.execute_query("DELETE FROM market_data")
+
+    def get_market_objects_as_models(self, symbol=None, side=None, start_date=None):
+        grouped_data = self.get_market_objects(symbol, side, start_date)
+        market_objects = []
+        
+        for symbol, side, markets in grouped_data:
+            for market_data in markets:  # Itera sobre cada mercado no grupo
+                market = Market(
+                    id=market_data["id"],
+                    key=market_data["key"],
+                    symbol=market_data["symbol"],
+                    side=market_data["side"],
+                    indicator=market_data["indicator"],
+                    created_at=market_data["created_at"],
+                    operation=market_data["operation"]
+                )
+                market_objects.append(market.to_dict())
+        
+        return market_objects
+
+    def save_operation_to_db(self, operation_data):
+        query = """
+            INSERT INTO operations (date, symbol, size, side)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id
+        """
+        params = (
+            datetime.now(),
+            operation_data["symbol"],
+            operation_data["size"],
+            operation_data["side"]
+        )
+        try:
+            self.cursor.execute(query, params)
+            new_id = self.cursor.fetchone()[0]  # Captura o id gerado
+            self.db_client.commit()
+            return new_id
+        except Exception as e:
+            print(f"Erro ao salvar a operação: {e}")
+            self.db_client.rollback()
+            return None
+
+    def get_last_operation_from_db(self, symbol):
+        query = """
+            SELECT id
+            ,date
+            ,symbol
+            ,size
+            ,side 
+            FROM operations
+            WHERE symbol = %s
+            ORDER BY date DESC
+            LIMIT 1;
+        """
+        last_op = self.fetch_data(query, (symbol,))
+        
+        # Defina os nomes das colunas conforme esperado na consulta
+        columns = ["id", "date", "symbol", "size", "side"]
+        
+        # Retorne os dados no formato de dicionário
+        return dict(zip(columns, last_op[0])) if last_op else None
+
 
 
 class LastOperation:
