@@ -8,6 +8,9 @@ import threading
 from source.manager import OKX_interface
 import time
 from .form import DynamicForm
+import os
+os.environ['TCL_LIBRARY'] = r'C:\Users\Finn\AppData\Local\Programs\Python\Python313\tcl\tcl8.6'
+os.environ['TK_LIBRARY'] = r'C:\Users\Finn\AppData\Local\Programs\Python\Python313\tcl\tk8.6'
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("dark-blue")

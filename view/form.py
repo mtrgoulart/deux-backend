@@ -3,6 +3,7 @@ from PIL import Image
 from tkinter import messagebox, Scrollbar
 import os
 from source.director import OperationManager
+import re
 
 # Configuração inicial do CustomTkinter
 ctk.set_appearance_mode("light")
@@ -90,10 +91,20 @@ class ButtonManager:
             key = f"{symbol}_{side}"
             if key not in self.saved_data:
                 raise ValueError(f"Não existem dados salvos para o par {symbol} e {side}.")
+            
+            
+            match = re.match(r"^([^-]+)-([^-]+)$", symbol)
+            if not match:
+                raise ValueError(f"O símbolo '{symbol}' não está no formato esperado 'parte1-parte2'.")
+            
+            part1, part2 = match.groups()
+            
+            # Define `ccy` com base no valor de `side`
+            ccy = part2 if side == 'buy' else part1
 
             saved_entry = self.saved_data[key]
             percent = float(saved_entry.get('% Operações', 0.0))
-            saldo = self.app_instance.obter_saldo('USDT')
+            saldo = float(self.app_instance.obter_saldo(ccy) or 0.0)
             condition = int(saved_entry.get('Condicionantes', 1))
             interval = int(saved_entry.get('Delay', 5))
 
