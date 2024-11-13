@@ -6,7 +6,9 @@ import json
 from datetime import datetime, timezone
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from .pp import LastOperation
+from datetime import datetime
+from types import SimpleNamespace
+
 
 class OKXClient:
     def __init__(self, config_loader, url='https://www.okx.com'):
@@ -50,8 +52,11 @@ class OKXClient:
             print(f"Error during request: {e}")
             return None
 
-    def place_order(self, symbol, side, order_type, size, price=None):
-        print(f'\nSending Order: {symbol},{side},{order_type},{size}')
+    def place_order(self, symbol, side, order_type, size, currency, price=None):
+        tgtCcy = "quote_ccy" if side == "buy" else "base_ccy"
+        
+        print(f'\nSending Order: {symbol},{side},{order_type},{size} in {tgtCcy}')
+        
         body = {
             "instId": symbol,
             "tdMode": "cash",
@@ -59,9 +64,46 @@ class OKXClient:
             "ordType": order_type,
             "sz": size,
             "px": price,
-            "tgtCcy": "quote_ccy",
+            "tgtCcy": tgtCcy,
         }
-        return self.send_request('POST', '/api/v5/trade/order', body)
+        response = self.send_request('POST', '/api/v5/trade/order', body)
+        if response and "data" in response:
+            return response["data"][0]["ordId"]  # Retorna o ID da ordem
+        return None
+    
+   
+    def wait_for_fill_price(self, order_id, check_interval=1, timeout=90):
+        """
+        Verifica repetidamente até que a ordem especificada pelo `order_id` seja executada, retornando o `fillPx`.
+        Interrompe a verificação após um tempo limite de 30 segundos.
+
+        Args:
+            order_id (str): ID da ordem a ser monitorada.
+            check_interval (int): Intervalo de tempo em segundos entre verificações (padrão é 1 segundo).
+            timeout (int): Tempo máximo em segundos para aguardar o preenchimento (padrão é 30 segundos).
+
+        Returns:
+            float: Preço de execução `fillPx` da ordem quando ela for preenchida.
+            None: Caso o tempo limite seja atingido ou a ordem não seja encontrada.
+        """
+        start_time = time.time()  # Marca o início do tempo de espera
+
+        while True:
+            # Verifica se o tempo limite foi atingido
+            if time.time() - start_time > timeout:
+                print("Tempo limite atingido. Ordem não executada dentro de 30 segundos.")
+                return float(0.0)
+
+            # Verifica o preenchimento da ordem
+            response = self.send_request('GET', '/api/v5/trade/fills', {"ordId": order_id})
+            
+            if response and "data" in response:
+                # Itera sobre cada trade na resposta para verificar o `order_id`
+                for trade in response["data"]:
+                    if trade["ordId"] == order_id:
+                        return float(trade["fillPx"])  # Retorna o preço de execução específico da ordem
+            
+            time.sleep(check_interval)  # Espera antes de verificar novamente
 
     def cancel_order(self, symbol, order_id):
         body = {
@@ -90,35 +132,32 @@ class OKXClient:
         return self.send_request('GET', '/api/v5/account/balance', body=params)
     
     def get_last_trade(self, symbol):
-        body = {
-            "instId": symbol,
-            "limit": "100"
-        }
+        body = {"instId": symbol, "limit": "100"}
         response = self.send_request('GET', '/api/v5/trade/fills', body)
+        
         if response and response.get("code") == "0" and response.get("data"):
-            sorted_trades = sorted(response['data'], key=lambda x: x['fillTime'], reverse=True)
-            last_trade_data = sorted_trades[0]
-            fill_time_ms = int(last_trade_data.get('fillTime'))
-            fill_time = datetime.fromtimestamp(fill_time_ms / 1000)
-            return LastOperation(
-                fill_id=last_trade_data.get('tradeId'),
-                order_id=last_trade_data.get('ordId'),
-                symbol=last_trade_data.get('instId'),
-                side=last_trade_data.get('side'),
-                fill_size=last_trade_data.get('fillSz'),
-                fill_price=last_trade_data.get('fillPx'),
-                fee=last_trade_data.get('fee'),
+            last_trade_data = max(response["data"], key=lambda x: x['fillTime'])
+            fill_time = datetime.fromtimestamp(int(last_trade_data.get('fillTime', 0)) / 1000)
+            return SimpleNamespace(
+                fill_id=last_trade_data.get("tradeId"),
+                order_id=last_trade_data.get("ordId"),
+                symbol=last_trade_data.get("instId"),
+                side=last_trade_data.get("side"),
+                fill_size=last_trade_data.get("fillSz"),
+                fill_price=last_trade_data.get("fillPx"),
+                fee=last_trade_data.get("fee"),
                 time=fill_time
             )
-        else:
-            return None
+        
+        return None
 
 if __name__=="__main__":
     from pp import ConfigLoader
-    config = ConfigLoader(r'C:\Project\okx\venv\config.ini')
+    config = ConfigLoader(r'C:\Project\DeuxTradingBot\config.ini')
     client = OKXClient(config)
-    op = client.get_last_trade('BTC-USDT')
-    if op:
-        print(op.time)
-    else:
-        print("No trade data available.")
+    #op = client.get_last_trade('BTC-USDT')
+    #print(op)
+    price=client.get_balance('USDT')
+    print(price)
+    
+

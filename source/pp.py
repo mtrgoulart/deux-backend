@@ -1,6 +1,5 @@
 import configparser
-import psycopg2
-from .dbmanager import DatabaseClient
+import psycopg
 from datetime import datetime
 
 
@@ -59,7 +58,7 @@ class WebhookData:
 
     def __init__(self, db_params):
         if not hasattr(self, 'db_client'):
-            self.db_client = psycopg2.connect(**db_params)
+            self.db_client = psycopg.connect(**db_params)
             self.cursor = self.db_client.cursor()
             print("Conexão com o banco de dados estabelecida.")
 
@@ -194,17 +193,19 @@ class WebhookData:
         
         return market_objects
 
-    def save_operation_to_db(self, operation_data):
+    def save_operation_to_db(self, operation_data, price, status="realizada"):
         query = """
-            INSERT INTO operations (date, symbol, size, side)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO operations (date, symbol, size, side, price, status)
+            VALUES (%s, %s, %s, %s, %s, %s)
             RETURNING id
         """
         params = (
             datetime.now(),
             operation_data["symbol"],
             operation_data["size"],
-            operation_data["side"]
+            operation_data["side"],
+            price,
+            status
         )
         try:
             self.cursor.execute(query, params)
@@ -235,16 +236,3 @@ class WebhookData:
         
         # Retorne os dados no formato de dicionário
         return dict(zip(columns, last_op[0])) if last_op else None
-
-
-
-class LastOperation:
-    def __init__(self, fill_id, order_id, symbol, side, fill_size, fill_price, fee, time):
-        self.fill_id = fill_id
-        self.order_id = order_id
-        self.symbol = symbol
-        self.side = side
-        self.fill_size = fill_size
-        self.fill_price = fill_price
-        self.fee = fee
-        self.time = time  # O tempo da última operação

@@ -1,5 +1,5 @@
-import psycopg2
-from psycopg2.extras import RealDictCursor
+import psycopg
+#from psycopg.extras import RealDictCursor
 
 class DatabaseClient:
     def __init__(self, dbname, user, password, host, port=5432):
@@ -21,8 +21,8 @@ class DatabaseClient:
         Conecta ao banco de dados usando os parâmetros fornecidos.
         """
         try:
-            self.conn = psycopg2.connect(**self.connection_params)
-            self.cursor = self.conn.cursor(cursor_factory=RealDictCursor)
+            self.conn = psycopg.connect(**self.connection_params)
+            self.cursor = self.conn.cursor()
             print("Conexão com o banco de dados estabelecida.")
         except Exception as e:
             print("Erro ao conectar ao banco de dados:", e)
