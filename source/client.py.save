@@ -151,21 +151,20 @@ class OKXClient:
             )
         
         return None
+
 if __name__ == "__main__":
-    import configparser
-    class ConfigLoader:
-        def __init__(self, config_file='config.ini'):
-            self.config_file = config_file
-            self.config = configparser.ConfigParser()
-            self.config.read(config_file)
-        
+
+class ConfigLoader:
+    def __init__(self, config_file='config.ini'):
+        self.config_file = config_file
+        self.config = configparser.ConfigParser()
+        self.config.read(config_file)
         def get(self, section, key):
-            return self.config.get(section, key)
-
+        return self.config.get(section, key)
     # Use o caminho do config.ini passado como argumento ou um valor padrão
-    config_path = sys.argv[1] if len(sys.argv) > 1 else '/app/config.ini'
+    config_path = sys.argv[1] if len(sys.argv) > 1 else '/app/DeuxTradingBot/config.ini'
     print(f"Using config path: {config_path}")
-
+    
     config = ConfigLoader(config_path)
     client = OKXClient(config)
     price = client.get_balance('USDT')

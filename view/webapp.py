@@ -16,8 +16,7 @@ def index():
 def start_operation():
     global operation_manager
     data = request.json
-    general_logger.info("Requisição recebida para iniciar operação.")
-    general_logger.debug(f"Dados recebidos para operação: {data}")
+    general_logger.info(f"Requisição recebida para iniciar operação: {data}")
     try:
         percent = float(data.get('percent'))
         avaiable_size = float(data.get('avaiable_size'))
@@ -54,5 +53,4 @@ def stop_operation():
 
 if __name__ == "__main__":
     general_logger.info("Iniciando aplicação Flask.")
-    app.run(host="0.0.0.0", port=5000)
-
+    app.run(host="0.0.0.0", port=5001)

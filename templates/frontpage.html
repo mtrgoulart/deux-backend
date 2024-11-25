@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Bot Interface</title>
+    <style>
+        .operation-set { margin-bottom: 20px; padding: 10px; border: 1px solid #ccc; }
+        .remove-button { color: red; cursor: pointer; font-weight: bold; margin-left: 10px; }
+        .operation-controls { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Trade Bot Interface</h1>
+    
+    <div id="operations-container">
+        <!-- Área onde os conjuntos de campos serão adicionados -->
+    </div>
+    
+    <button onclick="addOperationSet()">Add Operation</button>
+
+    <script>
+        let operationCounter = 0;
+
+        function addOperationSet() {
+            operationCounter++;
+
+            const operationSet = document.createElement('div');
+            operationSet.classList.add('operation-set');
+            operationSet.id = `operation-${operationCounter}`;
+
+            operationSet.innerHTML = `
+                <h3>Operation ${operationCounter}</h3>
+                
+                <label for="symbol-${operationCounter}">Symbol:</label>
+                <input type="text" id="symbol-${operationCounter}" required>
+
+                <label for="side-${operationCounter}">Side:</label>
+                <select id="side-${operationCounter}" required>
+                    <option value="buy">Buy</option>
+                    <option value="sell">Sell</option>
+                </select>
+
+                <label for="percent-${operationCounter}">Percent:</label>
+                <input type="number" id="percent-${operationCounter}" step="0.01" required>
+
+                <label for="avaiable_size-${operationCounter}">Available Size:</label>
+                <input type="number" id="avaiable_size-${operationCounter}" step="0.01" required>
+
+                <label for="condition_limit-${operationCounter}">Condition Limit:</label>
+                <input type="number" id="condition_limit-${operationCounter}" min="1" required>
+
+                <label for="interval-${operationCounter}">Interval (seconds):</label>
+                <input type="number" id="interval-${operationCounter}" step="0.01" required>
+
+                <div class="operation-controls">
+                    <button onclick="startOperation(${operationCounter})">Start</button>
+                    <button onclick="stopOperation(${operationCounter})">Stop</button>
+                    <span class="remove-button" onclick="removeOperationSet(${operationCounter})">Remove</span>
+                </div>
+            `;
+
+            document.getElementById('operations-container').appendChild(operationSet);
+        }
+
+        function removeOperationSet(id) {
+            const operationSet = document.getElementById(`operation-${id}`);
+            operationSet.remove();
+        }
+
+        async function startOperation(id) {
+            const symbol = document.getElementById(`symbol-${id}`).value;
+            const side = document.getElementById(`side-${id}`).value;
+            const percent = parseFloat(document.getElementById(`percent-${id}`).value);
+            const avaiableSize = parseFloat(document.getElementById(`avaiable_size-${id}`).value);
+            const conditionLimit = parseInt(document.getElementById(`condition_limit-${id}`).value, 10);
+            const interval = parseFloat(document.getElementById(`interval-${id}`).value);
+
+            const operation = {
+                symbol: symbol,
+                side: side,
+                percent: percent,
+                avaiable_size: avaiableSize,
+                condition_limit: conditionLimit,
+                interval: interval
+            };
+
+            try {
+                const response = await fetch('/start_operation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(operation)
+                });
+
+                const result = await response.json();
+                alert(`Operation ${id} for ${symbol}: ${result.message || result.error}`);
+            } catch (error) {
+                alert(`Error starting operation ${id}: ${error.message}`);
+            }
+        }
+
+        async function stopOperation(id) {
+            const symbol = document.getElementById(`symbol-${id}`).value;
+            const side = document.getElementById(`side-${id}`).value;
+
+            const operation = {
+                symbol: symbol,
+                side: side
+            };
+
+            try {
+                const response = await fetch('/stop_operation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(operation)
+                });
+
+                const result = await response.json();
+                alert(`Stop Operation ${id} for ${symbol}: ${result.message || result.error}`);
+            } catch (error) {
+                alert(`Error stopping operation ${id}: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
+

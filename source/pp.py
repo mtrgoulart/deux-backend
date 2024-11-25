@@ -211,11 +211,11 @@ class WebhookData:
             self.cursor.execute(query, params)
             new_id = self.cursor.fetchone()[0]  # Captura o id gerado
             self.db_client.commit()
-            return new_id
+            return new_id,None
         except Exception as e:
-            print(f"Erro ao salvar a operação: {e}")
+            log=f"Erro ao salvar a operação: {e}"
             self.db_client.rollback()
-            return None
+            return None,log
 
     def get_last_operation_from_db(self, symbol):
         query = """
@@ -236,3 +236,4 @@ class WebhookData:
         
         # Retorne os dados no formato de dicionário
         return dict(zip(columns, last_op[0])) if last_op else None
+

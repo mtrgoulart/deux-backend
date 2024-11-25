@@ -137,9 +137,12 @@ class OperationHandler:
                 )
                 execution_price, execution_size, execution_status = self.perform_operation(market_to_operation)
                 market_to_operation.size = execution_size
-                operation_id = self.webhook_data_manager.save_operation_to_db(
+                general_logger.info(f'Operation Executed on: symbol:{last_market_data["symbol"]} price:{execution_price}')
+                operation_id,operation_log = self.webhook_data_manager.save_operation_to_db(
                     market_to_operation.to_dict(), price=execution_price, status=execution_status
                 )
+                if operation_log:
+                    general_logger.error(operation_log)
                 self.update_webhook_operation(data, operation_id)
                 operation_performed = True
                 time.sleep(2)
@@ -151,6 +154,9 @@ class OperationHandler:
             time.sleep(3)
 
     def update_webhook_operation(self, filtered_data, operation_id):
+        if operation_id is None:
+            operation_id = 0
+
         for market_object in filtered_data:
             new_data = {
                 "symbol": market_object["symbol"],

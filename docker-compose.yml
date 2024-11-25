@@ -1,0 +1,40 @@
+version: '3'
+services:
+  deuxbot:
+    image: deuxbot
+    container_name: deuxbot
+    network_mode: host
+    ports:
+      - "5001:5001"
+    restart: always
+
+  webhook_pipeline:
+    image: webhook_pipeline
+    container_name: webhook_pipeline
+    networks:
+      - main_network
+    ports:
+      - "5000:5000"
+    restart: always
+
+  db_postgres:
+    image: postgres:latest
+    container_name: db_postgres
+    networks:
+      - main_network
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: consumer_adm
+      POSTGRES_PASSWORD: criandta0
+      POSTGRES_DB: deux
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+networks:
+  main_network:
+    external: true
+
+volumes:
+  db_data:
