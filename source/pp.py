@@ -1,6 +1,6 @@
 import configparser
-import psycopg
 from datetime import datetime
+import os
 
 
 class ConfigLoader:
@@ -49,74 +49,35 @@ class Condition:
     
 
 class WebhookData:
-    _instance = None
+    def __init__(self, db_manager):
+        self.db_manager = db_manager
+        self.queries_path = os.path.join(os.path.dirname(__file__), "queries")
 
-    def __new__(cls, db_params):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-
-    def __init__(self, db_params):
-        if not hasattr(self, 'db_client'):
-            self.db_client = psycopg.connect(**db_params)
-            self.cursor = self.db_client.cursor()
-            print("Conexão com o banco de dados estabelecida.")
-
-    def fetch_data(self, query, params=()):
-        try:
-            self.cursor.execute(query, params)
-            return self.cursor.fetchall()
-        except Exception as e:
-            print(f"Erro ao buscar dados: {e}")
-            self.db_client.rollback()
-            return []
-
-    def execute_query(self, query, params=()):
-        try:
-            self.cursor.execute(query, params)
-            self.db_client.commit()
-        except Exception as e:
-            print(f"Erro ao executar consulta: {e}")
-            self.db_client.rollback()
-
-    def add_data(self, data_str):
-        data_dict = self._parse_data(data_str)
-        query = """
-            INSERT INTO webhook_data (key, symbol, side, indicator)
-            VALUES (%s, %s, %s, %s)
+    def _load_query(self, query_file):
         """
-        params = (data_dict["key"], data_dict["symbol"], data_dict["side"], int(data_dict["indicator"]))
-        self.execute_query(query, params)
+        Carrega a query SQL do arquivo especificado.
+        """
+        # Construir o caminho absoluto para o arquivo
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        filepath = os.path.join(project_root, "queries", query_file)
 
-    def add_object(self, market_object):
-        if isinstance(market_object, Market):
-            query = """
-                INSERT INTO market_data (symbol, strategy, ...)
-                VALUES (%s, %s, ...)
-            """
-            params = (market_object.symbol, market_object.strategy, ...)
-            self.execute_query(query, params)
-        else:
-            raise TypeError("Expected an instance of Market class.")
+        if not os.path.exists(filepath):
+            raise FileNotFoundError(f"Query file not found: {filepath}")
+
+        with open(filepath, "r") as file:
+            return file.read()
 
     def get_data(self):
-        query = "SELECT * FROM webhook_data"
-        return self.fetch_data(query)
+        query = self._load_query("select_webhook_data.sql")
+        return self.db_manager.fetch_data(query)
 
     def get_data_at_index(self, index):
-        query = "SELECT * FROM webhook_data WHERE id = %s"
-        return self.fetch_data(query, (index,))
+        query = self._load_query("select_webhook_data_by_id.sql")
+        return self.db_manager.fetch_data(query, (index,))
 
     def get_market_objects(self, symbol=None, side=None, start_date=None):
-        # Base da consulta
-        query = """
-            SELECT symbol, side, json_agg(row_to_json(webhook_data)) AS markets
-            FROM webhook_data
-            WHERE operation IS NULL
-        """
+        query = self._load_query("select_market_objects.sql")
         params = []
-
-        # Adiciona filtros se `symbol` e `side` forem fornecidos
         if symbol:
             query += " AND symbol = %s"
             params.append(symbol)
@@ -126,41 +87,25 @@ class WebhookData:
         if start_date:
             query += " AND created_at >= %s"
             params.append(start_date)
-        
-        # Agrupamento por `symbol` e `side`
         query += " GROUP BY symbol, side"
-        
-        return self.fetch_data(query, tuple(params))
-
-    def get_market_object_at_index(self, index):
-        query = "SELECT * FROM webhook_data WHERE id = %s"
-        return self.fetch_data(query, (index,))
+        return self.db_manager.fetch_data(query, tuple(params))
 
     def update_data_at_index(self, index, new_data_str):
         new_data = self._parse_data(new_data_str)
-        query = """
-            UPDATE webhook_data
-            SET key = %s, symbol = %s, side = %s, indicator = %s
-            WHERE id = %s
-        """
+        query = self._load_query("update_webhook_data.sql")
         params = (new_data["key"], new_data["symbol"], new_data["side"], int(new_data["indicator"]), index)
-        self.execute_query(query, params)
+        self.db_manager.insert_data(query, params)
 
     def update_market_object_at_index(self, id, new_data):
-        # Atualiza somente as colunas existentes na tabela webhook_data
-        query = """
-            UPDATE webhook_data
-            SET symbol = %s, side = %s, indicator = %s, operation = %s
-            WHERE id = %s
-        """
+        query = self._load_query("update_market_object.sql")
         params = (
-            new_data["symbol"], 
+            new_data["symbol"],
             new_data["side"],
-            new_data["indicator"], 
-            new_data["operation"], 
-            id
+            new_data["indicator"],
+            new_data["operation"],
+            id,
         )
-        self.execute_query(query, params)
+        self.db_manager.insert_data(query, params)
 
     def _parse_data(self, data_str):
         data_items = data_str.split(',')
@@ -170,16 +115,11 @@ class WebhookData:
             data_dict[key.strip()] = value.strip()
         return data_dict
 
-    def reset_data(self):
-        self.execute_query("DELETE FROM webhook_data")
-        self.execute_query("DELETE FROM market_data")
-
     def get_market_objects_as_models(self, symbol=None, side=None, start_date=None):
         grouped_data = self.get_market_objects(symbol, side, start_date)
         market_objects = []
-        
         for symbol, side, markets in grouped_data:
-            for market_data in markets:  # Itera sobre cada mercado no grupo
+            for market_data in markets:
                 market = Market(
                     id=market_data["id"],
                     key=market_data["key"],
@@ -187,53 +127,43 @@ class WebhookData:
                     side=market_data["side"],
                     indicator=market_data["indicator"],
                     created_at=market_data["created_at"],
-                    operation=market_data["operation"]
+                    operation=market_data["operation"],
                 )
                 market_objects.append(market.to_dict())
-        
         return market_objects
 
+class Operations:
+    def __init__(self, db_manager):
+        self.db_manager = db_manager
+
     def save_operation_to_db(self, operation_data, price, status="realizada"):
-        query = """
-            INSERT INTO operations (date, symbol, size, side, price, status)
-            VALUES (%s, %s, %s, %s, %s, %s)
-            RETURNING id
-        """
+        query = self._load_query("insert_operation.sql")
         params = (
             datetime.now(),
             operation_data["symbol"],
             operation_data["size"],
             operation_data["side"],
             price,
-            status
+            status,
         )
-        try:
-            self.cursor.execute(query, params)
-            new_id = self.cursor.fetchone()[0]  # Captura o id gerado
-            self.db_client.commit()
-            return new_id,None
-        except Exception as e:
-            log=f"Erro ao salvar a operação: {e}"
-            self.db_client.rollback()
-            return None,log
+        return self.db_manager.insert_data(query, params)
 
-    def get_last_operation_from_db(self, symbol):
-        query = """
-            SELECT id
-            ,date
-            ,symbol
-            ,size
-            ,side 
-            FROM operations
-            WHERE symbol = %s
-            ORDER BY date DESC
-            LIMIT 1;
-        """
-        last_op = self.fetch_data(query, (symbol,))
-        
-        # Defina os nomes das colunas conforme esperado na consulta
+    def get_last_operations_from_db(self, symbol, limit):
+        query = self._load_query("select_last_operations.sql")
+        last_ops = self.db_manager.fetch_data(query, (symbol, limit))
         columns = ["id", "date", "symbol", "size", "side"]
-        
-        # Retorne os dados no formato de dicionário
-        return dict(zip(columns, last_op[0])) if last_op else None
+        return [dict(zip(columns, op)) for op in last_ops] if last_ops else []
 
+    def _load_query(self, query_file):
+        """
+        Carrega a query SQL do arquivo especificado.
+        """
+        # Construir o caminho absoluto para o arquivo
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        filepath = os.path.join(project_root, "queries", query_file)
+
+        if not os.path.exists(filepath):
+            raise FileNotFoundError(f"Query file not found: {filepath}")
+
+        with open(filepath, "r") as file:
+            return file.read()

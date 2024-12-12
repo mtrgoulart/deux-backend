@@ -2,10 +2,11 @@ from .client import OKXClient
 from log.log import general_logger  # Importa o logger configurado
 import threading
 import time
-from .pp import ConfigLoader, Market
-from collections import defaultdict
+from .pp import ConfigLoader, Market, WebhookData, Operations
 from datetime import datetime
 import re
+from .context import get_db_connection
+from threading import Event
 
 class OKX_interface:
     def __init__(self, config: object):
@@ -61,25 +62,40 @@ class OKX_interface:
         return execution_price
 
 class IntervalHandler:
-    def __init__(self, interval, symbol, db_manager, side):
+    def __init__(self, interval, symbol, side, simultaneus_operation=1):
         self.interval = float(interval)
         self.symbol = symbol
-        self.db_manager = db_manager
         self.side = side
+        self.operations = None
+        self.simultaneus_operation=simultaneus_operation
 
-    def get_last_op(self):
-        general_logger.info(f"Fetching last operation from DB for symbol: {self.symbol}")
-        last_operation = self.db_manager.get_last_operation_from_db(self.symbol)
-        return last_operation
+        # Instancia o Operations com conexão
+        with get_db_connection() as db_client:
+            self.operations = Operations(db_client)
+
+    def get_last_operations(self,limit):
+        #general_logger.info(f"Fetching last {self.simultaneus_operation} operations from DB for symbol: {self.symbol}")
+        return self.operations.get_last_operations_from_db(self.symbol, limit)
+
 
     def check_interval(self):
-        last_operation = self.get_last_op()
-        if last_operation is not None:
-            if last_operation['side'] != self.side:
-                return True
+        last_operations = self.get_last_operations(limit=self.simultaneus_operation)
+        if last_operations:
+            # Verifica se todas as operações possuem o mesmo `side`
+            same_side = all(op["side"] == self.side for op in last_operations)
+            if same_side:
+                general_logger.info("All recent operations have the same side. Skipping interval check.")
+                return False
             else:
-                valid_interval = self._interval_logic(last_operation['date'])
-                return valid_interval
+                last_operation=self.get_last_operations(1)
+                if last_operation:
+                    if last_operation['side'] != self.side:
+                        return True
+                    else:
+                        valid_interval = self._interval_logic(last_operation['date'])
+                        return valid_interval
+                else:
+                    return True
         else:
             return True
 
@@ -98,16 +114,21 @@ class IntervalHandler:
             return last_operation_interval >= self.interval
 
 class OperationHandler:
-    def __init__(self, webhook_data_manager, market_manager, condition_handler, interval, symbol, side, percent):
-        self.webhook_data_manager = webhook_data_manager
+    def __init__(self, market_manager, condition_handler, interval, symbol, side, percent):
         self.market_manager = market_manager
-        self.stop_event = threading.Event()
         self.condition_handler = condition_handler
         self.interval = interval
         self.symbol = symbol
-        self._is_running = False
         self.side = side
         self.percent = percent
+        self.webhook_data_manager = None
+
+        self.stop_event = Event()
+        self._is_running = False
+
+        # Instancia o WebhookData com conexão
+        with get_db_connection() as db_client:
+            self.webhook_data_manager = WebhookData(db_client)
         general_logger.info(f"OperationHandler initialized for symbol: {self.symbol}, side: {self.side}")
 
     def start(self, start_date):
@@ -119,8 +140,10 @@ class OperationHandler:
 
     def stop(self):
         general_logger.info(f"Stopping operation for symbol: {self.symbol}")
-        self.stop_event.set()
-        self.thread.join()
+        self.stop_event.set()  # Sinaliza a parada
+        if hasattr(self, 'thread') and self.thread.is_alive():
+            self.thread.join()  # Aguarda a thread terminar
+        self._is_running = False
 
     def run(self, start_date):
         while not self.stop_event.is_set():
@@ -132,8 +155,7 @@ class OperationHandler:
                 market_to_operation = Market(
                     symbol=last_market_data["symbol"],
                     order_type='market',
-                    side=last_market_data["side"],
-                    size=self.market_manager.size
+                    side=last_market_data["side"]
                 )
                 execution_price, execution_size, execution_status = self.perform_operation(market_to_operation)
                 market_to_operation.size = execution_size

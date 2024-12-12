@@ -1,11 +1,476 @@
-2024-11-13 11:20:52,460 - general_logger - INFO - Iniciando aplicaÃ§Ã£o Flask a partir de main.py.
-2024-11-13 11:22:34,446 - general_logger - INFO - Iniciando aplicaÃ§Ã£o Flask a partir de main.py.
-2024-11-13 11:27:11,764 - general_logger - INFO - Iniciando aplicaÃ§Ã£o Flask a partir de main.py.
-2024-11-13 11:28:08,607 - general_logger - INFO - Iniciando aplicaÃ§Ã£o Flask a partir de main.py.
-2024-11-13 11:29:17,003 - general_logger - INFO - Acessou a pÃ¡gina inicial.
-2024-11-13 11:36:24,610 - general_logger - INFO - Iniciando aplicaÃ§Ã£o Flask a partir de main.py.
-2024-11-13 11:38:41,267 - general_logger - INFO - Iniciando aplicaÃ§Ã£o Flask a partir de main.py.
-2024-11-13 11:39:22,077 - general_logger - INFO - Iniciando aplicaÃ§Ã£o Flask a partir de main.py.
-2024-11-13 11:40:04,974 - general_logger - INFO - Acessou a pÃ¡gina inicial.
-2024-11-13 11:40:55,362 - general_logger - INFO - Iniciando aplicaÃ§Ã£o Flask a partir de main.py.
-2024-11-13 11:59:04,530 - general_logger - INFO - Acessou a pÃ¡gina inicial.
+2024-11-25 01:30:02,798 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-11-25 01:30:20,895 - general_logger - INFO - Acessou a página inicial.
+2024-11-25 01:30:27,052 - general_logger - INFO - Acessou a página inicial.
+2024-11-25 01:32:32,797 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-11-25 01:35:14,505 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-11-25 01:37:12,788 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-11-25 01:44:09,240 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-11-25 01:56:31,578 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-11-25 01:59:12,302 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-11-25 01:59:47,636 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: buy
+2024-11-25 01:59:47,638 - general_logger - INFO - Starting monitoring thread for operation.
+2024-11-25 01:59:47,639 - general_logger - INFO - Iniciando monitoramento do intervalo...
+2024-11-25 01:59:47,641 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USDT
+2024-11-25 01:59:47,641 - general_logger - INFO - Operation started for BTC-USDT (buy).
+2024-11-25 01:59:48,083 - general_logger - INFO - Elapsed interval: 101.62457238333333 minutes
+2024-11-25 01:59:48,083 - general_logger - INFO - Intervalo válido, iniciando webhook...
+2024-11-25 01:59:50,162 - general_logger - INFO - Starting operation at 2024-11-25 01:59:50.162721-03:00 for symbol: BTC-USDT, buy
+2024-11-25 01:59:53,459 - general_logger - INFO - Parando todas as operações...
+2024-11-25 01:59:53,459 - general_logger - INFO - Stopping operation for symbol: BTC-USDT
+2024-11-25 01:59:56,605 - general_logger - INFO - Parando monitoramento do intervalo...
+2024-11-25 01:59:56,606 - general_logger - INFO - Operation stopped for BTC-USDT (buy).
+2024-11-25 19:54:52,277 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-11-30 23:42:31,777 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 02:56:00,803 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 02:58:40,075 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 03:07:16,144 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 03:08:38,161 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 04:49:16,070 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 04:49:53,645 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 04:52:55,814 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 04:54:31,652 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 04:55:58,011 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 05:27:42,348 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 16:31:53,219 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 16:39:03,239 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 16:48:26,539 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 16:50:49,209 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 16:52:57,553 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 16:54:27,231 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 16:55:35,506 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 16:57:39,572 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 16:59:34,470 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 16:59:57,242 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 17:00:24,538 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 17:10:11,754 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 17:16:24,390 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 17:21:31,245 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 17:21:45,357 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 17:24:04,132 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 18:17:26,456 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 18:32:35,670 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 18:33:53,488 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 18:34:42,565 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 18:39:59,147 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 19:58:54,924 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 20:03:49,477 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 20:08:46,799 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 20:09:51,615 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 20:11:53,819 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 20:14:31,522 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 20:16:38,907 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 20:24:17,538 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 20:25:42,519 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 20:59:36,225 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 21:11:20,215 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 21:17:53,873 - general_logger - ERROR - Error starting operation: tuple indices must be integers or slices, not str
+2024-12-01 21:17:56,456 - general_logger - ERROR - Error starting operation: tuple indices must be integers or slices, not str
+2024-12-01 21:25:01,660 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 21:25:27,653 - general_logger - ERROR - Error starting strategies: 'symbol'
+2024-12-01 21:28:25,249 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 21:28:32,680 - general_logger - ERROR - Error starting strategies: OperationHandler.__init__() got an unexpected keyword argument 'db_client'
+2024-12-01 21:29:24,588 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 21:29:29,091 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-01 21:29:29,093 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:29:29,093 - general_logger - INFO - Started buy operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:29:29,100 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-01 21:29:29,103 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:29:29,104 - general_logger - INFO - Started sell operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:47:06,564 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 21:47:32,928 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-01 21:47:32,929 - general_logger - INFO - Started buy operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:47:34,028 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:47:34,071 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-01 21:47:34,073 - general_logger - INFO - Started sell operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:47:35,195 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:50:59,886 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 21:51:06,848 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-01 21:51:06,851 - general_logger - INFO - Started buy operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:51:07,939 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:51:07,972 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-01 21:51:07,974 - general_logger - INFO - Started sell operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:51:09,078 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:51:57,200 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 21:52:04,881 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-01 21:52:04,882 - general_logger - INFO - Started buy operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:52:05,943 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:52:05,972 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-01 21:52:05,974 - general_logger - INFO - Started sell operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:52:07,041 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:56:49,705 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 21:56:56,956 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-01 21:56:56,957 - general_logger - INFO - Started buy operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:56:58,181 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-01 21:56:58,182 - general_logger - INFO - Started sell operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:56:58,211 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:56:59,302 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:56:59,821 - general_logger - INFO - Starting operation at 2024-12-02 00:56:59.821605+00:00 for symbol: BTC-USD, buy
+2024-12-01 21:57:00,852 - general_logger - INFO - Starting operation at 2024-12-02 00:57:00.852629+00:00 for symbol: BTC-USD, sell
+2024-12-01 21:58:29,808 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 21:58:36,747 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-01 21:58:36,750 - general_logger - INFO - Started buy operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:58:37,835 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:58:37,876 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-01 21:58:37,877 - general_logger - INFO - Started sell operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 21:58:39,005 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:58:39,418 - general_logger - INFO - Starting operation at 2024-12-02 00:58:39.418854+00:00 for symbol: BTC-USD, buy
+2024-12-01 21:58:40,586 - general_logger - INFO - Starting operation at 2024-12-02 00:58:40.586793+00:00 for symbol: BTC-USD, sell
+2024-12-01 21:58:42,430 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:58:43,599 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:58:46,979 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:58:48,158 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:58:51,523 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:58:52,705 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:58:57,156 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:58:58,571 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:01,647 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:03,130 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:06,185 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:07,650 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:10,767 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:12,183 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:15,255 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:16,688 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:19,743 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:21,235 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:24,317 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:25,776 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:28,882 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:30,255 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:33,378 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:34,749 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:37,944 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:39,310 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:42,515 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:43,855 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:47,104 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:48,444 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:51,639 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:53,009 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:56,213 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 21:59:57,724 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:01,505 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:03,895 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-01 22:00:10,193 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-01 22:00:10,194 - general_logger - INFO - Started buy operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 22:00:11,282 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:11,286 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-01 22:00:11,287 - general_logger - INFO - Started sell operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-01 22:00:12,356 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:12,766 - general_logger - INFO - Starting operation at 2024-12-02 01:00:12.765956+00:00 for symbol: BTC-USD, buy
+2024-12-01 22:00:13,866 - general_logger - INFO - Starting operation at 2024-12-02 01:00:13.866441+00:00 for symbol: BTC-USD, sell
+2024-12-01 22:00:15,775 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:16,878 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:20,333 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:21,432 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:24,847 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:25,905 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:29,317 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:30,466 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:34,095 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:35,238 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:38,697 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:40,318 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USD, side: buy
+2024-12-01 22:00:40,321 - general_logger - INFO - Started buy operation for user 1 with strategy ID 58fb25a1-81be-468e-9be8-583a295dbbd5 and symbol ETH-USD.
+2024-12-01 22:00:40,614 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:41,460 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USD, side: sell
+2024-12-01 22:00:41,462 - general_logger - INFO - Started sell operation for user 1 with strategy ID 58fb25a1-81be-468e-9be8-583a295dbbd5 and symbol ETH-USD.
+2024-12-01 22:00:42,550 - general_logger - INFO - Fetching last operation from DB for symbol: ETH-USD
+2024-12-01 22:00:43,336 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:43,861 - general_logger - INFO - Fetching last operation from DB for symbol: ETH-USD
+2024-12-01 22:00:44,085 - general_logger - INFO - Starting operation at 2024-12-02 01:00:44.085643+00:00 for symbol: ETH-USD, sell
+2024-12-01 22:00:45,232 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:47,091 - general_logger - INFO - Fetching last operation from DB for symbol: ETH-USD
+2024-12-01 22:00:47,906 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:48,212 - general_logger - INFO - Starting operation at 2024-12-02 01:00:48.212231+00:00 for symbol: ETH-USD, buy
+2024-12-01 22:00:49,818 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:51,214 - general_logger - INFO - Fetching last operation from DB for symbol: ETH-USD
+2024-12-01 22:00:51,599 - general_logger - INFO - Fetching last operation from DB for symbol: ETH-USD
+2024-12-01 22:00:52,443 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:54,362 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:55,723 - general_logger - INFO - Fetching last operation from DB for symbol: ETH-USD
+2024-12-01 22:00:56,128 - general_logger - INFO - Fetching last operation from DB for symbol: ETH-USD
+2024-12-01 22:00:56,981 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:00:58,867 - general_logger - INFO - Fetching last operation from DB for symbol: BTC-USD
+2024-12-01 22:01:00,285 - general_logger - INFO - Fetching last operation from DB for symbol: ETH-USD
+2024-12-01 22:01:00,657 - general_logger - INFO - Fetching last operation from DB for symbol: ETH-USD
+2024-12-02 07:18:46,754 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-02 07:19:05,927 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-02 07:19:05,928 - general_logger - INFO - Started buy operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-02 07:19:07,072 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-02 07:19:07,073 - general_logger - INFO - Started sell operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-02 07:19:08,588 - general_logger - INFO - Starting operation at 2024-12-02 10:19:08.588252+00:00 for symbol: BTC-USD, buy
+2024-12-02 07:19:09,751 - general_logger - INFO - Starting operation at 2024-12-02 10:19:09.750986+00:00 for symbol: BTC-USD, sell
+2024-12-02 12:17:34,081 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-02 12:22:13,332 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-02 12:22:13,333 - general_logger - INFO - Started buy operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-02 12:22:14,384 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-02 12:22:14,385 - general_logger - INFO - Started sell operation for user 1 with strategy ID 03cfe68e-ed79-4fbe-9d57-e4205adeeda8 and symbol BTC-USD.
+2024-12-02 12:22:15,703 - general_logger - INFO - Starting operation at 2024-12-02 15:22:15.703652+00:00 for symbol: BTC-USD, buy
+2024-12-02 12:22:16,757 - general_logger - INFO - Starting operation at 2024-12-02 15:22:16.756990+00:00 for symbol: BTC-USD, sell
+2024-12-05 20:57:30,737 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-05 20:59:08,054 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-05 21:01:06,143 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-05 21:04:02,489 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-05 21:06:54,572 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-05 21:09:01,993 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-05 21:10:00,531 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-05 21:44:45,931 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:08:19,327 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:14:32,079 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:15:39,166 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:20:24,094 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:21:18,810 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:23:07,201 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:23:35,775 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:24:41,718 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:27:16,867 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:32:37,118 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:35:21,551 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:36:11,901 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:38:28,484 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:40:33,031 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:41:45,378 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:44:16,572 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:46:38,555 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:48:29,147 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-07 17:52:20,509 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:04:33,628 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:07:04,710 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:07:46,743 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:13:29,366 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:20:14,708 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:20:48,902 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:22:26,140 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:33:25,898 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:34:22,217 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:41:12,907 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:42:58,517 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:46:08,681 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 18:48:26,635 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 19:20:39,166 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 19:21:42,289 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 19:22:47,710 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 19:30:15,993 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 19:33:13,147 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 19:35:14,922 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 19:35:25,718 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:03:07,240 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:05:44,061 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:07:28,583 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:09:42,060 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:09:57,116 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:09:57,117 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:09:58,214 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:09:58,215 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:09:59,334 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:09:59,339 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:09:59,915 - general_logger - INFO - Starting operation at 2024-12-08 23:09:59.915287+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:10:00,530 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:10:00,534 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:10:00,878 - general_logger - INFO - Starting operation at 2024-12-08 23:10:00.878672+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:10:01,973 - general_logger - INFO - Starting operation at 2024-12-08 23:10:01.973450+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:10:03,174 - general_logger - INFO - Starting operation at 2024-12-08 23:10:03.174471+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:19:01,366 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:20:00,178 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:20:17,086 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:20:17,088 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:20:18,309 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:20:18,311 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:20:19,520 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:20:19,522 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:20:19,939 - general_logger - INFO - Starting operation at 2024-12-08 23:20:19.939420+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:20:20,660 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:20:20,664 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:20:21,098 - general_logger - INFO - Starting operation at 2024-12-08 23:20:21.098195+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:20:22,220 - general_logger - INFO - Starting operation at 2024-12-08 23:20:22.220637+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:20:23,367 - general_logger - INFO - Starting operation at 2024-12-08 23:20:23.367246+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:21:12,197 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:21:24,119 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:21:24,120 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:21:25,273 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:21:25,274 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:21:26,471 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:21:26,472 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:21:26,824 - general_logger - INFO - Starting operation at 2024-12-08 23:21:26.824123+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:21:27,573 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:21:27,574 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:21:27,958 - general_logger - INFO - Starting operation at 2024-12-08 23:21:27.958172+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:21:29,139 - general_logger - INFO - Starting operation at 2024-12-08 23:21:29.139271+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:21:30,378 - general_logger - INFO - Starting operation at 2024-12-08 23:21:30.378521+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:22:30,644 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:22:42,962 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:22:42,963 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:22:44,129 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:22:44,130 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:22:45,621 - general_logger - INFO - Starting operation at 2024-12-08 23:22:45.621057+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:22:46,778 - general_logger - INFO - Starting operation at 2024-12-08 23:22:46.778069+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:30:09,511 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:30:19,440 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:30:19,441 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:30:20,572 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:30:20,575 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:30:22,241 - general_logger - INFO - Starting operation at 2024-12-08 23:30:22.241148+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:30:23,469 - general_logger - INFO - Starting operation at 2024-12-08 23:30:23.469618+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:32:29,426 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:32:39,991 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:32:39,992 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:32:41,152 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:32:41,153 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:32:42,711 - general_logger - INFO - Starting operation at 2024-12-08 23:32:42.711845+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:32:43,872 - general_logger - INFO - Starting operation at 2024-12-08 23:32:43.872349+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:34:10,698 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:34:27,169 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:34:27,172 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:34:28,388 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:34:28,389 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:34:29,948 - general_logger - INFO - Starting operation at 2024-12-08 23:34:29.948504+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:34:31,072 - general_logger - INFO - Starting operation at 2024-12-08 23:34:31.072664+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:35:59,414 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:36:08,813 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:36:08,815 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:36:09,938 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:36:09,939 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:36:11,563 - general_logger - INFO - Starting operation at 2024-12-08 23:36:11.563145+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:36:12,807 - general_logger - INFO - Starting operation at 2024-12-08 23:36:12.807710+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:38:34,327 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:38:51,576 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:39:01,622 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:39:01,624 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:39:02,819 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:39:02,821 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:39:04,388 - general_logger - INFO - Starting operation at 2024-12-08 23:39:04.388054+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:39:05,598 - general_logger - INFO - Starting operation at 2024-12-08 23:39:05.598328+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:48:16,340 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:49:02,063 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:49:02,064 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:49:03,188 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:49:03,189 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:49:04,821 - general_logger - INFO - Starting operation at 2024-12-08 23:49:04.821358+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:49:05,800 - general_logger - INFO - Stopping operation for symbol: BTC-USD
+2024-12-08 20:49:05,965 - general_logger - INFO - Starting operation at 2024-12-08 23:49:05.965579+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:49:14,162 - general_logger - INFO - Operation 9759947a-4371-402e-b811-0d9cacba7fb2_buy stopped for user 1.
+2024-12-08 20:49:15,437 - general_logger - INFO - Stopping operation for symbol: BTC-USD
+2024-12-08 20:49:19,678 - general_logger - INFO - Starting operation at 2024-12-08 23:49:19.678614+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:49:24,450 - general_logger - INFO - Operation 9759947a-4371-402e-b811-0d9cacba7fb2_sell stopped for user 1.
+2024-12-08 20:49:46,042 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:49:46,043 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:49:47,156 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:49:47,157 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:49:48,723 - general_logger - INFO - Starting operation at 2024-12-08 23:49:48.723280+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:49:49,916 - general_logger - INFO - Starting operation at 2024-12-08 23:49:49.916003+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:50:07,125 - general_logger - INFO - Stopping operation for symbol: BTC-USD
+2024-12-08 20:50:07,260 - general_logger - INFO - Starting operation at 2024-12-08 23:50:07.260513+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:50:11,989 - general_logger - INFO - Operation 9759947a-4371-402e-b811-0d9cacba7fb2_buy stopped for user 1.
+2024-12-08 20:50:13,114 - general_logger - INFO - Stopping operation for symbol: BTC-USD
+2024-12-08 20:50:22,441 - general_logger - INFO - Operation 9759947a-4371-402e-b811-0d9cacba7fb2_sell stopped for user 1.
+2024-12-08 20:50:54,299 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USD, side: buy
+2024-12-08 20:50:54,300 - general_logger - INFO - Started buy operation for user 1 with strategy ID 81d5b122-1d99-4c9a-ba98-37222080ba24 and symbol ETH-USD.
+2024-12-08 20:50:55,470 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USD, side: sell
+2024-12-08 20:50:55,472 - general_logger - INFO - Started sell operation for user 1 with strategy ID 81d5b122-1d99-4c9a-ba98-37222080ba24 and symbol ETH-USD.
+2024-12-08 20:50:56,982 - general_logger - INFO - Starting operation at 2024-12-08 23:50:56.982101+00:00 for symbol: ETH-USD, buy
+2024-12-08 20:50:58,251 - general_logger - INFO - Starting operation at 2024-12-08 23:50:58.251668+00:00 for symbol: ETH-USD, sell
+2024-12-08 20:51:05,971 - general_logger - INFO - Stopping operation for symbol: ETH-USD
+2024-12-08 20:51:06,362 - general_logger - INFO - Starting operation at 2024-12-08 23:51:06.362196+00:00 for symbol: ETH-USD, buy
+2024-12-08 20:51:11,233 - general_logger - INFO - Operation 81d5b122-1d99-4c9a-ba98-37222080ba24_buy stopped for user 1.
+2024-12-08 20:51:12,324 - general_logger - INFO - Stopping operation for symbol: ETH-USD
+2024-12-08 20:51:16,554 - general_logger - INFO - Starting operation at 2024-12-08 23:51:16.553974+00:00 for symbol: ETH-USD, sell
+2024-12-08 20:51:21,323 - general_logger - INFO - Operation 81d5b122-1d99-4c9a-ba98-37222080ba24_sell stopped for user 1.
+2024-12-08 20:51:31,463 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:51:31,465 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:51:32,615 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:51:32,616 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:51:34,164 - general_logger - INFO - Starting operation at 2024-12-08 23:51:34.164332+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:51:35,242 - general_logger - INFO - Starting operation at 2024-12-08 23:51:35.242653+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:53:24,943 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 20:53:43,639 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:53:45,147 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:53:46,252 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:53:46,317 - general_logger - INFO - Starting operation at 2024-12-08 23:53:46.317572+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:53:47,781 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:53:48,843 - general_logger - INFO - Starting operation at 2024-12-08 23:53:48.843178+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:53:59,873 - general_logger - INFO - Stopping operation for symbol: BTC-USD
+2024-12-08 20:54:04,894 - general_logger - INFO - Operation 9759947a-4371-402e-b811-0d9cacba7fb2_buy stopped for user 1.
+2024-12-08 20:54:06,044 - general_logger - INFO - Stopping operation for symbol: BTC-USD
+2024-12-08 20:54:12,001 - general_logger - INFO - Operation 9759947a-4371-402e-b811-0d9cacba7fb2_sell stopped for user 1.
+2024-12-08 20:54:18,575 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 20:54:20,125 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:54:21,212 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 20:54:21,279 - general_logger - INFO - Starting operation at 2024-12-08 23:54:21.278952+00:00 for symbol: BTC-USD, buy
+2024-12-08 20:54:22,865 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 20:54:23,896 - general_logger - INFO - Starting operation at 2024-12-08 23:54:23.896784+00:00 for symbol: BTC-USD, sell
+2024-12-08 20:54:43,481 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USD, side: buy
+2024-12-08 20:54:44,961 - general_logger - INFO - Started buy operation for user 1 with strategy ID 81d5b122-1d99-4c9a-ba98-37222080ba24 and symbol ETH-USD.
+2024-12-08 20:54:46,051 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USD, side: sell
+2024-12-08 20:54:46,148 - general_logger - INFO - Starting operation at 2024-12-08 23:54:46.148245+00:00 for symbol: ETH-USD, buy
+2024-12-08 20:54:47,647 - general_logger - INFO - Started sell operation for user 1 with strategy ID 81d5b122-1d99-4c9a-ba98-37222080ba24 and symbol ETH-USD.
+2024-12-08 20:54:48,895 - general_logger - INFO - Starting operation at 2024-12-08 23:54:48.895458+00:00 for symbol: ETH-USD, sell
+2024-12-08 21:14:08,631 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 21:14:26,880 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USD, side: buy
+2024-12-08 21:14:28,549 - general_logger - INFO - Started buy operation for user 1 with strategy ID 81d5b122-1d99-4c9a-ba98-37222080ba24 and symbol ETH-USD.
+2024-12-08 21:14:29,677 - general_logger - INFO - Starting operation at 2024-12-09 00:14:29.676823+00:00 for symbol: ETH-USD, buy
+2024-12-08 21:14:29,778 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USD, side: sell
+2024-12-08 21:14:31,300 - general_logger - INFO - Started sell operation for user 1 with strategy ID 81d5b122-1d99-4c9a-ba98-37222080ba24 and symbol ETH-USD.
+2024-12-08 21:14:32,478 - general_logger - INFO - Starting operation at 2024-12-09 00:14:32.478216+00:00 for symbol: ETH-USD, sell
+2024-12-08 21:18:04,297 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-08 21:18:06,114 - general_logger - INFO - Started buy operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 21:18:07,201 - general_logger - INFO - Starting operation at 2024-12-09 00:18:07.200896+00:00 for symbol: BTC-USD, buy
+2024-12-08 21:18:07,244 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-08 21:18:08,997 - general_logger - INFO - Started sell operation for user 1 with strategy ID 9759947a-4371-402e-b811-0d9cacba7fb2 and symbol BTC-USD.
+2024-12-08 21:18:09,987 - general_logger - INFO - Starting operation at 2024-12-09 00:18:09.987403+00:00 for symbol: BTC-USD, sell
+2024-12-08 21:18:50,620 - general_logger - INFO - Stopping operation for symbol: BTC-USD
+2024-12-08 21:18:58,150 - general_logger - INFO - Operation 9759947a-4371-402e-b811-0d9cacba7fb2_buy stopped for user 1.
+2024-12-08 21:18:59,276 - general_logger - INFO - Stopping operation for symbol: BTC-USD
+2024-12-08 21:19:03,430 - general_logger - INFO - Operation 9759947a-4371-402e-b811-0d9cacba7fb2_sell stopped for user 1.
+2024-12-08 21:21:50,442 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 21:26:45,926 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 21:40:09,582 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 21:41:06,822 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 21:50:25,630 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 21:50:50,813 - general_logger - ERROR - Error deleting strategy: operator does not exist: uuid = smallint
+LINE 2: WHERE user_id = $1 AND strategy_id = $2;
+                                           ^
+HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+2024-12-08 21:52:54,431 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 21:53:03,165 - general_logger - ERROR - Error deleting strategy: the query has 0 placeholders but 2 parameters were passed
+2024-12-08 21:58:36,518 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 21:58:45,920 - general_logger - INFO - Strategy 81d5b122-1d99-4c9a-ba98-37222080ba24 deleted for user 1.
+2024-12-08 21:58:56,311 - general_logger - INFO - Strategy 36e44cd0-2ff7-4f74-bab3-1692b5046ed2 deleted for user 1.
+2024-12-08 21:59:02,228 - general_logger - WARNING - No strategy found with ID dd9961cb-d31c-49d2-92f9-a8f036dfd371 for user 1.
+2024-12-08 22:02:26,249 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 22:02:36,606 - general_logger - INFO - Strategy 9759947a-4371-402e-b811-0d9cacba7fb2 deleted for user 1.
+2024-12-08 22:02:42,592 - general_logger - WARNING - No strategy found with ID a45b1e91-d9c6-4c70-9832-5e7e8b2cc3b2 for user 1.
+2024-12-08 22:02:57,136 - general_logger - INFO - Strategy a45b1e91-d9c6-4c70-9832-5e7e8b2cc3b2 saved for user 1.
+2024-12-08 22:03:04,021 - general_logger - INFO - Strategy a45b1e91-d9c6-4c70-9832-5e7e8b2cc3b2 deleted for user 1.
+2024-12-08 22:04:16,512 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 22:04:37,334 - general_logger - INFO - Strategy 69171e78-db9c-46fc-a0ac-56499eb78f36 saved for user 1.
+2024-12-08 22:06:06,756 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-08 22:06:16,347 - general_logger - INFO - Strategy 69171e78-db9c-46fc-a0ac-56499eb78f36 deleted for user 1.
+2024-12-08 22:06:23,905 - general_logger - INFO - Strategy bd96a41e-0edd-4856-b2dd-12e24645bde0 saved for user 1.
+2024-12-08 22:06:27,834 - general_logger - INFO - Strategy bd96a41e-0edd-4856-b2dd-12e24645bde0 deleted for user 1.
+2024-12-08 22:06:47,203 - general_logger - INFO - Strategy 416acc4d-b780-4e82-a360-8ccfadb95790 saved for user 1.
+2024-12-08 22:06:53,586 - general_logger - INFO - Strategy 416acc4d-b780-4e82-a360-8ccfadb95790 deleted for user 1.
+2024-12-08 22:07:02,825 - general_logger - INFO - Strategy 5c35452f-aa6d-4a96-82fc-bc1fde0a061f saved for user 1.
+2024-12-09 06:21:33,273 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 06:23:39,652 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 06:25:40,000 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 06:35:13,804 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 06:41:31,979 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 07:11:56,747 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 07:13:55,414 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 08:20:32,662 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 08:35:36,638 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 09:30:19,683 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 09:42:54,018 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 09:50:42,305 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 09:56:59,171 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 10:10:26,749 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 10:11:48,811 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2024-12-09 12:26:45,481 - general_logger - INFO - Strategy de87550a-25a2-46fc-b042-30e4ded91222 saved for user 1.
+2024-12-09 12:27:14,954 - general_logger - INFO - Strategy de87550a-25a2-46fc-b042-30e4ded91222 deleted for user 1.
+2024-12-09 12:27:34,281 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: buy
+2024-12-09 12:27:36,029 - general_logger - INFO - Started buy operation for user 1 with strategy ID 5c35452f-aa6d-4a96-82fc-bc1fde0a061f and symbol BTC-USD.
+2024-12-09 12:27:36,895 - general_logger - INFO - Starting operation at 2024-12-09 15:27:36.893899+00:00 for symbol: BTC-USD, buy
+2024-12-09 12:27:37,121 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USD, side: sell
+2024-12-09 12:27:38,962 - general_logger - INFO - Started sell operation for user 1 with strategy ID 5c35452f-aa6d-4a96-82fc-bc1fde0a061f and symbol BTC-USD.
+2024-12-09 12:27:39,821 - general_logger - INFO - Starting operation at 2024-12-09 15:27:39.821722+00:00 for symbol: BTC-USD, sell
