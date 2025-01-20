@@ -9,13 +9,15 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from datetime import datetime
 from types import SimpleNamespace
+import hmac
+import hashlib
 
 
 class OKXClient:
-    def __init__(self, config_loader, url='https://www.okx.com'):
-        self.api_key = config_loader.get('okx', 'api_key')
-        self.secret_key = config_loader.get('okx', 'secret_key')
-        self.passphrase = config_loader.get('okx', 'passphrase')
+    def __init__(self, credentials, url='https://www.okx.com'):
+        self.api_key = credentials["api_key"]
+        self.secret_key = credentials["secret_key"]
+        self.passphrase = credentials["passphrase"]
         self.url = url
         self.session = self.create_session_with_retries()
 
@@ -71,7 +73,6 @@ class OKXClient:
         if response and "data" in response:
             return response["data"][0]["ordId"]  # Retorna o ID da ordem
         return None
-    
    
     def wait_for_fill_price(self, order_id, check_interval=1, timeout=90):
         """
@@ -151,6 +152,110 @@ class OKXClient:
             )
         
         return None
+
+class BinanceClient:
+    def __init__(self, credentials, url='https://api.binance.com'):
+        """
+        Cliente para a API da Binance.
+        :param credentials: Dicionário contendo as credenciais de API (api_key, secret_key).
+        :param url: URL base da API da Binance.
+        """
+        self.api_key = credentials["api_key"]
+        self.secret_key = credentials["secret_key"]
+        self.url = url
+        self.session = self.create_session_with_retries()
+
+    def create_session_with_retries(self):
+        session = requests.Session()
+        retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
+        adapter = HTTPAdapter(max_retries=retries)
+        session.mount('https://', adapter)
+        session.mount('http://', adapter)
+        return session
+
+    def _generate_signature(self, params):
+        query_string = '&'.join([f"{key}={value}" for key, value in params.items() if value is not None])
+        return hmac.new(self.secret_key.encode('utf-8'), query_string.encode('utf-8'), hashlib.sha256).hexdigest()
+
+    def _send_request(self, method, endpoint, params=None):
+        if params is None:
+            params = {}
+        
+        params['timestamp'] = int(time.time() * 1000)
+        params['signature'] = self._generate_signature(params)
+        headers = {
+            'X-MBX-APIKEY': self.api_key
+        }
+
+        url = f"{self.url}{endpoint}"
+
+        try:
+            if method == 'GET':
+                response = self.session.get(url, headers=headers, params=params)
+            elif method == 'POST':
+                response = self.session.post(url, headers=headers, params=params)
+            elif method == 'DELETE':
+                response = self.session.delete(url, headers=headers, params=params)
+            else:
+                raise ValueError("HTTP method not supported.")
+
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as e:
+            print(f"Error during request: {e}")
+            return None
+
+    def place_order(self, symbol, side, order_type, quantity, price=None):
+        params = {
+            'symbol': symbol,
+            'side': side.upper(),
+            'type': order_type.upper(),
+            'quantity': quantity,
+            'price': price,
+            'timeInForce': 'GTC' if price else None
+        }
+        return self._send_request('POST', '/api/v3/order', params)
+
+    def cancel_order(self, symbol, order_id):
+        params = {
+            'symbol': symbol,
+            'orderId': order_id
+        }
+        return self._send_request('DELETE', '/api/v3/order', params)
+
+    def get_open_orders(self, symbol=None):
+        params = {
+            'symbol': symbol
+        }
+        return self._send_request('GET', '/api/v3/openOrders', params)
+
+    def get_order_status(self, symbol, order_id):
+        params = {
+            'symbol': symbol,
+            'orderId': order_id
+        }
+        return self._send_request('GET', '/api/v3/order', params)
+
+    def get_balance(self, asset=None):
+        endpoint = '/api/v3/account'
+        response = self._send_request('GET', endpoint)
+        if response and 'balances' in response:
+            balances = {item['asset']: float(item['free']) for item in response['balances']}
+            if asset:
+                return balances.get(asset, 0.0)
+            return balances
+        return {}
+
+    def get_last_trade(self, symbol):
+        params = {
+            'symbol': symbol,
+            'limit': 1
+        }
+        response = self._send_request('GET', '/api/v3/myTrades', params)
+        if response:
+            return response[-1]  # Retorna o último trade
+        return None
+
 if __name__ == "__main__":
     import configparser
     class ConfigLoader:

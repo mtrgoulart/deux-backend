@@ -1,7 +1,7 @@
 from flask import jsonify
 from source.dbmanager import load_query
 from log.log import general_logger
-from source.context import get_db_connection  # Usa o gerenciador de conexão do context.py
+from source.context import get_db_connection
 
 
 def save_indicators(data, user_id):

@@ -3,46 +3,98 @@ from source.director import OperationManager
 from source.dbmanager import load_query
 from log.log import general_logger
 from source.context import get_db_connection  # Usa o gerenciador de conexão do context.py
+from .instances import save_instance
 
 operation_managers = {}  # Dicionário para gerenciar múltiplas instâncias
 
 
 def save_strategy(data, user_id):
     """
-    Salva uma estratégia no banco de dados (Buy e Sell).
+    Salva ou atualiza uma estratégia no banco de dados (Buy e Sell) e cria a relação com uma instância.
     """
     try:
-        strategy_id = data.get('strategy_id')
+        strategy_uuid = data.get('strategy_id')
+        instance_id = data.get('instance_id')  # Campo da instância
         symbol = data.get('symbol')
-        buy_data = data.get('buy')
-        sell_data = data.get('sell')
+        buy_data = data.get('buy', {})
+        sell_data = data.get('sell', {})
+        api_key = data.get('api_key')  # Necessário para criar a instância
+        instance_name = data.get('instanceName','default')  # Nome padrão da instância
 
-        if not strategy_id or not symbol or not buy_data or not sell_data:
-            return jsonify({"error": "Invalid strategy data"}), 400
+
+        # Validação dos dados recebidos
+        missing_fields = []
+        if not strategy_uuid:
+            missing_fields.append('strategy_id')
+        if not instance_id:
+            missing_fields.append('instance_id')
+        if not symbol:
+            missing_fields.append('symbol')
+        if not buy_data:
+            missing_fields.append('buy data')
+        if not sell_data:
+            missing_fields.append('sell data')
+
+        if missing_fields:
+            error_message = f"Missing required fields: {', '.join(missing_fields)}"
+            general_logger.error(error_message)
+            return jsonify({"error": error_message}), 400
+        
+        with get_db_connection() as db_client:
+        
+            check_instance_uuid_exist_query=load_query('check_instance_exists.sql')
+            existing_instance=db_client.fetch_data(check_instance_uuid_exist_query, (instance_id,user_id))
+        
+    
+            if not existing_instance:
+                # Chamar a rota `save_instance` para criar uma nova instância
+                instance_payload = {
+                    "api_key": api_key,
+                    "strategy": strategy_uuid,
+                    "name": instance_name,
+                    "status": 1,  # Status padrão
+                    "instance_uuid": instance_id
+                }
+                instance_response, status_code = save_instance(instance_payload, user_id)
+
+
+                if status_code != 201:
+                    raise ValueError(f"Failed to create instance: {instance_response.get('error')}")
+
+                # Atualizar o ID da instância a partir da resposta
+                instance_id = instance_response["instance_id"]
 
         with get_db_connection() as db_client:
-            # Query para salvar a estratégia Buy
-            buy_query = load_query('insert_strategy.sql')
-            db_client.insert_data(buy_query, (
-                user_id, strategy_id, symbol, 'buy', buy_data['percent'],
-                buy_data['condition_limit'], buy_data['interval'],
-                buy_data['simultaneous_operations'], 'stopped'
-            ))
+            # 1. Verificar se a estratégia já existe
+            check_strategy_query = load_query('check_strategy_exists.sql')
+            existing_strategy = db_client.fetch_data(check_strategy_query, (user_id, strategy_uuid))
 
-            # Query para salvar a estratégia Sell
-            sell_query = load_query('insert_strategy.sql')
-            db_client.insert_data(sell_query, (
-                user_id, strategy_id, symbol, 'sell', sell_data['percent'],
-                sell_data['condition_limit'], sell_data['interval'],
-                None, 'stopped'
-            ))
+            if not existing_strategy:
+                # Inserir nova estratégia
+                insert_strategy_query = load_query('insert_strategy.sql')
+                strategy_id_buy=db_client.insert_data_returning(insert_strategy_query, (
+                    user_id, strategy_uuid, symbol, 'buy', buy_data['percent'],
+                    buy_data['condition_limit'], buy_data['interval'],
+                    buy_data['simultaneous_operations'], 'stopped'
+                ))
+                strategy_id_sell=db_client.insert_data_returning(insert_strategy_query, (
+                    user_id, strategy_uuid, symbol, 'sell', sell_data['percent'],
+                    sell_data['condition_limit'], sell_data['interval'],
+                    None, 'stopped'
+                ))
+                strategy_ids=[strategy_id_buy,strategy_id_sell]
 
-        general_logger.info(f"Strategy {strategy_id} saved for user {user_id}.")
-        return jsonify({"message": "Strategy saved successfully", "strategy_id": strategy_id}), 200
+            # 2. Criar relação entre a instância e a estratégia
+            for strategy_id in strategy_ids:
+                relation_query = load_query('insert_instance_strategy.sql')
+                db_client.insert_data(relation_query, (instance_id, strategy_id))
+
+        general_logger.info(f"Strategy {strategy_id} saved and linked to instance {instance_id} for user {user_id}.")
+        return jsonify({"message": "Strategy saved and linked successfully", "strategy_id": strategy_id}), 200
+
     except Exception as e:
         general_logger.error(f"Error saving strategy: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
 
 def delete_strategy(strategy_id, user_id):
     """
@@ -69,76 +121,3 @@ def delete_strategy(strategy_id, user_id):
     except Exception as e:
         general_logger.error(f"Error deleting strategy: {str(e)}")
         return jsonify({"error": str(e)}), 500
-
-
-def start_bot_operation(data, user_id):
-    """
-    Inicia operações do bot com base na estratégia registrada (Buy e Sell).
-    """
-    global operation_managers
-    try:
-        strategy_id = data.get('strategy_id')
-        if not strategy_id:
-            return {"error": "Strategy ID is required"}, 400
-
-        with get_db_connection() as db_client:
-            # Busca as estratégias no banco
-            query = load_query('select_strategies_by_id.sql')
-            strategies = db_client.fetch_data(query, (strategy_id, user_id))
-
-        if not strategies:
-            return {"error": "No strategies found for the given ID"}, 404
-
-        # Inicializa cada subestratégia (Buy e Sell)
-        responses = []
-        for strategy in strategies:
-            symbol = strategy[1]  # Obtém o símbolo do banco de dados
-            side = strategy[2]  # "buy" ou "sell"
-            operation_data = {
-                "strategy_id": strategy_id,
-                "symbol": symbol,
-                "side": side,
-                "percent": strategy[3],
-                "condition_limit": strategy[4],
-                "interval": strategy[5],
-                "simultaneous_operations": strategy[6] if side == "buy" else 1
-            }
-
-            # Cria o OperationManager e inicia a operação
-            director = OperationManager(user_id, operation_data, strategy_id)
-            director.start_operation()
-            operation_managers[f"{strategy_id}_{side}"] = director
-
-            # Atualiza o status no banco de dados para "running"
-            update_query = load_query('update_strategy_status.sql')
-            db_client.update_data(update_query, ('running', strategy_id, user_id))
-
-            general_logger.info(f"Started {side} operation for user {user_id} with strategy ID {strategy_id} and symbol {symbol}.")
-            responses.append({"side": side, "symbol": symbol, "status": "started"})
-
-        return {"message": "Both strategies started successfully", "responses": responses}, 200
-    except Exception as e:
-        general_logger.error(f"Error starting strategies: {str(e)}")
-        return {"error": f"An error occurred: {str(e)}"}, 500
-    
-def stop_bot_operation(data, user_id):
-    """
-    Para uma operação em execução.
-    """
-    global operation_managers
-    strategy_id = data.get('strategy_id')
-    side = data.get('side')  # Adiciona o lado (buy/sell) ao identificar a operação
-    try:
-        operation_key = f"{strategy_id}_{side}"  # Combina ID da estratégia com o lado
-        if operation_key in operation_managers:
-            with get_db_connection() as db_client:
-                manager = operation_managers.pop(operation_key)
-                manager.stop_operation()
-                query = load_query('update_strategy_status.sql')  # Atualiza o status no banco
-                db_client.update_data(query, ('stopped', strategy_id, user_id))
-                general_logger.info(f"Operation {operation_key} stopped for user {user_id}.")
-            return {"message": f"Operation {operation_key} stopped successfully"}, 200
-        return {"error": f"No operation found with key {operation_key}"}, 404
-    except Exception as e:
-        general_logger.error(f"Error stopping operation: {str(e)}")
-        return {"error": str(e)}, 500

@@ -7,59 +7,8 @@ from datetime import datetime
 import re
 from .context import get_db_connection
 from threading import Event
-
-class OKX_interface:
-    def __init__(self, config: object):
-        self.config = config
-        self.okx_client = OKXClient(self.config)
-
-    def place_order(self, symbol, side, order_type, size, currency, price=None):
-        general_logger.info(f"Placing order: {symbol}, {side}, {order_type}, {size}, {currency}, {price}")
-        response = self.okx_client.place_order(symbol, side, order_type, size, currency, price)
-        return response
-
-    def get_fill_price(self, order_id):
-        general_logger.info(f"Getting fill price for order ID: {order_id}")
-        return self.okx_client.wait_for_fill_price(order_id)
-
-    def cancel_order(self, symbol, order):
-        general_logger.info(f"Cancelling order: {order} for symbol: {symbol}")
-        response = self.okx_client.cancel_order(symbol, order)
-        return response
-
-    def get_open_order(self, symbol):
-        general_logger.info(f"Getting open orders for symbol: {symbol}")
-        response = self.okx_client.get_open_orders(symbol)
-        return response
-
-    def get_order_status(self, symbol, order_id):
-        general_logger.info(f"Getting status for order ID: {order_id} on symbol: {symbol}")
-        response = self.okx_client.get_order_status(symbol, order_id)
-        return response
-
-    def get_last_trade(self, symbol):
-        general_logger.info(f"Getting last trade for symbol: {symbol}")
-        response = self.okx_client.get_last_trade(symbol)
-        return response
-
-    def get_balance(self, ccy=None):
-        general_logger.info(f"Getting balance for currency: {ccy}")
-        response = self.okx_client.get_balance(ccy)
-
-        if 'data' in response and isinstance(response['data'], list) and response['data']:
-            details = response['data'][0].get('details', [])
-            for detail in details:
-                if detail.get('ccy') == ccy:
-                    avail_balance = detail.get('availBal', None)
-                    if avail_balance is not None and avail_balance != '':
-                        return float(avail_balance)
-        return 0.0
-
-    def get_order_execution_price(self, symbol, order_id):
-        general_logger.info(f"Getting execution price for order ID: {order_id} on symbol: {symbol}")
-        order_status = self.okx_client.get_order_status(symbol, order_id)
-        execution_price = float(order_status['data'][0].get('fillPx', 0))
-        return execution_price
+from .exchange_interface import get_exchange_interface
+from decimal import Decimal
 
 class IntervalHandler:
     def __init__(self, interval, symbol, side, simultaneus_operation=1):
@@ -84,15 +33,15 @@ class IntervalHandler:
             # Verifica se todas as operações possuem o mesmo `side`
             same_side = all(op["side"] == self.side for op in last_operations)
             if same_side:
-                general_logger.info("All recent operations have the same side. Skipping interval check.")
                 return False
             else:
-                last_operation=self.get_last_operations(1)
+                # Obtém a última operação
+                last_operation = last_operations[0] if len(last_operations) > 0 else None
                 if last_operation:
-                    if last_operation['side'] != self.side:
+                    if last_operation["side"] != self.side: 
                         return True
                     else:
-                        valid_interval = self._interval_logic(last_operation['date'])
+                        valid_interval = self._interval_logic(last_operation["date"])
                         return valid_interval
                 else:
                     return True
@@ -114,7 +63,7 @@ class IntervalHandler:
             return last_operation_interval >= self.interval
 
 class OperationHandler:
-    def __init__(self, market_manager, condition_handler, interval, symbol, side, percent):
+    def __init__(self, market_manager, condition_handler, interval, symbol, side, percent,exchange_id,user_id,api_key,instance_id):
         self.market_manager = market_manager
         self.condition_handler = condition_handler
         self.interval = interval
@@ -122,13 +71,20 @@ class OperationHandler:
         self.side = side
         self.percent = percent
         self.webhook_data_manager = None
+        self.instance_id=instance_id
 
         self.stop_event = Event()
         self._is_running = False
 
+        self.exchange_interface = get_exchange_interface(exchange_id, user_id, api_key)
+
         # Instancia o WebhookData com conexão
         with get_db_connection() as db_client:
             self.webhook_data_manager = WebhookData(db_client)
+
+        with get_db_connection() as db_client:
+            self.operations = Operations(db_client)
+
         general_logger.info(f"OperationHandler initialized for symbol: {self.symbol}, side: {self.side}")
 
     def start(self, start_date):
@@ -139,7 +95,7 @@ class OperationHandler:
         self._is_running = True
 
     def stop(self):
-        general_logger.info(f"Stopping operation for symbol: {self.symbol}")
+        general_logger.info(f"Stopping operation for: {self.side} - {self.symbol}")
         self.stop_event.set()  # Sinaliza a parada
         if hasattr(self, 'thread') and self.thread.is_alive():
             self.thread.join()  # Aguarda a thread terminar
@@ -160,8 +116,8 @@ class OperationHandler:
                 execution_price, execution_size, execution_status = self.perform_operation(market_to_operation)
                 market_to_operation.size = execution_size
                 general_logger.info(f'Operation Executed on: symbol:{last_market_data["symbol"]} price:{execution_price}')
-                operation_id,operation_log = self.webhook_data_manager.save_operation_to_db(
-                    market_to_operation.to_dict(), price=execution_price, status=execution_status
+                operation_id,operation_log = self.operations.save_operation_to_db(
+                    market_to_operation.to_dict(), price=execution_price, status=execution_status, instance_id=self.instance_id
                 )
                 if operation_log:
                     general_logger.error(operation_log)
@@ -196,28 +152,27 @@ class OperationHandler:
         return self.condition_handler.check_condition(data)
 
     def perform_operation(self, market_data):
-        config = ConfigLoader()
-        client = OKX_interface(config)
-
         match = re.match(r"^([^-]+)-([^-]+)$", market_data.symbol)
         if not match:
             raise ValueError(f"O símbolo '{market_data.symbol}' não está no formato esperado 'parte1-parte2'.")
 
         base_currency, quote_currency = match.groups()
         ccy = quote_currency if market_data.side == 'buy' else base_currency
-        actual_size = client.get_balance(ccy)
+        try:
+            actual_size = self.exchange_interface.get_balance(ccy)
+        except Exception as e:
+            raise ValueError(f'Erro ao obter o saldo: {e}')
 
-        if not isinstance(actual_size, (int, float)):
-            raise ValueError(f"Erro ao obter o saldo: {actual_size}")
+        if not isinstance(actual_size, (int, float, Decimal)):
+            raise ValueError(f"Erro no tipo de valor do saldo: {actual_size}")
 
-        percent_size = float(actual_size) * self.percent
+        # Converte explicitamente `actual_size` para float se for Decimal
+        percent_size = float(actual_size) * float(self.percent)
 
         general_logger.info(f'Balance: {percent_size} {ccy}')
 
-
         if percent_size != 0:
-            # Envia a nova ordem e captura a resposta específica dessa operação
-            order_response = client.place_order(
+            order_response = self.exchange_interface.place_order(
                 symbol=market_data.symbol,
                 side=market_data.side,
                 order_type=market_data.order_type,
@@ -228,13 +183,11 @@ class OperationHandler:
 
             general_logger.info(f'Ordem enviada, aguardando execução....')
 
-            # Verifica se `order_response` contém o ID da nova ordem
             if not order_response:
                 print("Erro: ordem não foi executada.")
                 return None, percent_size, 'erro'
 
-            # Obtém o preço de execução da ordem recém-criada
-            execution_price = client.get_fill_price(order_response)
+            execution_price = self.exchange_interface.get_fill_price(order_response)
 
             if execution_price is not None:
                 return execution_price, percent_size, 'realizada'
@@ -244,65 +197,6 @@ class OperationHandler:
         else:
             print("Operação não realizada, pois o percent_size é zero.")
             return None, percent_size, 'percent_size=0'
-
-    def perform_operation_with_stop_take(self, market_data, stop_loss_percent=0.5, take_profit_percent=0.5):
-        config = ConfigLoader()
-        client = OKX_interface(config)
-
-        # Envia a ordem à mercado e captura o 'ordId'
-        market_order = client.place_order(
-            symbol=market_data.symbol,
-            type='market',
-            side=market_data.side,
-            size=market_data.size,
-            price=None  # Preço não é necessário para uma ordem de mercado
-        )
-        order_id = market_order['data'][0]['ordId']  # Captura o 'ordId' da resposta
-        print(f'Market order placed: {market_order}')
-
-        # Captura o preço de execução da ordem usando o 'ordId'
-        execution_price = self.get_execution_price(client,market_data.symbol, order_id)
-        print(f'Execution price: {execution_price}')
-
-        # Valor em USD da operação (tamanho da posição em USD)
-        total_usd = execution_price * market_data.size
-
-        # Calcula a perda em USD para o Stop Loss e o ganho para o Take Profit
-        stop_loss_usd = total_usd * stop_loss_percent
-        take_profit_usd = total_usd * take_profit_percent
-
-        # Calcula os preços de Stop Loss e Take Profit com base nos valores em USD
-        if market_data.side == 'buy':
-            stop_loss_price = execution_price - (stop_loss_usd / market_data.size)
-            take_profit_price = execution_price + (take_profit_usd / market_data.size)
-        else:  # Para ordens de venda
-            stop_loss_price = execution_price + (stop_loss_usd / market_data.size)
-            take_profit_price = execution_price - (take_profit_usd / market_data.size)
-
-        # Define o lado oposto para as ordens de stop loss e take profit
-        opposite_side = 'sell' if market_data.side == 'buy' else 'buy'
-
-        # Envia a ordem de Stop Loss
-        stop_loss_order = client.place_order(
-            symbol=market_data.symbol,
-            type='limit',  # Ordem limitada
-            side=opposite_side,
-            size=market_data.size,
-            price=stop_loss_price  # Preço calculado para o stop loss
-        )
-        print(f'Stop Loss order placed at {stop_loss_price}: {stop_loss_order}')
-
-        # Envia a ordem de Take Profit
-        take_profit_order = client.place_order(
-            symbol=market_data.symbol,
-            type='limit',  # Ordem limitada
-            side=opposite_side,
-            size=market_data.size,
-            price=take_profit_price  # Preço calculado para o take profit
-        )
-        print(f'Take Profit order placed at {take_profit_price}: {take_profit_order}')
-
-        return market_order, stop_loss_order, take_profit_order
 
     def get_execution_price(self, client,symbol, order_id):
         # Consulta o status da ordem usando o 'ordId'

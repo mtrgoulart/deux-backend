@@ -9,5 +9,5 @@ SELECT
 FROM
     strategy
 WHERE
-    strategy_id = %s
+    id = %s
     AND user_id = %s;

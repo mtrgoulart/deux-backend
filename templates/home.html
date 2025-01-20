@@ -7,18 +7,64 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <div id="header">
-        <div id="username">Welcome, <span id="user-name">User</span></div>
-        <button id="logout-button">Logout</button>
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+    <div id="header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div id="username">Welcome, <span id="user-name">Loading...</span></div>
+        <div>
+            <button id="logout-button">Logout</button>
+            <button id="select-api-key-button" style="margin-left: 10px;">Select API Key</button>
+        </div>
     </div>
 
     <h1>Trade Bot Interface</h1>
 
-    <div id="operations-container">
-        <p style="text-align: center; color: #666;">No strategies yet. Add one below.</p>
+    <!-- Container para exibir as instâncias -->
+    <div id="instances-container">
+        <p style="text-align: center; color: #666;">No instances to display.</p>
     </div>
 
-    <button id="add-operation">Add Strategy</button>
+    <button id="add-operation">Add Instance</button>
+
+    <!-- Pop-up para exibir as API Keys -->
+    <div id="api-key-popup" class="popup-container" style="display: none;">
+        <div class="popup-content">
+            <h2>API Keys</h2>
+            <ul id="api-keys-container">
+                <!-- Lista de API Keys carregadas dinamicamente -->
+            </ul>
+            <div style="margin-top: 20px;">
+                <button id="add-api-key-button" class="popup-action-button">Add New API Key</button>
+            </div>
+            <button id="close-api-key-popup" class="popup-close-button">Close</button>
+        </div>
+    </div>
+
+    <!-- Formulário de registro de nova API Key -->
+    <div id="api-key-form-container" style="display: none;">
+        <h2>Add New API Key</h2>
+        <form id="api-key-form">
+            <div class="form-group">
+                <label for="exchange-id">Exchange:</label>
+                <select id="exchange-id" name="exchange_id" required></select>
+            </div>
+            <div class="form-group">
+                <label for="api-key">API Key:</label>
+                <input type="text" id="api-key" name="api_key" required>
+            </div>
+            <div class="form-group">
+                <label for="secret-key">Secret Key:</label>
+                <input type="text" id="secret-key" name="secret_key" required>
+            </div>
+            <div class="form-group">
+                <label for="passphrase">Passphrase:</label>
+                <input type="text" id="passphrase" name="passphrase" required>
+            </div>
+            <button type="submit" class="submit-button">Save</button>
+            <button type="button" id="close-api-key-modal" class="cancel-button">Cancel</button>
+        </form>
+    </div>
 
     <!-- Inclua o script principal com type="module" -->
     <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>

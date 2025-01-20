@@ -45,16 +45,18 @@ class AuthService:
         """
         try:
             with self.get_db_connection() as db_client:
-                query = 'SELECT id, password_hash FROM neouser WHERE username = %s'
+                query = 'SELECT id, username, password_hash FROM neouser WHERE username = %s'
                 db_client.cursor.execute(query, (username,))
                 user = db_client.cursor.fetchone()
 
-            if user and check_password_hash(user[1], password):
+            if user and check_password_hash(user[2], password):
                 user_id = user[0]
+                user_name = user[1]  # Obtem o username
                 token = self._generate_jwt(user_id)
-                
-                # Armazena o token na sessão
+
+                # Armazena o token e o username na sessão
                 session['user_token'] = token
+                session['user_name'] = user_name
 
                 flash("Login successful!", "success")
                 return {"token": token}

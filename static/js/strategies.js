@@ -31,6 +31,40 @@ export function addStrategySet() {
     renderStrategy(strategy);
 }
 
+export async function saveStrategyData(strategy) {
+    const payload = {
+        strategy_id: strategy.strategy_id,
+        instance_id: strategy.instance_id, // Garantir que a estratégia esteja vinculada à instância
+        symbol: strategy.symbol,
+        buy: strategy.buy,
+        sell: strategy.sell,
+    };
+
+    try {
+        const response = await fetch('/save_strategy', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to save strategy: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (data.error) {
+            console.error(`Error saving strategy ${strategy.strategy_id}:`, data.error);
+        } else {
+            console.log(`Strategy ${strategy.strategy_id} saved successfully!`);
+        }
+    } catch (error) {
+        console.error('Error saving strategy:', error);
+    }
+}
+
 
 /**
  * Carrega as estratégias existentes do backend.

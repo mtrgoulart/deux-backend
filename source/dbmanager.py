@@ -71,7 +71,6 @@ class DatabaseClient:
             self.connect()
             self.cursor.execute(query, params)
             self.conn.commit()
-            print("Dados inseridos/atualizados com sucesso.")
         except Exception as e:
             print("Erro ao inserir dados:", e)
         finally:
@@ -104,6 +103,22 @@ class DatabaseClient:
             print("Dados atualizados com sucesso.")
         except Exception as e:
             print("Erro ao atualizar dados:", e)
+        finally:
+            self.close()
+
+    def insert_data_returning(self, query, params):
+        """
+        Executa uma inserção no banco de dados com a cláusula RETURNING e retorna o valor.
+        """
+        try:
+            self.connect()
+            self.cursor.execute(query, params)
+            result = self.cursor.fetchone()  # Obtém o primeiro valor retornado pelo RETURNING
+            self.conn.commit()
+            return result[0] if result else None
+        except Exception as e:
+            print("Erro ao inserir dados com retorno:", e)
+            raise
         finally:
             self.close()
     

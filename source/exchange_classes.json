@@ -1,0 +1,4 @@
+{
+    "1": "source.exchange_interface.OKXInterface",
+    "2": "source.exchange_interface.BinanceInterface"
+}

@@ -4,14 +4,18 @@ from datetime import datetime
 import pytz
 import threading
 
+
 class OperationManager:
-    def __init__(self, user_id, data,strategy_id):
+    def __init__(self, user_id, data,strategy_id,exchange_id,api_key,instance_id):
         self.user_id = user_id
         self.data = data
         self.strategy_id = strategy_id
         self.stop_event = threading.Event()
         self.monitoring_thread = None
         self.operation_handler = None
+        self.exchange_id=exchange_id
+        self.api_key=api_key
+        self.instance_id=instance_id
 
     def start_operation(self):
         self.market = Market(
@@ -25,7 +29,11 @@ class OperationManager:
             interval=self.data['interval'],
             symbol=self.data['symbol'],
             side=self.data['side'],
-            percent=self.data['percent']
+            percent=self.data['percent'],
+            exchange_id=self.exchange_id,
+            user_id=self.user_id,
+            api_key=self.api_key,
+            instance_id=self.instance_id
         )
         self.monitoring_thread = threading.Thread(target=self.monitor_interval)
         self.monitoring_thread.start()

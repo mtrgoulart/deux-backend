@@ -74,6 +74,8 @@ class WebhookData:
     def get_data_at_index(self, index):
         query = self._load_query("select_webhook_data_by_id.sql")
         return self.db_manager.fetch_data(query, (index,))
+    
+    
 
     def get_market_objects(self, symbol=None, side=None, start_date=None):
         query = self._load_query("select_market_objects.sql")
@@ -131,22 +133,28 @@ class WebhookData:
                 )
                 market_objects.append(market.to_dict())
         return market_objects
+    
 
 class Operations:
     def __init__(self, db_manager):
         self.db_manager = db_manager
 
-    def save_operation_to_db(self, operation_data, price, status="realizada"):
-        query = self._load_query("insert_operation.sql")
-        params = (
-            datetime.now(),
-            operation_data["symbol"],
-            operation_data["size"],
-            operation_data["side"],
-            price,
-            status,
-        )
-        return self.db_manager.insert_data(query, params)
+    def save_operation_to_db(self, operation_data, price, instance_id, status="realizada"):
+        try:
+            query = self._load_query("insert_operation.sql")
+            params = (
+                datetime.now(),
+                operation_data["symbol"],
+                operation_data["size"],
+                operation_data["side"],
+                price,
+                status,
+                instance_id
+            )
+            return self.db_manager.insert_data(query, params),None
+        except Exception as e:
+            error=f'Erro ao salvar operação no banco: {e}'
+            return None, error
 
     def get_last_operations_from_db(self, symbol, limit):
         query = self._load_query("select_last_operations.sql")

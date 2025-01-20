@@ -154,12 +154,14 @@ button[disabled] {
 .strategy-box h3 {
     text-align: center;
     margin-bottom: 15px;
+    color: #000; /* Texto preto */
 }
 
 .strategy-inner {
     display: flex; /* Organiza as caixas filhas em linha */
     justify-content: space-between; /* Espaçamento entre elas */
     gap: 20px; /* Espaçamento entre as caixas */
+    color: #000; /* Texto preto */
 }
 
 .buy-box, .sell-box {
@@ -264,4 +266,137 @@ input:focus {
     background: #dc3545;
     color: #fff;
     margin-top: 20px;
+}
+
+.popup-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background: #fff;
+    color: #333;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    text-align: center;
+}
+
+.popup-close-button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #dc3545;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.popup-close-button:hover {
+    background-color: #c82333;
+}
+
+
+.api-key-item.selected-api-key {
+    background-color: #f8f9fa;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+
+.popup-action-button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.popup-action-button:hover {
+    background-color: #0056b3;
+}
+
+
+.api-key-item {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    color: #333; /* Cor do texto mais escura para melhor visibilidade */
+    font-family: Arial, sans-serif; /* Adiciona uma fonte limpa */
+}
+
+.api-key-item p {
+    margin: 5px 0;
+    font-size: 14px; /* Tamanho da fonte ajustado */
+}
+
+.api-key-item button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    border: none;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px; /* Tamanho da fonte no botão */
+}
+
+.api-key-item button:hover {
+    background-color: #c82333;
+}
+
+#api-keys-container {
+    margin-top: 20px;
+    color: #444; /* Cor padrão do texto do container */
+    font-size: 14px; /* Tamanho de fonte do container */
+}
+
+
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 6px solid #ccc;
+    border-top-color: #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

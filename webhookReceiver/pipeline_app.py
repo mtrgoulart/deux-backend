@@ -4,6 +4,7 @@ import logging
 import psycopg2
 from configparser import ConfigParser
 from flask import Flask, request, jsonify
+import pika
 
 # Função para carregar configurações a partir do config.ini
 def load_config(filename="config.ini"):
@@ -20,6 +21,32 @@ def setup_logging(log_file, log_level):
         format="%(asctime)s [%(levelname)s] %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S"
     )
+
+
+# Função para enviar mensagens ao RabbitMQ
+def send_to_rabbitmq(data):
+    try:
+        rabbitmq_params = config["rabbitmq"]
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host=rabbitmq_params["host"])
+        )
+        channel = connection.channel()
+
+        # Declarar a fila
+        queue_name = rabbitmq_params["queue_name"]
+        channel.queue_declare(queue=queue_name, durable=True)
+
+        # Publicar a mensagem
+        channel.basic_publish(
+            exchange='',
+            routing_key=queue_name,
+            body=str(data),
+            properties=pika.BasicProperties(delivery_mode=2)  # Mensagens persistentes
+        )
+        logging.info("Mensagem enviada ao RabbitMQ: %s", data)
+        connection.close()
+    except Exception as e:
+        logging.error("Erro ao enviar mensagem ao RabbitMQ: %s", e)
 
 # Carregar configurações e configurar logger
 config = load_config()
@@ -70,18 +97,43 @@ def insert_data_to_db(data):
     except Exception as e:
         logging.error("Erro ao inserir dados no banco: %s", e)
 
-# Rota do webhook para receber dados POST
 @app.route('/webhook', methods=['POST'])
 def webhook_listener():
-    raw_data = request.form.get('data')
-    if raw_data and validate_data(raw_data):
-        data = model_data(raw_data)  # Modela os dados se a validação for bem-sucedida
-        insert_data_to_db(data)      # Insere os dados no banco de dados
-        return jsonify({"message": "Data processed and stored successfully"}), 200
-    else:
-        logging.warning("Requisição falhou devido a dados inválidos.")
-        return jsonify({"error": "Invalid data format"}), 400
+    try:
+        # Captura o corpo da requisição como texto
+        raw_body = request.get_data(as_text=True)
+        logging.info(f'Dados recebidos no POST (raw body): {raw_body}')
 
+        # Tenta processar os dados como JSON
+        try:
+            raw_data = request.json
+            #logging.info(f'Dados processados como JSON: {raw_data}')
+        except Exception:
+            raw_data = None
+
+        # Lógica para capturar o dado a ser validado
+        if raw_data and isinstance(raw_data, dict) and 'data' in raw_data:
+            # Se 'data' estiver presente, usa apenas o valor dele
+            data_to_validate = raw_data['data']
+            #logging.info(f'Parâmetro "data" extraído: {data_to_validate}')
+        else:
+            # Caso contrário, usa o corpo da requisição diretamente
+            data_to_validate = raw_body
+            logging.info(f'Usando corpo bruto para validação: {data_to_validate}')
+
+        # Valida os dados
+        if validate_data(data_to_validate):
+            modeled_data = model_data(data_to_validate)  # Modela os dados validados
+            insert_data_to_db(modeled_data)  # Insere os dados no banco
+            #send_to_rabbitmq(modeled_data)  # Envia para o RabbitMQ
+            return jsonify({"message": "Data processed and stored successfully"}), 200
+        else:
+            logging.warning("Requisição falhou devido a dados inválidos.")
+            return jsonify({"error": "Invalid data format"}), 400
+    except Exception as e:
+        logging.error(f"Erro ao processar a requisição: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+    
 # Inicializa o servidor Flask
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
