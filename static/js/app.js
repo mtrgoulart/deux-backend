@@ -5,6 +5,7 @@ import { removeStrategySet, saveStrategy, startStrategy, stopStrategy } from './
 import { openIndicatorPopup } from './indicators.js';
 import { loadSymbols } from './symbols.js';
 import { renderStrategy } from './strategyRenderer.js';
+import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("DOMContentLoaded triggered");
@@ -99,8 +100,8 @@ function setupAddInstanceButton() {
         }
 
         // Gera um UUID para a instância e a estratégia associada
-        const instanceId = crypto.randomUUID();
-        const strategyId = crypto.randomUUID();
+        const instanceId = uuidv4();
+        const strategyId = uuidv4();
 
         // Cria a estrutura da instância no DOM
         const container = document.getElementById("instances-container");

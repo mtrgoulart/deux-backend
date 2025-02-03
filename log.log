@@ -969,3 +969,10 @@ DETAIL:  Failing row contains (9, 1, 2, null, 1, 2025-01-19 04:04:11.653763, 202
 2025-01-20 07:23:11,057 - general_logger - INFO - Operation Executed on: symbol:ETH-USDT price:3383.47
 2025-01-20 07:23:15,005 - general_logger - INFO - Updated operation ID 0 for object 2849
 2025-01-20 07:23:16,906 - general_logger - INFO - Updated operation ID 0 for object 2850
+2025-01-20 11:11:26,736 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-01-20 12:11:03,490 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-01-20 12:12:00,887 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-01-20 12:13:37,126 - general_logger - INFO - Strategy 46 saved and linked to instance 13 for user 1.
+2025-01-28 07:28:35,674 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-01-28 07:30:15,732 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-01-28 07:31:05,042 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
