@@ -79,3 +79,4 @@ export function handleApiKeySelection(apiKeyId, apiKeyName) {
     // Chama `loadInstances` para carregar as instâncias vinculadas
     loadInstances(apiKeyId);
 }
+
