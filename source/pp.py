@@ -175,3 +175,74 @@ class Operations:
 
         with open(filepath, "r") as file:
             return file.read()
+
+
+    def save_tp_sl_to_db(self, instance_id, api_key, tp_price, sl_price,operation_id):
+        """
+        Salva os valores de Take Profit (TP) e Stop Loss (SL) na tabela `positions`.
+        """
+        try:
+            query = self._load_query("insert_tp_sl.sql")  # Carregar a query correta
+            
+            if tp_price is not None:
+                self.db_manager.insert_data(query, (instance_id, api_key, 'TP', float(tp_price), 'active',operation_id))
+
+            if sl_price is not None:
+                self.db_manager.insert_data(query, (instance_id, api_key, 'SL', float(sl_price), 'active',operation_id))
+
+            return True, None
+
+        except Exception as e:
+            error = f'Erro ao salvar TP/SL no banco: {e}'
+            return False, error
+
+
+    def get_tp_sl_prices(self, instance_id, api_key):
+        """
+        Obtém os preços de Take Profit (TP) e Stop Loss (SL) para uma instância e símbolo.
+        """
+        try:
+            query = self._load_query("select_tp_sl_prices.sql")
+            results = self.db_manager.fetch_data(query, (instance_id, api_key))
+
+            tp_price, sl_price = None, None
+            tp_status, sl_status= None, None
+            for record in results:
+                if record[0] == "TP":
+                    tp_price = float(record[1])
+                    tp_status=record[2]
+                elif record[0] == "SL":
+                    sl_price = float(record[1])
+                    sl_status=record[2]
+
+            return tp_price, sl_price, tp_status, sl_status
+        except Exception as e:
+            print(f"Erro ao obter TP/SL do banco: {e}")
+            return None, None, None, None
+
+    def delete_tp_sl(self, instance_id, symbol):
+        """
+        Remove os registros de TP e SL da tabela `positions`.
+        """
+        try:
+            query = self._load_query("delete_tp_sl.sql")
+            rows_affected = self.db_manager.delete_data(query, (instance_id, symbol))
+            return rows_affected
+        except Exception as e:
+            print(f"Erro ao deletar TP/SL do banco: {e}")
+            return 0
+
+    def update_tp_sl_status(self, instance_id, api_key, new_tp_status, new_sl_status):
+        """
+        Atualiza os status de TP e SL na tabela `positions` quando um dos dois é executado.
+        """
+        try:
+            query = self._load_query("update_tp_sl_status.sql")
+
+            self.db_manager.update_data(query, (new_tp_status, instance_id, api_key, 'TP'))
+            self.db_manager.update_data(query, (new_sl_status, instance_id, api_key, 'SL'))
+
+            return True
+        except Exception as e:
+            print(f"Erro ao atualizar status de TP/SL no banco: {e}")
+            return False

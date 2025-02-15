@@ -63,7 +63,7 @@ def start_instance_operation(instance_id, user_id):
             instance_details = db_client.fetch_data(query_instance, (instance_id, user_id))
 
             if not instance_details:
-                return jsonify({"error": "Instance not found"}), 404
+                return False, "Instance not found"
 
             api_key_id, instance_name, exchange_id = instance_details[0]
 
@@ -72,7 +72,7 @@ def start_instance_operation(instance_id, user_id):
             strategies = db_client.fetch_data(query_strategies, (instance_id,))
 
             if not strategies:
-                return jsonify({"error": "No strategies found for the instance"}), 404
+                return False, "No strategies found for the instance"
 
             # Inicia o OperationManager para cada estratégia
             responses = []
@@ -89,6 +89,8 @@ def start_instance_operation(instance_id, user_id):
                     "condition_limit": strategy[5],
                     "interval": strategy[6],
                     "simultaneous_operations": strategy[7] if side == "buy" else 1,
+                    "tp":strategy[9],
+                    "sl":strategy[10]
                 }
 
                 # Instancia o OperationManager e inicia a operação
@@ -111,11 +113,11 @@ def start_instance_operation(instance_id, user_id):
                 general_logger.info(f"Started {side} operation for instance {instance_id}, strategy {strategy_uuid}, user {user_id}.")
                 responses.append({"strategy_uuid": strategy_uuid, "side": side, "status": "running"})
 
-            return jsonify({"message": "Instance operations started successfully", "operations": responses}), 200
+            return True, "Instância iniciada com sucesso!"
 
     except Exception as e:
         general_logger.error(f"Error starting instance operations: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        return False, str(e)
 
 def stop_instance_operation(instance_id):
     global operation_managers

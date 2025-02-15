@@ -58,6 +58,9 @@ class ExchangeInterface:
 
     def get_last_trade(self, symbol):
         raise NotImplementedError("Este método deve ser implementado pela subclasse específica da exchange.")
+    
+    def get_current_price(self, symbol):
+        raise NotImplementedError("Este método deve ser implementado pela subclasse específica da exchange.")
 
     def get_balance(self, ccy=None):
         raise NotImplementedError("Este método deve ser implementado pela subclasse específica da exchange.")
@@ -84,6 +87,9 @@ class OKXInterface(ExchangeInterface):
         general_logger.info(f"Placing order: {symbol}, {side}, {order_type}, {size}, {currency}, {price}")
         response = self.okx_client.place_order(symbol, side, order_type, size, currency, price)
         return response
+    
+    def get_current_price(self, symbol):
+        return self.okx_client.get_current_price(symbol)
 
     def get_fill_price(self, order_id):
         general_logger.info(f"Getting fill price for order ID: {order_id}")
@@ -141,6 +147,18 @@ class BinanceInterface(ExchangeInterface):
         general_logger.info(f"Placing order: {symbol}, {side}, {order_type}, {size}, {currency}, {price}")
         response = self.binance_client.place_order(symbol, side, order_type, size, currency, price)
         return response
+    
+    def get_current_price(self, symbol):
+        try:
+            response = self.okx_client.get_ticker(symbol)
+            if 'data' in response and isinstance(response['data'], list) and response['data']:
+                return float(response['data'][0].get('last', 0))
+            else:
+                general_logger.error(f"Erro ao obter preço atual na OKX para {symbol}")
+                return None
+        except Exception as e:
+            general_logger.error(f"Erro ao obter preço atual na OKX: {e}")
+            return None
 
     def get_fill_price(self, order_id):
         general_logger.info(f"Getting fill price for order ID: {order_id}")

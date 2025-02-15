@@ -19,6 +19,11 @@
                 <label>Simultaneous Operations:</label>
                 <input type="number" id="simultaneous_operations-buy-{{strategy_id}}" value="" disabled>
                 <button id="indicator-buy-{{strategy_id}}" onclick="openIndicatorPopup('{{strategy_id}}', 'buy')">Indicators</button>
+                <label>Take Profit:</label>
+                <input type="number" id="tp-buy-{{strategy_id}}" value="" disabled>
+                <label>Stop Loss:</label>
+                <input type="number" id="sl-buy-{{strategy_id}}" value="" disabled>
+
             </div>
             <div class="sell-box">
                 <h4>Sell Strategy</h4>

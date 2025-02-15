@@ -100,7 +100,7 @@ class DatabaseClient:
             self.connect()
             self.cursor.execute(query, params)
             self.conn.commit()
-            print("Dados atualizados com sucesso.")
+            #print("Dados atualizados com sucesso.")
         except Exception as e:
             print("Erro ao atualizar dados:", e)
         finally:

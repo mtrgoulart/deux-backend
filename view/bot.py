@@ -75,22 +75,25 @@ def save_strategy(data, user_id):
                 strategy_id_buy=db_client.insert_data_returning(insert_strategy_query, (
                     user_id, strategy_uuid, symbol, 'buy', buy_data['percent'],
                     buy_data['condition_limit'], buy_data['interval'],
-                    buy_data['simultaneous_operations'], 'stopped'
+                    buy_data['simultaneous_operations'], 'stopped',buy_data['tp'],buy_data['sl']
                 ))
                 strategy_id_sell=db_client.insert_data_returning(insert_strategy_query, (
                     user_id, strategy_uuid, symbol, 'sell', sell_data['percent'],
                     sell_data['condition_limit'], sell_data['interval'],
-                    None, 'stopped'
+                    None, 'stopped',None, None
                 ))
                 strategy_ids=[strategy_id_buy,strategy_id_sell]
+                
+                
 
             # 2. Criar relação entre a instância e a estratégia
             for strategy_id in strategy_ids:
                 relation_query = load_query('insert_instance_strategy.sql')
                 db_client.insert_data(relation_query, (instance_id, strategy_id))
+                general_logger.info(f"Strategy {strategy_id} saved and linked to instance {instance_id} for user {user_id}.")
 
-        general_logger.info(f"Strategy {strategy_id} saved and linked to instance {instance_id} for user {user_id}.")
-        return jsonify({"message": "Strategy saved and linked successfully", "strategy_id": strategy_id}), 200
+        
+        return jsonify({"message": "Strategies saved and linked successfully", "strategy_ids": strategy_ids}), 200
 
     except Exception as e:
         general_logger.error(f"Error saving strategy: {str(e)}")

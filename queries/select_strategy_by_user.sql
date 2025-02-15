@@ -6,7 +6,9 @@ SELECT
     condition_limit,
     interval,
     simultaneous_operations,
-    status
+    status,
+    tp,
+    sl
 FROM
     strategy
 WHERE

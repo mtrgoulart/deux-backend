@@ -33,6 +33,9 @@ export async function renderStrategy(strategy, container) {
         const buyConditionInput = document.getElementById(`condition_limit-buy-${strategy_uuid}`);
         const buyIntervalInput = document.getElementById(`interval-buy-${strategy_uuid}`);
         const buySimultaneousInput = document.getElementById(`simultaneous_operations-buy-${strategy_uuid}`);
+        const buyTPInput = document.getElementById(`tp-buy-${strategy_uuid}`);
+        const buySLInput = document.getElementById(`sl-buy-${strategy_uuid}`);
+
         const sellPercentInput = document.getElementById(`percent-sell-${strategy_uuid}`);
         const sellConditionInput = document.getElementById(`condition_limit-sell-${strategy_uuid}`);
         const sellIntervalInput = document.getElementById(`interval-sell-${strategy_uuid}`);
@@ -44,6 +47,8 @@ export async function renderStrategy(strategy, container) {
         buyConditionInput.value = buy.condition_limit || '';
         buyIntervalInput.value = buy.interval || '';
         buySimultaneousInput.value = buy.simultaneous_operations || '';
+        buyTPInput.value = buy.tp || '';  // Take Profit
+        buySLInput.value = buy.sl || '';  // Stop Loss
 
         sellPercentInput.value = sell.percent ? (sell.percent * 100).toFixed(2) : '';
         sellConditionInput.value = sell.condition_limit || '';
@@ -82,6 +87,9 @@ export async function renderStrategy(strategy, container) {
                         condition_limit: parseInt(buyConditionInput.value) || 0,
                         interval: parseInt(buyIntervalInput.value) || 0,
                         simultaneous_operations: parseInt(buySimultaneousInput.value) || 1,
+                        tp: parseFloat(buyTPInput.value) || 0, // Novo campo TP
+                        sl: parseFloat(buySLInput.value) || 0, // Novo campo SL
+                        
                     },
                     sell: {
                         percent: parseFloat(sellPercentInput.value) / 100 || 0,

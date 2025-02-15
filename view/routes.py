@@ -210,6 +210,8 @@ def get_strategies():
                     "buy": None,
                     "sell": None,
                     "status": row[7],
+                    "tp":row[8],
+                    "sl":row[9]
                 }
 
             # Adiciona os detalhes de buy ou sell no local correto
@@ -460,7 +462,13 @@ def start_instance_route():
     if not instance_id:
         return jsonify({"error": "Instance ID is required"}), 400
 
-    return start_instance_operation(instance_id, user_id)
+    success, message = start_instance_operation(instance_id, user_id)
+
+    if success:
+        return jsonify({"message": message}), 200
+    else:
+        return jsonify({"error": message}), 500
+    
 
 @main_bp.route('/stop_instance', methods=['POST'])
 def stop_instance_route():

@@ -54,6 +54,37 @@ class OKXClient:
         except requests.exceptions.RequestException as e:
             print(f"Error during request: {e}")
             return None
+        
+
+    def get_current_price(self, symbol):
+        """
+        Obtém o preço atual do ativo na OKX.
+
+        :param symbol: Símbolo do ativo (exemplo: "BTC-USDT").
+        :return: Preço atual do ativo como float ou None em caso de erro.
+        """
+        try:
+            request_path = f'/api/v5/market/ticker?instId={symbol}'
+            response = self.send_request('GET', request_path, None)
+
+            # Verificar se a resposta é válida e contém os dados esperados
+            if isinstance(response, dict) and "data" in response and isinstance(response["data"], list) and response["data"]:
+                price_str = response["data"][0].get("last")
+                if price_str is not None:
+                    try:
+                        return float(price_str)  # Converter corretamente a string para float
+                    except ValueError:
+                        print(f"Erro ao converter preço para float: {price_str}")
+                        return None
+
+            print(f"Erro ao obter preço atual na OKX para {symbol}: resposta inesperada {response}")
+            return None
+
+        except Exception as e:
+            print(f"Erro ao obter preço atual na OKX: {e}")
+            return None
+
+
 
     def place_order(self, symbol, side, order_type, size, currency, price=None):
         tgtCcy = "quote_ccy" if side == "buy" else "base_ccy"
@@ -203,6 +234,21 @@ class BinanceClient:
             return response.json()
         except requests.RequestException as e:
             print(f"Error during request: {e}")
+            return None
+
+    def get_current_price(self, symbol):
+        """
+        Obtém o preço atual do ativo na Binance.
+        """
+        try:
+            response = self._send_request('GET', f'/api/v3/ticker/price?symbol={symbol}')
+            if response and 'price' in response:
+                return float(response['price'])
+            else:
+                print(f"Erro ao obter preço atual na Binance para {symbol}")
+                return None
+        except Exception as e:
+            print(f"Erro ao obter preço atual na Binance: {e}")
             return None
 
     def place_order(self, symbol, side, order_type, quantity, price=None):

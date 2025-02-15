@@ -7,7 +7,9 @@ SELECT
     s.condition_limit,
     s.interval,
     s.simultaneous_operations,
-    s.status
+    s.status,
+    s.tp,
+    s.sl
 FROM
     instance_strategy AS ist
 JOIN
