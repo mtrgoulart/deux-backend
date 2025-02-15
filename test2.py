@@ -1,20 +1,10 @@
-import requests
+from flask import Flask
 
-def get_all_inst_ids():
-    url = "https://www.okx.com/api/v5/public/instruments"
-    params = {
-        "instType": "SPOT"  # Tipo de instrumento: 'SPOT' para mercado à vista (pode ajustar conforme necessário)
-    }
-    response = requests.get(url, params=params)
-    
-    if response.status_code == 200:
-        data = response.json().get("data", [])
-        inst_ids = [item["instId"] for item in data]
-        return inst_ids
-    else:
-        print(f"Erro ao buscar dados: {response.status_code}")
-        return []
+app = Flask(__name__)
 
-# Exemplo de uso
-inst_ids = get_all_inst_ids()
-print(inst_ids)
+@app.route("/")
+def hello():
+    return "<h1>Hello</h1>"
+
+if __name__=="__main__":
+    app.run(host='0.0.0.0',port=5002)

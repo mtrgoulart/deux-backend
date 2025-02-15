@@ -1,0 +1,43 @@
+<div class="strategy-box" id="{{strategy_id}}" data-saved="true">
+    <div class="strategy-header">
+        <h3>Strategy Code: {{strategy_id}}</h3>
+        <label for="symbol-{{strategy_id}}">Symbol:</label>
+        <select id="symbol-{{strategy_id}}" disabled>
+            {{symbols}}
+        </select>
+    </div>
+    <div class="strategy-inner">
+        <div class="buy-sell-container">
+            <div class="buy-box">
+                <h4>Buy Strategy</h4>
+                <label>Percent:</label>
+                <input type="text" id="percent-buy-{{strategy_id}}" value="" disabled>
+                <label>Condition Limit:</label>
+                <input type="number" id="condition_limit-buy-{{strategy_id}}" value="" disabled>
+                <label>Interval (minutes):</label>
+                <input type="number" id="interval-buy-{{strategy_id}}" value="" disabled>
+                <label>Simultaneous Operations:</label>
+                <input type="number" id="simultaneous_operations-buy-{{strategy_id}}" value="" disabled>
+                <button id="indicator-buy-{{strategy_id}}" onclick="openIndicatorPopup('{{strategy_id}}', 'buy')">Indicators</button>
+                <label>Take Profit:</label>
+                <input type="number" id="tp-buy-{{strategy_id}}" value="" disabled>
+                <label>Stop Loss:</label>
+                <input type="number" id="sl-buy-{{strategy_id}}" value="" disabled>
+
+            </div>
+            <div class="sell-box">
+                <h4>Sell Strategy</h4>
+                <label>Percent:</label>
+                <input type="text" id="percent-sell-{{strategy_id}}" value="" disabled>
+                <label>Condition Limit:</label>
+                <input type="number" id="condition_limit-sell-{{strategy_id}}" value="" disabled>
+                <label>Interval (minutes):</label>
+                <input type="number" id="interval-sell-{{strategy_id}}" value="">
+                <button id="indicator-sell-{{strategy_id}}" onclick="openIndicatorPopup('{{strategy_id}}', 'sell')">Indicators</button>
+            </div>
+        </div>
+    </div>
+    <div class="operation-controls">
+        <button id="save-button-{{strategy_id}}">Edit</button>
+    </div>
+</div>
