@@ -1937,3 +1937,114 @@ DETAIL:  Failing row contains (9, 1, 2, null, 1, 2025-01-19 04:04:11.653763, 202
 2025-02-15 11:00:43,669 - general_logger - INFO - Placing order: BTC-USDT, sell, market, 0.009129995984, BTC, None
 2025-02-15 11:00:44,052 - general_logger - INFO - Ordem de venda executada para BTC-USDT
 2025-02-15 11:00:44,053 - general_logger - INFO - Stop Loss executado com sucesso para BTC-USDT. Atualizando banco...
+2025-02-18 19:16:20,192 - general_logger - INFO - Iniciando aplicação
+2025-02-18 19:16:20,200 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-02-18 19:35:14,049 - general_logger - INFO - Nenhuma instancia para iniciar.
+2025-02-18 19:35:14,051 - general_logger - INFO - Iniciando aplicação
+2025-02-18 19:35:14,052 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-02-18 19:36:51,557 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: buy
+2025-02-18 19:36:53,851 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: buy
+2025-02-18 19:36:54,190 - general_logger - INFO - Starting operation at 2025-02-18 22:36:54.190060+00:00 for symbol: ETH-USDT, buy
+2025-02-18 19:36:54,644 - general_logger - INFO - Started buy operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 19:36:55,859 - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: buy
+2025-02-18 19:36:56,503 - general_logger - INFO - Starting operation at 2025-02-18 22:36:56.503166+00:00 for symbol: BTC-USDT, buy
+2025-02-18 19:36:56,914 - general_logger - INFO - Started buy operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 19:36:58,621 - general_logger - INFO - Starting operation at 2025-02-18 22:36:58.621438+00:00 for symbol: DOGE-USDT, buy
+2025-02-18 19:37:03,117 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: sell
+2025-02-18 19:37:03,390 - general_logger - INFO - Started buy operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 19:37:05,593 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: sell
+2025-02-18 19:37:06,192 - general_logger - INFO - Started sell operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 19:37:08,693 - general_logger - INFO - Started sell operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 19:37:13,566 - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: sell
+2025-02-18 19:37:16,753 - general_logger - INFO - Started sell operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 19:37:16,756 - general_logger - INFO - Iniciando aplicação
+2025-02-18 19:37:16,757 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-02-18 19:45:56,750 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: buy
+2025-02-18 19:45:57,294 - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: buy
+2025-02-18 19:45:57,567 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: buy
+2025-02-18 19:45:58,739 - general_logger - INFO - Started buy operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 19:45:59,199 - general_logger - INFO - Started buy operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 19:45:59,679 - general_logger - INFO - Starting operation at 2025-02-18 22:45:59.679160+00:00 for symbol: BTC-USDT, buy
+2025-02-18 19:46:00,434 - general_logger - INFO - Starting operation at 2025-02-18 22:46:00.434581+00:00 for symbol: ETH-USDT, buy
+2025-02-18 19:46:03,597 - general_logger - INFO - Started buy operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 19:46:04,141 - general_logger - INFO - Starting operation at 2025-02-18 22:46:04.140914+00:00 for symbol: DOGE-USDT, buy
+2025-02-18 19:46:07,276 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: sell
+2025-02-18 19:46:07,283 - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: sell
+2025-02-18 19:46:09,057 - general_logger - INFO - Started sell operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 19:46:09,093 - general_logger - INFO - Started sell operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 19:46:12,359 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: sell
+2025-02-18 19:46:18,409 - general_logger - INFO - Started sell operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 19:46:20,223 - general_logger - INFO - Iniciando aplicação
+2025-02-18 19:46:20,224 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-02-18 19:48:16,003 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: buy
+2025-02-18 19:48:17,113 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: buy
+2025-02-18 19:48:17,802 - general_logger - INFO - Started buy operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 19:48:18,883 - general_logger - INFO - Started buy operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 19:48:18,937 - general_logger - INFO - Starting operation at 2025-02-18 22:48:18.937137+00:00 for symbol: ETH-USDT, buy
+2025-02-18 19:48:20,822 - general_logger - INFO - Starting operation at 2025-02-18 22:48:20.822084+00:00 for symbol: BTC-USDT, buy
+2025-02-18 19:48:21,378 - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: buy
+2025-02-18 19:48:23,712 - general_logger - INFO - Started buy operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 19:48:24,668 - general_logger - INFO - Starting operation at 2025-02-18 22:48:24.668544+00:00 for symbol: DOGE-USDT, buy
+2025-02-18 19:48:28,918 - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: sell
+2025-02-18 19:48:29,881 - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: sell
+2025-02-18 19:48:30,753 - general_logger - INFO - Started sell operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 19:48:31,841 - general_logger - INFO - Started sell operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 19:48:33,669 - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: sell
+2025-02-18 19:48:35,491 - general_logger - INFO - Started sell operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 19:48:37,368 - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-02-18 19:56:14,043 - manager - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: buy
+2025-02-18 19:56:14,467 - manager - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: buy
+2025-02-18 19:56:15,835 - instances - general_logger - INFO - Started buy operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 19:56:16,251 - instances - general_logger - INFO - Started buy operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 19:56:16,701 - manager - general_logger - INFO - Starting operation at 2025-02-18 22:56:16.701680+00:00 for symbol: DOGE-USDT, buy
+2025-02-18 19:56:17,107 - manager - general_logger - INFO - Starting operation at 2025-02-18 22:56:17.107419+00:00 for symbol: ETH-USDT, buy
+2025-02-18 19:56:20,984 - manager - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: buy
+2025-02-18 19:56:23,298 - instances - general_logger - INFO - Started buy operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 19:56:25,973 - manager - general_logger - INFO - Starting operation at 2025-02-18 22:56:25.973402+00:00 for symbol: BTC-USDT, buy
+2025-02-18 19:56:26,970 - manager - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: sell
+2025-02-18 19:56:27,754 - manager - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: sell
+2025-02-18 19:56:28,677 - instances - general_logger - INFO - Started sell operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 19:56:29,508 - instances - general_logger - INFO - Started sell operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 19:56:31,551 - manager - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: sell
+2025-02-18 19:56:33,362 - instances - general_logger - INFO - Started sell operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 19:56:35,578 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-02-18 22:26:35,210 - instances - general_logger - INFO - Iniciando 3 instâncias...
+2025-02-18 22:26:54,839 - manager - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: buy
+2025-02-18 22:26:56,997 - instances - general_logger - INFO - Started buy operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 22:27:00,768 - manager - general_logger - INFO - Starting operation at 2025-02-19 01:27:00.768182+00:00 for symbol: DOGE-USDT, buy
+2025-02-18 22:27:05,765 - manager - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: sell
+2025-02-18 22:27:07,485 - instances - general_logger - INFO - Started sell operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 22:27:09,259 - instances - general_logger - INFO - Instância 26 iniciada com sucesso.
+2025-02-18 22:27:24,375 - manager - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: buy
+2025-02-18 22:27:27,352 - instances - general_logger - INFO - Started buy operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 22:27:28,798 - manager - general_logger - INFO - Starting operation at 2025-02-19 01:27:28.798221+00:00 for symbol: ETH-USDT, buy
+2025-02-18 22:27:36,694 - manager - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: sell
+2025-02-18 22:27:38,421 - instances - general_logger - INFO - Started sell operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 22:27:40,155 - instances - general_logger - INFO - Instância 25 iniciada com sucesso.
+2025-02-18 22:28:00,254 - manager - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: buy
+2025-02-18 22:28:02,020 - instances - general_logger - INFO - Started buy operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 22:28:02,856 - manager - general_logger - INFO - Starting operation at 2025-02-19 01:28:02.856408+00:00 for symbol: BTC-USDT, buy
+2025-02-18 22:28:11,465 - manager - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: sell
+2025-02-18 22:28:17,590 - instances - general_logger - INFO - Started sell operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 22:28:20,575 - instances - general_logger - INFO - Instância 24 iniciada com sucesso.
+2025-02-18 22:28:20,576 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-02-18 22:33:20,511 - instances - general_logger - INFO - Iniciando 3 instâncias...
+2025-02-18 22:33:45,190 - manager - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: buy
+2025-02-18 22:33:47,006 - instances - general_logger - INFO - Started buy operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 22:33:47,897 - manager - general_logger - INFO - Starting operation at 2025-02-19 01:33:47.897511+00:00 for symbol: DOGE-USDT, buy
+2025-02-18 22:33:54,496 - manager - general_logger - INFO - OperationHandler initialized for symbol: DOGE-USDT, side: sell
+2025-02-18 22:33:56,231 - instances - general_logger - INFO - Started sell operation for instance 26, strategy c2d66e83-cb9d-4eeb-8229-a902efb01d20, user 6.
+2025-02-18 22:33:57,976 - instances - general_logger - INFO - Instância 26 iniciada com sucesso.
+2025-02-18 22:34:19,117 - manager - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: buy
+2025-02-18 22:34:20,859 - instances - general_logger - INFO - Started buy operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 22:34:21,758 - manager - general_logger - INFO - Starting operation at 2025-02-19 01:34:21.758803+00:00 for symbol: ETH-USDT, buy
+2025-02-18 22:34:28,311 - manager - general_logger - INFO - OperationHandler initialized for symbol: ETH-USDT, side: sell
+2025-02-18 22:34:30,084 - instances - general_logger - INFO - Started sell operation for instance 25, strategy 8311ffbe-565c-4816-b7e3-4f0f283962e2, user 6.
+2025-02-18 22:34:36,281 - instances - general_logger - INFO - Instância 25 iniciada com sucesso.
+2025-02-18 22:34:54,410 - manager - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: buy
+2025-02-18 22:34:56,158 - instances - general_logger - INFO - Started buy operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 22:34:56,998 - manager - general_logger - INFO - Starting operation at 2025-02-19 01:34:56.998847+00:00 for symbol: BTC-USDT, buy
+2025-02-18 22:35:09,485 - manager - general_logger - INFO - OperationHandler initialized for symbol: BTC-USDT, side: sell
+2025-02-18 22:35:11,264 - instances - general_logger - INFO - Started sell operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
+2025-02-18 22:35:13,006 - instances - general_logger - INFO - Instância 24 iniciada com sucesso.
+2025-02-18 22:35:13,008 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.

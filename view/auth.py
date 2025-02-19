@@ -6,6 +6,7 @@ from source.dbmanager import DatabaseClient
 from source.pp import ConfigLoader
 from datetime import datetime, timedelta, timezone
 from contextlib import contextmanager
+from log.log import general_logger
 
 class AuthService:
     def __init__(self):
@@ -45,27 +46,26 @@ class AuthService:
         """
         try:
             with self.get_db_connection() as db_client:
-                query = 'SELECT id, username, password_hash FROM neouser WHERE username = %s'
+                query = 'SELECT id,  password_hash FROM neouser WHERE username = %s'
                 db_client.cursor.execute(query, (username,))
                 user = db_client.cursor.fetchone()
 
-            if user and check_password_hash(user[2], password):
+            if user and check_password_hash(user[1], password):
                 user_id = user[0]
-                user_name = user[1]  # Obtem o username
+                #user_name = user[1]  # Obtem o username
                 token = self._generate_jwt(user_id)
 
                 # Armazena o token e o username na sessão
                 session['user_token'] = token
-                session['user_name'] = user_name
+                #session['user_name'] = user_name
 
                 flash("Login successful!", "success")
                 return {"token": token}
 
         except Exception as e:
-            print(f"Login Error: {e}")  # Log do erro para depuração
-
-        flash("Invalid username or password.", "error")
-        return {"error": "Invalid credentials"}
+            general_logger(f"Login Error: {e}")  # Log do erro para depuração
+            flash("Invalid username or password.", "error")
+            return {"error": "Invalid credentials"}
 
     def register_user(self, username, password):
         """
