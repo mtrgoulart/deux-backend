@@ -6,6 +6,39 @@ from source.director import OperationManager
 
 operation_managers = {}
 
+import concurrent.futures
+
+def start_running_instances():
+    """
+    Verifica e inicia todas as instâncias que estavam rodando antes da reinicialização da aplicação.
+    """
+    query = load_query('select_running_instances.sql')
+
+    try:
+        with get_db_connection() as db_client:
+            running_instances_data = db_client.fetch_data(query)
+
+            if not running_instances_data:
+                general_logger.info('Nenhuma instancia para iniciar.')
+                return
+            
+            general_logger.info(f"Iniciando {len(running_instances_data)} instâncias...")
+
+            for data in running_instances_data:
+                instance_id = data[1]
+                user_id = data[0]
+
+                success, message = start_instance_operation(instance_id=instance_id, user_id=user_id)
+                
+                if success:
+                    general_logger.info(f"Instância {instance_id} iniciada com sucesso.")
+                else:
+                    general_logger.error(f"Erro ao iniciar instância {instance_id}: {message}")
+
+    except Exception as e:
+        general_logger.error(f"Error starting running instance: {str(e)}")
+
+
 def save_instance(data, user_id):
     """
     Salva uma nova instância no banco de dados.
@@ -110,8 +143,13 @@ def start_instance_operation(instance_id, user_id):
                 update_query = load_query('update_strategy_status.sql')
                 db_client.update_data(update_query, ('running', strategy_uuid, user_id))
 
+                
+
                 general_logger.info(f"Started {side} operation for instance {instance_id}, strategy {strategy_uuid}, user {user_id}.")
                 responses.append({"strategy_uuid": strategy_uuid, "side": side, "status": "running"})
+
+            update_instance_query=load_query('update_instance_status.sql')
+            db_client.update_data(update_instance_query,(2,instance_id))
 
             return True, "Instância iniciada com sucesso!"
 
@@ -132,6 +170,10 @@ def stop_instance_operation(instance_id):
             manager = operation_managers.pop(key)
             manager.stop_operation()
             general_logger.info(f"Stopped operation for key {key}.")
+
+        with get_db_connection() as db_client:
+            update_instance_query=load_query('update_instance_status.sql')
+            db_client.update_data(update_instance_query,(1,instance_id))
 
         return jsonify({"message": "All operations for the instance stopped successfully"}), 200
     except Exception as e:

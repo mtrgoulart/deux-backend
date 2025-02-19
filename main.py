@@ -2,8 +2,10 @@
 from view import create_app
 from log.log import general_logger
 import os
+from view.instances import start_running_instances
 
 app=create_app()
+start_running_instances()
 
 if __name__ == "__main__":
     general_logger.info("Iniciando aplicação Flask a partir de main.py.")

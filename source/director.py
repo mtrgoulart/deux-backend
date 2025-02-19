@@ -38,12 +38,12 @@ class OperationManager:
             tp=self.data.get('tp'),
             sl=self.data.get('sl')
         )
-        self.monitoring_thread = threading.Thread(target=self.monitor_interval)
+        self.monitoring_thread = threading.Thread(target=self.monitor_interval,daemon=True)
         self.monitoring_thread.start()
 
         # Iniciar monitoramento de TP/SL apenas para operações do tipo "buy"
         if self.data['side'].lower() == 'buy':
-            self.tp_sl_thread = threading.Thread(target=self.monitor_tp_sl)
+            self.tp_sl_thread = threading.Thread(target=self.monitor_tp_sl,daemon=True)
             self.tp_sl_thread.start()
 
     def monitor_tp_sl(self):
@@ -78,6 +78,8 @@ class OperationManager:
     def stop_operation(self):
         if self.operation_handler:
             self.operation_handler.stop()
-        if self.monitoring_thread and self.monitoring_thread.is_alive():
+        if self.monitoring_thread and self.monitoring_thread.is_alive() and self.tp_sl_thread.is_alive():
             self.stop_event.set()  # Sinaliza o evento de parada
             self.monitoring_thread.join()  # Aguarda a thread terminar
+            self.tp_sl_thread.join()  # Aguarda a thread terminar
+            
