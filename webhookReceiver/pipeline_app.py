@@ -1,13 +1,23 @@
 import os
+import sys
+
+# Define o caminho da pasta raiz do projeto
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # webhookReceiver/
+ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, "../"))  # Diretório raiz do projeto
+sys.path.insert(0, ROOT_DIR)  # Adiciona a raiz ao sys.path
+
 import re
 import logging
-import psycopg2
+import psycopg
 from configparser import ConfigParser
 from flask import Flask, request, jsonify
-import pika
+from celery_manager.tasks import process_webhook  # Agora Celery Manager é encontrado corretamente
+from celery_manager.celery_app import create_queue
+
+
 
 # Função para carregar configurações a partir do config.ini
-def load_config(filename="config.ini"):
+def load_config(filename="webhookreceiver/config.ini"):
     parser = ConfigParser()
     parser.read(filename)
     config = {section: {param[0]: param[1] for param in parser.items(section)} for section in parser.sections()}
@@ -23,36 +33,15 @@ def setup_logging(log_file, log_level):
     )
 
 
-# Função para enviar mensagens ao RabbitMQ
-def send_to_rabbitmq(data):
-    try:
-        rabbitmq_params = config["rabbitmq"]
-        connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=rabbitmq_params["host"])
-        )
-        channel = connection.channel()
-
-        # Declarar a fila
-        queue_name = rabbitmq_params["queue_name"]
-        channel.queue_declare(queue=queue_name, durable=True)
-
-        # Publicar a mensagem
-        channel.basic_publish(
-            exchange='',
-            routing_key=queue_name,
-            body=str(data),
-            properties=pika.BasicProperties(delivery_mode=2)  # Mensagens persistentes
-        )
-        logging.info("Mensagem enviada ao RabbitMQ: %s", data)
-        connection.close()
-    except Exception as e:
-        logging.error("Erro ao enviar mensagem ao RabbitMQ: %s", e)
-
 # Carregar configurações e configurar logger
 config = load_config()
-db_params = config["postgresql"]
+db_params = config["database"]
 data_config = config["data"]
 table_config = config["table"]
+rabbitmq_host=config['rabbitmq']['host']
+rabbitmq_webhook_queue=config['rabbitmq']['queue_name']
+rabbitmq_user=config['rabbitmq']['user']
+rabbitmq_password=config['rabbitmq']['pwd']
 
 setup_logging(config["logging"]["log_file"], config["logging"]["log_level"])
 
@@ -63,9 +52,7 @@ app = Flask(__name__)
 def validate_data(data):
     pattern = data_config["regex_pattern"]
     is_valid = bool(re.fullmatch(pattern, data))
-    if is_valid:
-        logging.info("Dados válidos recebidos.")
-    else:
+    if not is_valid:
         logging.warning("Dados inválidos recebidos: %s", data)
     return is_valid
 
@@ -78,31 +65,54 @@ def model_data(data):
     fields = data_config["data_fields"].split(",")
     return {field: parsed_data.get(field) for field in fields}
 
-# Função para inserir os dados no banco de dados PostgreSQL
-def insert_data_to_db(data):
-    table_name = table_config["table_name"]
-    fields = data_config["data_fields"].split(",")
-    
-    columns = ", ".join(fields)
-    placeholders = ", ".join(["%s"] * len(fields))
-    
+# Envio para o rabbitmq
+def send_to_rabbitmq(data):
     try:
-        with psycopg2.connect(**db_params) as conn:
-            with conn.cursor() as cursor:
-                query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
-                values = [data[field] for field in fields]
-                cursor.execute(query, values)
-                conn.commit()
-                logging.info("Dados inseridos com sucesso no banco de dados.")
+        user_id = data.get("key", "unknown")
+        instance_id = data.get("instance_id", "unknown")
+
+        queue_name = f"user_{user_id}_instance_{instance_id}"
+        TTL_MS = 600000  # 10 minutos (600.000 milissegundos)
+
+        credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_password)
+        parameters = pika.ConnectionParameters(
+            host=rabbitmq_host,
+            port=5672,
+            virtual_host="/",
+            credentials=credentials,
+            heartbeat=600,
+            blocked_connection_timeout=300
+        )
+        connection = pika.BlockingConnection(parameters)
+        channel = connection.channel()
+
+        # Declara a fila com tempo de vida por inatividade
+        channel.queue_declare(
+            queue=queue_name,
+            durable=True,
+            arguments={'x-expires': TTL_MS}  # Define o tempo de vida da fila
+        )
+
+        # Publica a mensagem na fila específica
+        channel.basic_publish(
+            exchange='',
+            routing_key=queue_name,
+            body=json.dumps(data),
+            properties=pika.BasicProperties(delivery_mode=2)
+        )
+
+        connection.close()
+        logging.info(f"Dados enviados para fila: {queue_name}")
     except Exception as e:
-        logging.error("Erro ao inserir dados no banco: %s", e)
+        logging.error(f"Erro ao enviar mensagem para RabbitMQ: {e}")
+
+
 
 @app.route('/webhook', methods=['POST'])
 def webhook_listener():
     try:
         # Captura o corpo da requisição como texto
         raw_body = request.get_data(as_text=True)
-        logging.info(f'Dados recebidos no POST (raw body): {raw_body}')
 
         # Tenta processar os dados como JSON
         try:
@@ -124,8 +134,10 @@ def webhook_listener():
         # Valida os dados
         if validate_data(data_to_validate):
             modeled_data = model_data(data_to_validate)  # Modela os dados validados
-            insert_data_to_db(modeled_data)  # Insere os dados no banco
-            #send_to_rabbitmq(modeled_data)  # Envia para o RabbitMQ
+            create_queue(modeled_data['user_id'], modeled_data['instance_id'])
+            
+            # Envia para o Celery with the dynamic queue
+            process_webhook.apply_async(args=[modeled_data], queue=f'queue_{modeled_data['user_id']}_{modeled_data['instance_id']}')
             return jsonify({"message": "Data processed and stored successfully"}), 200
         else:
             logging.warning("Requisição falhou devido a dados inválidos.")
@@ -136,4 +148,5 @@ def webhook_listener():
     
 # Inicializa o servidor Flask
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    print('iniciando webhook')
+    app.run(host='0.0.0.0', port=5000, debug=True)

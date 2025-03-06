@@ -1,0 +1,147 @@
+2025-03-03 20:42:17,520 - director - general_logger - INFO - Entrando no director None
+2025-03-03 23:57:18,149 - instances - general_logger - INFO - instance status (2,)
+2025-03-03 23:57:52,640 - instances - general_logger - INFO - instance status 2
+2025-03-04 00:00:58,335 - instances - general_logger - INFO - instance status 2
+2025-03-04 00:05:22,415 - instances - general_logger - INFO - instance status 2
+2025-03-04 00:07:43,388 - instances - general_logger - INFO - instance status 2
+2025-03-04 00:08:01,127 - instances - general_logger - INFO - instance status 2
+2025-03-04 00:09:10,524 - instances - general_logger - INFO - instance status 2
+2025-03-04 00:14:14,360 - instances - general_logger - INFO - Executando instance operation em instances
+2025-03-04 00:14:34,366 - instances - general_logger - INFO - Executando instance operation em instances
+2025-03-04 00:22:27,025 - director - general_logger - INFO - Entrando no operation handler 2025-03-04 00:07:33.346823
+2025-03-04 00:25:22,467 - director - general_logger - INFO - Entrando no operation handler 2025-03-04 00:07:33.346823
+2025-03-04 00:25:25,140 - manager - general_logger - INFO - [{'id': 1209, 'date': datetime.datetime(2025, 3, 2, 19, 7, 47, 798042), 'symbol': 'BTC-USDT', 'size': Decimal('1087.56'), 'side': 'buy'}]
+2025-03-04 00:27:18,957 - director - general_logger - INFO - Entrando no operation handler 2025-03-04 00:07:33.346823
+2025-03-04 00:29:04,089 - director - general_logger - INFO - Entrando no operation handler 2025-03-04 00:07:33.346823
+2025-03-04 15:59:34,638 - director - general_logger - INFO - Entrando no operation handler 2025-03-04 00:07:33.346823
+2025-03-04 15:59:37,442 - manager - general_logger - INFO - ({'id': 1248, 'date': datetime.datetime(2025, 3, 4, 0, 29, 1, 616206), 'symbol': 'BTC-USDT', 'size': Decimal('0.00'), 'side': 'sell'}, {'buy'})
+2025-03-04 15:59:37,444 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 15:59:46,966 - manager - general_logger - INFO - Entrando na execucao da condicao: [{'id': 30807, 'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': 1, 'created_at': '2025-03-04T03:14:12.143755', 'operation': None, 'size': None, 'order_type': None, 'price': None}, {'id': 30808, 'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': 11, 'created_at': '2025-03-04T03:14:32.214163', 'operation': None, 'size': None, 'order_type': None, 'price': None}, {'id': 30814, 'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': 11, 'created_at': '2025-03-04T03:20:24.420525', 'operation': None, 'size': None, 'order_type': None, 'price': None}, {'id': 30816, 'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': 11, 'created_at': '2025-03-04T03:22:21.573962', 'operation': None, 'size': None, 'order_type': None, 'price': None}, {'id': 30818, 'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': 11, 'created_at': '2025-03-04T03:25:17.024498', 'operation': None, 'size': None, 'order_type': None, 'price': None}, {'id': 30820, 'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': 11, 'created_at': '2025-03-04T03:27:13.577868', 'operation': None, 'size': None, 'order_type': None, 'price': None}, {'id': 31455, 'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': 111, 'created_at': '2025-03-04T18:59:28.975332', 'operation': None, 'size': None, 'order_type': None, 'price': None}]
+2025-03-04 15:59:46,976 - manager - general_logger - INFO - **Filled Condition** Performing Operation...
+2025-03-04 15:59:47,007 - exchange_interface - general_logger - INFO - Getting balance for currency: USDT
+2025-03-04 15:59:47,764 - manager - general_logger - INFO - Balance: 764.4204993072258 USDT
+2025-03-04 15:59:47,765 - exchange_interface - general_logger - INFO - Placing order: BTC-USDT, buy, market, 764.4204993072258, USDT, None
+2025-03-04 15:59:48,166 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 15:59:48,168 - exchange_interface - general_logger - INFO - Getting fill price for order ID: 2302249683170754560
+2025-03-04 15:59:58,579 - manager - general_logger - INFO - Operation Executed on: symbol:BTC-USDT price:85700.0
+2025-03-04 16:00:00,408 - manager - general_logger - ERROR - Erro ao salvar operação no banco: 'int' object is not subscriptable
+2025-03-04 16:00:02,291 - manager - general_logger - INFO - Updated operation ID 0 for object 30807
+2025-03-04 16:00:04,287 - manager - general_logger - INFO - Updated operation ID 0 for object 30808
+2025-03-04 16:00:06,500 - manager - general_logger - INFO - Updated operation ID 0 for object 30814
+2025-03-04 16:00:08,543 - manager - general_logger - INFO - Updated operation ID 0 for object 30816
+2025-03-04 16:00:10,349 - manager - general_logger - INFO - Updated operation ID 0 for object 30818
+2025-03-04 16:00:12,181 - manager - general_logger - INFO - Updated operation ID 0 for object 30820
+2025-03-04 16:00:14,087 - manager - general_logger - INFO - Updated operation ID 0 for object 31455
+2025-03-04 16:19:03,896 - director - general_logger - INFO - Entrando no operation handler 2025-03-04 00:07:33.346823
+2025-03-04 16:19:07,164 - manager - general_logger - INFO - ({'id': 1281, 'date': datetime.datetime(2025, 3, 4, 15, 59, 58, 599992), 'symbol': 'BTC-USDT', 'size': Decimal('764.42'), 'side': 'buy'}, {'sell'})
+2025-03-04 16:19:07,165 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 16:19:16,619 - manager - general_logger - INFO - Entrando na execucao da condicao: [{'id': 31470, 'key': '1', 'symbol': 'BTC-USDT', 'side': 'sell', 'indicator': 11, 'created_at': '2025-03-04T19:18:57.345868', 'operation': None, 'size': None, 'order_type': None, 'price': None}]
+2025-03-04 16:19:16,621 - manager - general_logger - INFO - **Filled Condition** Performing Operation...
+2025-03-04 16:19:16,621 - exchange_interface - general_logger - INFO - Getting balance for currency: BTC
+2025-03-04 16:19:17,070 - manager - general_logger - INFO - Balance: 0.008887373308 BTC
+2025-03-04 16:19:17,071 - exchange_interface - general_logger - INFO - Placing order: BTC-USDT, sell, market, 0.008887373308, BTC, None
+2025-03-04 16:19:17,438 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 16:19:17,441 - exchange_interface - general_logger - INFO - Getting fill price for order ID: 2302288917395013632
+2025-03-04 16:20:48,238 - manager - general_logger - INFO - Operation Executed on: symbol:BTC-USDT price:0.0
+2025-03-04 16:20:50,779 - manager - general_logger - ERROR - Erro ao salvar operação no banco: 'int' object is not subscriptable
+2025-03-04 16:20:52,843 - manager - general_logger - INFO - Updated operation ID 0 for object 31470
+2025-03-04 16:51:57,557 - manager - general_logger - INFO - ({'id': 1285, 'date': datetime.datetime(2025, 3, 4, 16, 20, 48, 240527), 'symbol': 'BTC-USDT', 'size': Decimal('0.01'), 'side': 'sell'}, {'buy'})
+2025-03-04 16:51:57,561 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:00:16,371 - manager - general_logger - INFO - ({'id': 1287, 'date': datetime.datetime(2025, 3, 4, 16, 54, 0, 172308), 'symbol': 'BTC-USDT', 'size': Decimal('881.12'), 'side': 'buy'}, {'sell'})
+2025-03-04 17:00:16,372 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:00:26,445 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-04 17:00:26,872 - manager - general_logger - INFO - Balance: 0.03915409942 BTC
+2025-03-04 17:00:27,287 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 17:01:58,423 - manager - general_logger - INFO - Operation Executed on: symbol:BTC-USDT price:0.0
+2025-03-04 17:02:02,227 - manager - general_logger - INFO - Updated operation ID 1290 for object 31492
+2025-03-04 17:02:04,326 - manager - general_logger - INFO - Updated operation ID 1290 for object 31499
+2025-03-04 17:12:12,382 - manager - general_logger - INFO - ({'id': 1290, 'date': datetime.datetime(2025, 3, 4, 17, 1, 58, 424956), 'symbol': 'BTC-USDT', 'size': Decimal('0.04'), 'side': 'sell'}, {'buy'})
+2025-03-04 17:12:12,383 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:12:25,210 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-04 17:12:25,652 - manager - general_logger - INFO - Balance: 616.7911676599277 USDT
+2025-03-04 17:12:26,014 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 17:12:36,292 - manager - general_logger - INFO - Operation Executed on: symbol:BTC-USDT price:87099.5
+2025-03-04 17:12:40,169 - manager - general_logger - INFO - Updated operation ID 1291 for object 31497
+2025-03-04 17:12:42,044 - manager - general_logger - INFO - Updated operation ID 1291 for object 31498
+2025-03-04 17:12:43,865 - manager - general_logger - INFO - Updated operation ID 1291 for object 31510
+2025-03-04 17:14:49,099 - manager - general_logger - INFO - ({'id': 1291, 'date': datetime.datetime(2025, 3, 4, 17, 12, 36, 294640), 'symbol': 'BTC-USDT', 'size': Decimal('616.79'), 'side': 'buy'}, {'sell'})
+2025-03-04 17:14:49,101 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:14:58,591 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-04 17:14:59,084 - manager - general_logger - INFO - Balance: 0.04620900998 BTC
+2025-03-04 17:14:59,505 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 17:16:29,979 - manager - general_logger - INFO - Operation Executed on: symbol:BTC-USDT price:0.0
+2025-03-04 17:16:33,718 - manager - general_logger - INFO - Updated operation ID 1294 for object 31511
+2025-03-04 17:18:24,699 - manager - general_logger - INFO - ({'id': 1294, 'date': datetime.datetime(2025, 3, 4, 17, 16, 29, 981215), 'symbol': 'BTC-USDT', 'size': Decimal('0.05'), 'side': 'sell'}, {'buy'})
+2025-03-04 17:18:24,703 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:19:12,632 - manager - general_logger - INFO - ({'id': 1294, 'date': datetime.datetime(2025, 3, 4, 17, 16, 29, 981215), 'symbol': 'BTC-USDT', 'size': Decimal('0.05'), 'side': 'sell'}, {'buy'})
+2025-03-04 17:19:12,674 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:24:34,350 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:24:43,574 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-04 17:24:44,012 - manager - general_logger - INFO - Balance: 555.1212376799277 USDT
+2025-03-04 17:24:44,457 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 17:24:49,164 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:6.958e-06
+2025-03-04 17:24:52,762 - manager - general_logger - INFO - Updated operation ID 1295 for object 31515
+2025-03-04 17:24:54,582 - manager - general_logger - INFO - Updated operation ID 1295 for object 31516
+2025-03-04 17:24:56,552 - manager - general_logger - INFO - Updated operation ID 1295 for object 31520
+2025-03-04 17:25:57,005 - manager - general_logger - INFO - ({'id': 1295, 'date': datetime.datetime(2025, 3, 4, 17, 24, 49, 165429), 'symbol': 'PEPE-USDT', 'size': Decimal('555.12'), 'side': 'buy'}, {'sell'})
+2025-03-04 17:25:57,007 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:26:06,876 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-04 17:26:07,293 - manager - general_logger - INFO - Balance: 184338323.3852 PEPE
+2025-03-04 17:26:07,892 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 17:26:09,777 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:6.958e-06
+2025-03-04 17:26:12,318 - manager - general_logger - ERROR - Erro ao salvar operação no banco: numeric field overflow
+DETAIL:  A field with precision 10, scale 2 must round to an absolute value less than 10^8.
+2025-03-04 17:26:14,092 - manager - general_logger - INFO - Updated operation ID 0 for object 31525
+2025-03-04 17:43:36,768 - manager - general_logger - INFO - ({'id': 1295, 'date': datetime.datetime(2025, 3, 4, 17, 24, 49, 165429), 'symbol': 'PEPE-USDT', 'size': Decimal('555.12'), 'side': 'buy'}, {'sell'})
+2025-03-04 17:43:36,769 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:43:46,529 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-04 17:43:47,024 - manager - general_logger - INFO - Balance: 0.3852 PEPE
+2025-03-04 17:43:47,431 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 17:43:47,433 - manager - general_logger - ERROR - Erro: ordem não foi executada.
+2025-03-04 17:43:47,434 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:None
+2025-03-04 17:43:51,048 - manager - general_logger - INFO - Updated operation ID 1296 for object 31537
+2025-03-04 17:46:34,976 - manager - general_logger - INFO - ({'id': 1296, 'date': datetime.datetime(2025, 3, 4, 17, 43, 47, 436395), 'symbol': 'PEPE-USDT', 'size': Decimal('0.3852'), 'side': 'sell'}, {'buy'})
+2025-03-04 17:46:34,979 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:47:01,079 - manager - general_logger - INFO - ({'id': 1296, 'date': datetime.datetime(2025, 3, 4, 17, 43, 47, 436395), 'symbol': 'PEPE-USDT', 'size': Decimal('0.3852'), 'side': 'sell'}, {'buy'})
+2025-03-04 17:47:01,081 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:47:24,226 - manager - general_logger - INFO - ({'id': 1296, 'date': datetime.datetime(2025, 3, 4, 17, 43, 47, 436395), 'symbol': 'PEPE-USDT', 'size': Decimal('0.3852'), 'side': 'sell'}, {'buy'})
+2025-03-04 17:47:24,227 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:47:45,414 - manager - general_logger - INFO - ({'id': 1296, 'date': datetime.datetime(2025, 3, 4, 17, 43, 47, 436395), 'symbol': 'PEPE-USDT', 'size': Decimal('0.3852'), 'side': 'sell'}, {'buy'})
+2025-03-04 17:47:45,415 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:48:09,044 - manager - general_logger - INFO - ({'id': 1296, 'date': datetime.datetime(2025, 3, 4, 17, 43, 47, 436395), 'symbol': 'PEPE-USDT', 'size': Decimal('0.3852'), 'side': 'sell'}, {'buy'})
+2025-03-04 17:48:09,046 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 17:48:18,646 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-04 17:48:19,064 - manager - general_logger - INFO - Balance: 627.4099738856115 USDT
+2025-03-04 17:48:19,498 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 17:48:25,547 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:6.886e-06
+2025-03-04 17:48:29,289 - manager - general_logger - INFO - Updated operation ID 1297 for object 31521
+2025-03-04 17:48:31,170 - manager - general_logger - INFO - Updated operation ID 1297 for object 31523
+2025-03-04 17:48:32,922 - manager - general_logger - INFO - Updated operation ID 1297 for object 31541
+2025-03-04 17:48:34,731 - manager - general_logger - INFO - Updated operation ID 1297 for object 31542
+2025-03-04 17:48:36,520 - manager - general_logger - INFO - Updated operation ID 1297 for object 31543
+2025-03-04 17:48:38,381 - manager - general_logger - INFO - Updated operation ID 1297 for object 31544
+2025-03-04 17:48:40,769 - manager - general_logger - INFO - Updated operation ID 1297 for object 31545
+2025-03-04 18:13:00,658 - manager - general_logger - INFO - ({'id': 1297, 'date': datetime.datetime(2025, 3, 4, 17, 48, 25, 548489), 'symbol': 'PEPE-USDT', 'size': Decimal('627.409973885612'), 'side': 'buy'}, {'sell'})
+2025-03-04 18:13:00,660 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 18:13:12,295 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-04 18:13:12,725 - manager - general_logger - INFO - Balance: 90785840.5252 PEPE
+2025-03-04 18:13:13,147 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 18:13:22,262 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:6.846e-06
+2025-03-04 18:13:26,797 - manager - general_logger - INFO - Updated operation ID 1302 for object 31574
+2025-03-04 18:13:44,001 - manager - general_logger - INFO - ({'id': 1302, 'date': datetime.datetime(2025, 3, 4, 18, 13, 22, 263480), 'symbol': 'PEPE-USDT', 'size': Decimal('90785840.5252'), 'side': 'sell'}, {'buy'})
+2025-03-04 18:13:44,002 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 18:13:53,428 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-04 18:13:53,864 - manager - general_logger - INFO - Balance: 663.9862899944656 USDT
+2025-03-04 18:13:54,216 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 18:14:03,306 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:6.848e-06
+2025-03-04 18:14:06,881 - manager - general_logger - INFO - Updated operation ID 1303 for object 31546
+2025-03-04 18:14:08,637 - manager - general_logger - INFO - Updated operation ID 1303 for object 31572
+2025-03-04 18:14:10,379 - manager - general_logger - INFO - Updated operation ID 1303 for object 31573
+2025-03-04 18:14:12,155 - manager - general_logger - INFO - Updated operation ID 1303 for object 31575
+2025-03-04 18:14:46,065 - manager - general_logger - INFO - ({'id': 1303, 'date': datetime.datetime(2025, 3, 4, 18, 14, 3, 307382), 'symbol': 'PEPE-USDT', 'size': Decimal('663.986289994466'), 'side': 'buy'}, {'sell'})
+2025-03-04 18:14:46,066 - director - general_logger - INFO - Intervalo valido!
+2025-03-04 18:14:55,407 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-04 18:14:55,923 - manager - general_logger - INFO - Balance: 96611556.3148 PEPE
+2025-03-04 18:14:56,374 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-04 18:15:02,572 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:6.833e-06
+2025-03-04 18:15:07,387 - manager - general_logger - INFO - Updated operation ID 1304 for object 31577

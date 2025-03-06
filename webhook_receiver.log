@@ -1,0 +1,11 @@
+2025-03-03 02:27:34 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.100.2:5000
+2025-03-03 02:27:34 [INFO] [33mPress CTRL+C to quit[0m
+2025-03-03 02:27:34 [INFO]  * Restarting with stat
+2025-03-03 02:27:35 [WARNING]  * Debugger is active!
+2025-03-03 02:27:35 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 02:30:34 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-03 02:30:34 [INFO]  * Restarting with stat
+2025-03-03 11:51:07 [INFO]  * Restarting with stat

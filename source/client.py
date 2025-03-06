@@ -11,6 +11,10 @@ from datetime import datetime
 from types import SimpleNamespace
 import hmac
 import hashlib
+from mexc_api.spot import Spot
+#from mexc_sdk.constant import OrderSide, OrderType
+from datetime import datetime
+
 
 
 class OKXClient:
@@ -302,22 +306,86 @@ class BinanceClient:
             return response[-1]  # Retorna o último trade
         return None
 
+class MEXCClient:
+    def __init__(self, credentials, url='https://api.mexc.com'):
+        self.api_key = credentials["api_key"]
+        self.secret_key = credentials["secret_key"]
+        self.url = url
+        self.client = Spot(api_key=self.api_key, api_secret=self.secret_key)
+
+    def get_current_price(self, symbol):
+        try:
+            response = self.client.market.ticker_price(symbol)
+            price_data=response[0]
+            return float(price_data['price'])
+        except Exception as e:
+            print(f"Erro ao obter preço atual na MEXC: {e}")
+            return None
+
+    def place_order(self, symbol, side, order_type, quantity, price=None):
+        try:
+            order_params = {
+                "symbol": symbol,
+                "side": side.upper(),
+                "type": order_type.upper(),
+                "quantity": quantity,
+            }
+            if price:
+                order_params["price"] = price
+                order_params["timeInForce"] = "GTC"
+            response = self.client.trade.order_new(**order_params)
+            return response.get('orderId')
+        except Exception as e:
+            print(f"Erro ao colocar ordem na MEXC: {e}")
+            return None
+
+    def cancel_order(self, symbol, order_id):
+        try:
+            response = self.client.trade.order_cancel(symbol=symbol, orderId=order_id)
+            return response.get('status') == 'CANCELED'
+        except Exception as e:
+            print(f"Erro ao cancelar ordem na MEXC: {e}")
+            return False
+
+    def get_order_status(self, symbol, order_id):
+        try:
+            response = self.client.trade.order_query(symbol=symbol, orderId=order_id)
+            return response
+        except Exception as e:
+            print(f"Erro ao obter status da ordem na MEXC: {e}")
+            return None
+
+    def get_open_orders(self, symbol=None):
+        try:
+            response = self.client.trade.open_orders(symbol=symbol)
+            return response
+        except Exception as e:
+            print(f"Erro ao obter ordens abertas na MEXC: {e}")
+            return None
+
+    def get_balance(self, asset=None):
+        try:
+            response = self.client.account.get_account_info()
+            balances = {item['asset']: float(item['free']) for item in response['balances']}
+            return {asset: balances.get(asset, 0.0)} if asset else balances
+        except Exception as e:
+            print(f"Erro ao obter saldo na MEXC: {e}")
+            return None
+
+    def get_last_trade(self, symbol):
+        try:
+            response = self.client.market.trades(symbol=symbol, limit=1)
+            return response[0] if response else None
+        except Exception as e:
+            print(f"Erro ao obter última negociação na MEXC: {e}")
+            return None
+
+
+
 if __name__ == "__main__":
-    import configparser
-    class ConfigLoader:
-        def __init__(self, config_file='config.ini'):
-            self.config_file = config_file
-            self.config = configparser.ConfigParser()
-            self.config.read(config_file)
-        
-        def get(self, section, key):
-            return self.config.get(section, key)
-
-    # Use o caminho do config.ini passado como argumento ou um valor padrão
-    config_path = sys.argv[1] if len(sys.argv) > 1 else '/app/config.ini'
-    print(f"Using config path: {config_path}")
-
-    config = ConfigLoader(config_path)
-    client = OKXClient(config)
-    price = client.get_balance('USDT')
-    print(price)
+    credentials = {"api_key": "mx0vglaDR6ZEF14nhe", "secret_key": "6c21d3327433484d9d53ddda99eac350"}
+    mexc_client = MEXCClient(credentials)
+    
+    symbol = "BTCUSDT"
+    print(f"Preço atual de {symbol}: {mexc_client.get_current_price(symbol)}")
+    print(f"Saldo disponível: {mexc_client.get_balance()}")

@@ -77,19 +77,10 @@ class WebhookData:
     
     
 
-    def get_market_objects(self, symbol=None, side=None, start_date=None):
+    def get_market_objects(self, instance_id,symbol, side, start_date):
         query = self._load_query("select_market_objects.sql")
-        params = []
-        if symbol:
-            query += " AND symbol = %s"
-            params.append(symbol)
-        if side:
-            query += " AND side = %s"
-            params.append(side)
-        if start_date:
-            query += " AND created_at >= %s"
-            params.append(start_date)
-        query += " GROUP BY symbol, side"
+        params=(instance_id,symbol,side,start_date)
+        
         return self.db_manager.fetch_data(query, tuple(params))
 
     def update_data_at_index(self, index, new_data_str):
@@ -117,8 +108,8 @@ class WebhookData:
             data_dict[key.strip()] = value.strip()
         return data_dict
 
-    def get_market_objects_as_models(self, symbol=None, side=None, start_date=None):
-        grouped_data = self.get_market_objects(symbol, side, start_date)
+    def get_market_objects_as_models(self, instance_id,symbol, side, start_date):
+        grouped_data = self.get_market_objects(instance_id,symbol, side, start_date)
         market_objects = []
         for symbol, side, markets in grouped_data:
             for market_data in markets:
@@ -151,14 +142,19 @@ class Operations:
                 status,
                 instance_id
             )
-            return self.db_manager.insert_data(query, params),None
+            opeartion_id=self.db_manager.insert_data_returning(query, params)
+            if opeartion_id:
+                return opeartion_id,None
+            else:
+                None,'No operation ID returned'
+            
         except Exception as e:
             error=f'Erro ao salvar operação no banco: {e}'
             return None, error
 
-    def get_last_operations_from_db(self, symbol, limit):
+    def get_last_operations_from_db(self, instance_id, symbol, limit):
         query = self._load_query("select_last_operations.sql")
-        last_ops = self.db_manager.fetch_data(query, (symbol, limit))
+        last_ops = self.db_manager.fetch_data(query, (instance_id,symbol, limit))
         columns = ["id", "date", "symbol", "size", "side"]
         return [dict(zip(columns, op)) for op in last_ops] if last_ops else []
 
@@ -245,4 +241,16 @@ class Operations:
             return True
         except Exception as e:
             print(f"Erro ao atualizar status de TP/SL no banco: {e}")
+            return False
+        
+    def update_sl_price(self, instance_id, api_key, new_sl_price):
+        """
+        Atualiza o preço do Stop Loss (SL) na tabela `positions`.
+        """
+        try:
+            query = self._load_query("update_sl_price.sql")
+            self.db_manager.update_data(query, (float(new_sl_price), instance_id, api_key))
+            return True
+        except Exception as e:
+            print(f"Erro ao atualizar SL no banco: {e}")
             return False

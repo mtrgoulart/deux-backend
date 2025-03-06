@@ -2048,3 +2048,71 @@ DETAIL:  Failing row contains (9, 1, 2, null, 1, 2025-01-19 04:04:11.653763, 202
 2025-02-18 22:35:11,264 - instances - general_logger - INFO - Started sell operation for instance 24, strategy c53c849e-806a-47e0-aa58-d7cfa7653a0b, user 6.
 2025-02-18 22:35:13,006 - instances - general_logger - INFO - Instância 24 iniciada com sucesso.
 2025-02-18 22:35:13,008 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-02-26 09:31:05,455 - instances - general_logger - INFO - Iniciando 1 instâncias...
+2025-02-26 09:31:19,729 - manager - general_logger - INFO - OperationHandler initialized for symbol: ADA-USDT, side: buy
+2025-02-26 09:32:07,842 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-02-26 09:34:42,293 - bot - general_logger - INFO - Strategy 94 saved and linked to instance 38 for user 1.
+2025-02-26 09:34:44,045 - bot - general_logger - INFO - Strategy 95 saved and linked to instance 38 for user 1.
+2025-02-26 09:35:27,622 - manager - general_logger - INFO - OperationHandler initialized for symbol: PEPE-USDT, side: buy
+2025-02-26 09:35:29,759 - instances - general_logger - INFO - Started buy operation for instance 38, strategy b9f79e7f-a200-4888-a11c-6985f2dd197f, user 1.
+2025-02-26 09:35:30,678 - manager - general_logger - INFO - Starting operation at 2025-02-26 12:35:30.678565+00:00 for symbol: PEPE-USDT, buy
+2025-02-26 09:35:38,175 - manager - general_logger - INFO - OperationHandler initialized for symbol: PEPE-USDT, side: sell
+2025-02-26 09:35:40,596 - instances - general_logger - INFO - Started sell operation for instance 38, strategy b9f79e7f-a200-4888-a11c-6985f2dd197f, user 1.
+2025-02-26 09:35:41,353 - manager - general_logger - INFO - Starting operation at 2025-02-26 12:35:41.353294+00:00 for symbol: PEPE-USDT, sell
+2025-02-26 09:37:17,432 - manager - general_logger - INFO - **Filled Condition** Performing Operation...
+2025-02-26 09:37:17,433 - exchange_interface - general_logger - INFO - Getting balance for currency: USDT
+2025-02-26 09:37:18,055 - manager - general_logger - INFO - Balance: 603.5859248188584 USDT
+2025-02-26 09:37:18,055 - exchange_interface - general_logger - INFO - Placing order: PEPE-USDT, buy, market, 603.5859248188584, USDT, None
+2025-02-26 09:37:18,421 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-02-26 09:37:18,421 - exchange_interface - general_logger - INFO - Getting fill price for order ID: 2284084990367375360
+2025-02-26 09:37:24,410 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:8.184e-06
+2025-02-26 09:37:30,460 - manager - general_logger - INFO - TP on 0.0000163680 and SL on 0.00000810216
+2025-02-26 09:37:32,617 - manager - general_logger - INFO - Updated operation ID 0 for object 19351
+2025-02-26 09:37:34,738 - manager - general_logger - INFO - Updated operation ID 0 for object 19352
+2025-02-26 10:56:44,861 - instances - general_logger - WARNING - Operation for instance 38, strategy b9f79e7f-a200-4888-a11c-6985f2dd197f, side buy already running.
+2025-02-26 10:56:44,863 - instances - general_logger - WARNING - Operation for instance 38, strategy b9f79e7f-a200-4888-a11c-6985f2dd197f, side sell already running.
+2025-02-26 10:57:19,333 - manager - general_logger - INFO - **Filled Condition** Performing Operation...
+2025-02-26 10:57:19,334 - exchange_interface - general_logger - INFO - Getting balance for currency: PEPE
+2025-02-26 10:57:19,767 - manager - general_logger - INFO - Balance: 0.998 PEPE
+2025-02-26 10:57:19,768 - exchange_interface - general_logger - INFO - Placing order: PEPE-USDT, sell, market, 0.998, PEPE, None
+2025-02-26 10:57:20,129 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-02-26 10:57:20,130 - manager - general_logger - ERROR - Erro: ordem não foi executada.
+2025-02-26 10:57:20,130 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:None
+2025-02-26 10:57:21,640 - manager - general_logger - INFO - Starting operation at 2025-02-26 13:57:21.640716+00:00 for symbol: PEPE-USDT, buy
+2025-02-26 10:57:24,008 - manager - general_logger - INFO - Updated operation ID 0 for object 19575
+2025-02-26 10:57:25,836 - manager - general_logger - INFO - Updated operation ID 0 for object 19576
+2025-02-26 10:57:27,623 - manager - general_logger - INFO - Updated operation ID 0 for object 19577
+2025-02-26 10:57:29,587 - manager - general_logger - INFO - Updated operation ID 0 for object 19578
+2025-02-26 10:57:31,490 - manager - general_logger - INFO - Updated operation ID 0 for object 19579
+2025-02-26 10:58:01,075 - manager - general_logger - INFO - **Filled Condition** Performing Operation...
+2025-02-26 10:58:01,075 - exchange_interface - general_logger - INFO - Getting balance for currency: USDT
+2025-02-26 10:58:01,510 - manager - general_logger - INFO - Balance: 762.6733630621175 USDT
+2025-02-26 10:58:01,511 - exchange_interface - general_logger - INFO - Placing order: PEPE-USDT, buy, market, 762.6733630621175, USDT, None
+2025-02-26 10:58:02,099 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-02-26 10:58:02,099 - exchange_interface - general_logger - INFO - Getting fill price for order ID: 2284247515788615680
+2025-02-26 10:58:06,799 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:8.091e-06
+2025-02-26 10:58:10,776 - manager - general_logger - INFO - Starting operation at 2025-02-26 13:58:10.776004+00:00 for symbol: PEPE-USDT, sell
+2025-02-26 10:58:12,577 - manager - general_logger - INFO - TP on 0.0000161820 and SL on 0.00000801009
+2025-02-26 10:58:14,377 - manager - general_logger - INFO - Updated operation ID 0 for object 19580
+2025-02-26 10:58:16,161 - manager - general_logger - INFO - Updated operation ID 0 for object 19581
+2025-02-26 10:58:54,034 - manager - general_logger - INFO - **Filled Condition** Performing Operation...
+2025-02-26 10:58:54,035 - exchange_interface - general_logger - INFO - Getting balance for currency: PEPE
+2025-02-26 10:58:54,441 - manager - general_logger - INFO - Balance: 0.0056 PEPE
+2025-02-26 10:58:54,442 - exchange_interface - general_logger - INFO - Placing order: PEPE-USDT, sell, market, 0.0056, PEPE, None
+2025-02-26 10:58:54,806 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-02-26 10:58:54,806 - manager - general_logger - ERROR - Erro: ordem não foi executada.
+2025-02-26 10:58:54,807 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:None
+2025-02-26 10:58:58,561 - manager - general_logger - INFO - Updated operation ID 0 for object 19584
+2025-02-26 10:58:58,862 - manager - general_logger - INFO - Starting operation at 2025-02-26 13:58:58.862416+00:00 for symbol: PEPE-USDT, buy
+2025-02-26 10:59:00,459 - manager - general_logger - INFO - Updated operation ID 0 for object 19585
+2025-02-26 10:59:02,380 - manager - general_logger - INFO - Updated operation ID 0 for object 19586
+2025-02-26 10:59:04,271 - manager - general_logger - INFO - Updated operation ID 0 for object 19587
+2025-02-26 10:59:06,150 - manager - general_logger - INFO - Updated operation ID 0 for object 19588
+2025-02-26 10:59:36,491 - instances - general_logger - WARNING - Operation for instance 38, strategy b9f79e7f-a200-4888-a11c-6985f2dd197f, side buy already running.
+2025-02-26 10:59:36,491 - instances - general_logger - WARNING - Operation for instance 38, strategy b9f79e7f-a200-4888-a11c-6985f2dd197f, side sell already running.
+2025-02-26 10:59:50,094 - manager - general_logger - INFO - Stopping operation for: buy - PEPE-USDT
+2025-02-26 10:59:57,501 - instances - general_logger - INFO - Stopped operation for key 38_b9f79e7f-a200-4888-a11c-6985f2dd197f_buy.
+2025-02-26 10:59:57,502 - manager - general_logger - INFO - Stopping operation for: sell - PEPE-USDT
+2025-02-26 10:59:57,503 - instances - general_logger - ERROR - Error stopping instance operations: 'NoneType' object has no attribute 'is_alive'
+2025-02-26 11:08:22,477 - manager - general_logger - INFO - Starting operation at 2025-02-26 14:08:22.477696+00:00 for symbol: PEPE-USDT, sell
+2025-02-26 12:02:45,445 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.

@@ -1,5 +1,6 @@
 import psycopg
 import os
+from log.log import general_logger 
 
 def load_query(filename):
     """
@@ -38,7 +39,7 @@ class DatabaseClient:
             self.conn = psycopg.connect(**self.connection_params)
             self.cursor = self.conn.cursor()
         except Exception as e:
-            print("Erro ao conectar ao banco de dados:", e)
+            general_logger.error("Erro ao conectar ao banco de dados:", e)
 
     def close(self):
         """
@@ -59,7 +60,7 @@ class DatabaseClient:
             results = self.cursor.fetchall()
             return results
         except Exception as e:
-            print("Erro ao buscar dados:", e)
+            general_logger.error("Erro ao buscar dados:", e)
         finally:
             self.close()
 
@@ -72,7 +73,7 @@ class DatabaseClient:
             self.cursor.execute(query, params)
             self.conn.commit()
         except Exception as e:
-            print("Erro ao inserir dados:", e)
+            general_logger.error("Erro ao inserir dados:", e)
         finally:
             self.close()
 
@@ -87,7 +88,7 @@ class DatabaseClient:
                 rows_affected = self.cursor.rowcount  # Retorna o número de linhas afetadas
                 return rows_affected
             except Exception as e:
-                print("Erro ao deletar dados:", e)
+                general_logger.error("Erro ao deletar dados:", e)
                 raise
             finally:
                 self.close()
@@ -100,9 +101,8 @@ class DatabaseClient:
             self.connect()
             self.cursor.execute(query, params)
             self.conn.commit()
-            #print("Dados atualizados com sucesso.")
         except Exception as e:
-            print("Erro ao atualizar dados:", e)
+            general_logger.error("Erro ao atualizar dados:", e)
         finally:
             self.close()
 
@@ -117,7 +117,7 @@ class DatabaseClient:
             self.conn.commit()
             return result[0] if result else None
         except Exception as e:
-            print("Erro ao inserir dados com retorno:", e)
+            general_logger.error("Erro ao inserir dados com retorno:", e)
             raise
         finally:
             self.close()
