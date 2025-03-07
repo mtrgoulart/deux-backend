@@ -8,11 +8,9 @@ sys.path.insert(0, ROOT_DIR)  # Adiciona a raiz ao sys.path
 
 import re
 import logging
-import psycopg
 from configparser import ConfigParser
 from flask import Flask, request, jsonify
 from celery_manager.tasks import process_webhook  # Agora Celery Manager é encontrado corretamente
-import json
 
 
 

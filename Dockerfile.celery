@@ -1,17 +1,17 @@
-# Usa uma imagem base do Python
+# Use a Python 3.9 base image
 FROM python:3.9
 
-# Define o diretório de trabalho no contêiner
+# Set the working directory in the container
 WORKDIR /app
 
-# Copia todo o projeto para o contêiner
+# Copy the entire project into the container
 COPY . .
 
-# Instala as dependências
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Define a variável de ambiente PYTHONPATH para garantir que os módulos possam ser encontrados
+# Set PYTHONPATH to include the /app directory
 ENV PYTHONPATH="/app"
 
-# Comando para iniciar o Celery Worker
-CMD ["celery", "-A", "webhookReceiver.celery_manager.celery_app", "worker", "--loglevel=info"]
+# Command to start the Celery Worker
+CMD ["celery", "-A", "webhookReceiver.celery_manager.tasks", "worker", "--loglevel=info"]

@@ -13,7 +13,7 @@ ENV TZ=America/Sao_Paulo
 COPY pipeline_app.py config.ini /app/
 
 # Instala as dependências
-RUN pip install --no-cache-dir Flask psycopg2-binary pika
+RUN pip install --no-cache-dir Flask pika
 
 # Expõe a porta do Flask
 EXPOSE 5000

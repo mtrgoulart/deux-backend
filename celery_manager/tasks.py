@@ -5,13 +5,13 @@ from celery import Celery
 import psycopg
 from configparser import ConfigParser
 
-# 📌 Ajusta `sys.path` para garantir que `webhookReceiver` e `view/` sejam encontrados
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))  # Define `root/`
 sys.path.insert(0, BASE_DIR)
 
 # 📌 Agora importa corretamente a aplicação Celery e a função `execute_instance_operation`
-from webhookReceiver.celery_manager.celery_app import celery
-from view.instances import execute_instance_operation,get_instance_status  # Importação correta
+from celery_manager.celery_app import celery
+from view.instances import execute_instance_operation, get_instance_status  # Importação correta
+
 
 # Configuração do logger
 logging.basicConfig(

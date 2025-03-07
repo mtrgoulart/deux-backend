@@ -12,4 +12,4 @@ CELERY_BROKER_URL = f"pyamqp://{RABBITMQ_USER}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOS
 celery = Celery("celery_manager", broker=CELERY_BROKER_URL)
 
 celery.conf.broker_connection_retry_on_startup = True
-celery.autodiscover_tasks(["celery_manager.tasks"])
+celery.autodiscover_tasks(["webhookReceiver.celery_manager.tasks"])
