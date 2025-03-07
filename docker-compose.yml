@@ -63,7 +63,7 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
 
   celery_worker:
-    build: .
+    image: "celery_worker:latest"
     container_name: celery_worker
     networks:
       - main_network
