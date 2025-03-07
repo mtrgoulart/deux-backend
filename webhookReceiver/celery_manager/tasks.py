@@ -49,7 +49,6 @@ except KeyError as e:
 @celery.task(bind=True, name="process_webhook")
 def process_webhook(self, data):
     """Processa a mensagem recebida e executa a operação"""
-
     user_id = data.get("key", None)
     instance_id = data.get("instance_id", None)
     side = data.get("side", None)

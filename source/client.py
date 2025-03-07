@@ -11,7 +11,7 @@ from datetime import datetime
 from types import SimpleNamespace
 import hmac
 import hashlib
-from mexc_api.spot import Spot
+#from mexc_api.spot import Spot
 #from mexc_sdk.constant import OrderSide, OrderType
 from datetime import datetime
 
@@ -305,7 +305,7 @@ class BinanceClient:
         if response:
             return response[-1]  # Retorna o último trade
         return None
-
+'''
 class MEXCClient:
     def __init__(self, credentials, url='https://api.mexc.com'):
         self.api_key = credentials["api_key"]
@@ -379,13 +379,4 @@ class MEXCClient:
         except Exception as e:
             print(f"Erro ao obter última negociação na MEXC: {e}")
             return None
-
-
-
-if __name__ == "__main__":
-    credentials = {"api_key": "mx0vglaDR6ZEF14nhe", "secret_key": "6c21d3327433484d9d53ddda99eac350"}
-    mexc_client = MEXCClient(credentials)
-    
-    symbol = "BTCUSDT"
-    print(f"Preço atual de {symbol}: {mexc_client.get_current_price(symbol)}")
-    print(f"Saldo disponível: {mexc_client.get_balance()}")
+'''

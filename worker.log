@@ -415,3 +415,62 @@
 2025-03-05 07:31:13 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
 2025-03-05 07:31:13 [ERROR] Erro ao processar a requisição: 'user_id'
 2025-03-05 07:31:13 [INFO] 127.0.0.1 - - [05/Mar/2025 07:31:13] "[35m[1mPOST /webhook HTTP/1.1[0m" 500 -
+2025-03-06 21:06:59 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5004
+ * Running on http://192.168.100.2:5004
+2025-03-06 21:06:59 [INFO] [33mPress CTRL+C to quit[0m
+2025-03-06 21:06:59 [INFO]  * Restarting with stat
+2025-03-06 21:07:01 [WARNING]  * Debugger is active!
+2025-03-06 21:07:01 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:10:01 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=111,instance_id=22
+2025-03-06 21:10:01 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:10:03 [INFO] 127.0.0.1 - - [06/Mar/2025 21:10:03] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:11:05 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:11:05 [INFO]  * Restarting with stat
+2025-03-06 21:11:06 [WARNING]  * Debugger is active!
+2025-03-06 21:11:06 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:12:35 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:12:36 [INFO]  * Restarting with stat
+2025-03-06 21:12:37 [WARNING]  * Debugger is active!
+2025-03-06 21:12:37 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:12:38 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:12:39 [INFO] 127.0.0.1 - - [06/Mar/2025 21:12:39] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:14:14 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:14:14 [INFO]  * Restarting with stat
+2025-03-06 21:14:15 [WARNING]  * Debugger is active!
+2025-03-06 21:14:15 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:14:17 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:14:18 [INFO] 127.0.0.1 - - [06/Mar/2025 21:14:18] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:15:45 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:15:45 [INFO]  * Restarting with stat
+2025-03-06 21:15:46 [WARNING]  * Debugger is active!
+2025-03-06 21:15:46 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:15:54 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5004
+ * Running on http://192.168.100.2:5004
+2025-03-06 21:15:54 [INFO] [33mPress CTRL+C to quit[0m
+2025-03-06 21:15:54 [INFO]  * Restarting with stat
+2025-03-06 21:15:55 [WARNING]  * Debugger is active!
+2025-03-06 21:15:55 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:15:57 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:15:58 [INFO] 127.0.0.1 - - [06/Mar/2025 21:15:58] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:19:32 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:19:32 [INFO]  * Restarting with stat
+2025-03-06 21:19:34 [WARNING]  * Debugger is active!
+2025-03-06 21:19:34 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:19:36 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:19:37 [INFO] 127.0.0.1 - - [06/Mar/2025 21:19:37] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:20:16 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:20:16 [INFO]  * Restarting with stat
+2025-03-06 21:20:17 [WARNING]  * Debugger is active!
+2025-03-06 21:20:18 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:20:21 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:20:22 [INFO] 127.0.0.1 - - [06/Mar/2025 21:20:22] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:23:04 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-06 21:23:04 [INFO]  * Restarting with stat
+2025-03-06 21:23:05 [WARNING]  * Debugger is active!
+2025-03-06 21:23:05 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:23:08 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:23:10 [INFO] 127.0.0.1 - - [06/Mar/2025 21:23:10] "POST /webhook HTTP/1.1" 200 -

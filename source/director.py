@@ -70,8 +70,5 @@ class OperationManager:
             )
             result=operation_handler.execute_condition(start_date)
             return result
-        else:
-            result={'status':None,'massage':f'Intervalo nao alcancado {self.data['interval']}'}
-            return result
 
             
