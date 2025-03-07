@@ -8,6 +8,8 @@ services:
     ports:
       - "5001:5001"
     restart: always
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
 
   webhook_pipeline:
     image: webhook_pipeline
@@ -17,6 +19,8 @@ services:
     ports:
       - "5000:5000"
     restart: always
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
 
   db_postgres:
     image: postgres:latest
@@ -43,6 +47,32 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf  # Montar o arquivo de configuração
     networks:
       - main_network
+    restart: always
+
+  rabbitmq:
+    image: "rabbitmq:management"
+    container_name: rabbitmq
+    networks:
+      - main_network
+    ports:
+      - "5672:5672"   # Porta do RabbitMQ
+      - "15672:15672" # Interface de gerenciamento do RabbitMQ
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  celery_worker:
+    build: .
+    container_name: celery_worker
+    networks:
+      - main_network
+    depends_on:
+      - rabbitmq
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+      - CELERY_RESULT_BACKEND=db+postgresql://consumer_adm:criandta0@db_postgres/deux
+    command: celery -A celery_app worker --loglevel=info --concurrency=4
     restart: always
 
 networks:
