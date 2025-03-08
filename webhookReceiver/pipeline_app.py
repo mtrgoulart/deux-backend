@@ -4,13 +4,13 @@ import sys
 # Define o caminho da pasta raiz do projeto
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # webhookReceiver/
 ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, "../"))  # Diretório raiz do projeto
-sys.path.insert(0, ROOT_DIR)  # Adiciona a raiz ao sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(BASE_DIR, '..')))  # Adiciona a raiz ao sys.path
 
 import re
 import logging
 from configparser import ConfigParser
 from flask import Flask, request, jsonify
-from celery_manager.tasks import process_webhook  # Agora Celery Manager é encontrado corretamente
+from celeryManager.tasks import process_webhook 
 
 
 
@@ -81,7 +81,8 @@ def webhook_listener():
             modeled_data = model_data(data_to_validate)  # Modela os dados validados
             print(modeled_data)
             try:
-                process_webhook.apply_async(kwargs={"data": modeled_data})
+                #process_webhook.apply_async(kwargs={"data": modeled_data})
+                print('teste')
             except Exception as e:
                 print(f'Não possivel processar o webhook {e}')
 
@@ -97,4 +98,4 @@ def webhook_listener():
 # Inicializa o servidor Flask
 if __name__ == '__main__':
     print('iniciando webhook')
-    app.run(host='0.0.0.0', port=5004, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
