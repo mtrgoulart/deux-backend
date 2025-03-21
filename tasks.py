@@ -1,15 +1,14 @@
 import sys
 import os
 import logging
-from celery import Celery
 import psycopg
 from configparser import ConfigParser
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))  # Define `root/`
-sys.path.insert(0, BASE_DIR)
+#BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))  # Define `root/`
+#sys.path.insert(0, BASE_DIR)
 
 # 📌 Agora importa corretamente a aplicação Celery e a função `execute_instance_operation`
-from celeryManager.celery_app import celery
+from celery_app import celery
 from view.instances import execute_instance_operation, get_instance_status  # Importação correta
 
 
@@ -70,7 +69,7 @@ def process_webhook(self, data):
     elif instance_status == 2:
         if side in ["buy", "sell"]:
             insert_data_to_db(data)
-            #result = execute_instance_operation(instance_id, user_id, side)
+            result = execute_instance_operation(instance_id, user_id, side)
             result=logging.info('Chegou no execute instance operation')
         else:
             logging.warning(f"⚠ Operação inválida: {side}")

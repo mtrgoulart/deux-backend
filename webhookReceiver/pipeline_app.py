@@ -81,8 +81,7 @@ def webhook_listener():
             modeled_data = model_data(data_to_validate)  # Modela os dados validados
             print(modeled_data)
             try:
-                #process_webhook.apply_async(kwargs={"data": modeled_data})
-                print('teste')
+                process_webhook.apply_async(kwargs={"data": modeled_data})
             except Exception as e:
                 print(f'Não possivel processar o webhook {e}')
 

@@ -9,11 +9,11 @@ WORKDIR /app
 # Copia TODO o projeto para o contêiner
 COPY .. .
 
+# Define o PYTHONPATH para incluir o diretório raiz
+ENV PYTHONPATH="/app"
+
 # Instala as dependências
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Define a variável de ambiente PYTHONPATH
-ENV PYTHONPATH="/app"
-
 # Comando para iniciar o worker do Celery
-CMD ["celery", "-A", "celeryManager.celery_app", "worker", "--loglevel=info"]
+CMD ["celery", "--app", "celeryManager.celery_app", "worker", "--loglevel=info"]

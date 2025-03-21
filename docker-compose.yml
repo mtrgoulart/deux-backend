@@ -42,7 +42,7 @@ services:
     container_name: nginx
     ports:
       - "80:80"       # Porta para receber requisições HTTP
-      - "8082:8082"   # Porta extra para a segunda configuração
+      - "8082:8082"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf  # Montar o arquivo de configuração
     networks:
@@ -72,7 +72,7 @@ services:
     environment:
       - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
       - CELERY_RESULT_BACKEND=db+postgresql://consumer_adm:criandta0@db_postgres/deux
-    command: celery -A celery_app worker --loglevel=info --concurrency=4
+      - TZ=America/Sao_Paulo
     restart: always
 
 networks:

@@ -2116,3 +2116,34 @@ DETAIL:  Failing row contains (9, 1, 2, null, 1, 2025-01-19 04:04:11.653763, 202
 2025-02-26 10:59:57,503 - instances - general_logger - ERROR - Error stopping instance operations: 'NoneType' object has no attribute 'is_alive'
 2025-02-26 11:08:22,477 - manager - general_logger - INFO - Starting operation at 2025-02-26 14:08:22.477696+00:00 for symbol: PEPE-USDT, sell
 2025-02-26 12:02:45,445 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-03-10 21:34:52,737 - manager - general_logger - INFO - ({'id': 1430, 'date': datetime.datetime(2025, 3, 8, 3, 15, 5, 279997), 'symbol': 'PEPE-USDT', 'size': Decimal('65.8180947220298'), 'side': 'buy'}, {'sell'})
+2025-03-10 21:34:52,744 - director - general_logger - INFO - Intervalo valido!
+2025-03-10 21:35:02,054 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-10 21:35:02,701 - manager - general_logger - INFO - Balance: 9536301.5932 PEPE
+2025-03-10 21:35:03,108 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-10 21:36:33,924 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:0.0
+2025-03-10 21:36:38,189 - manager - general_logger - INFO - Updated operation ID 1431 for object 34176
+2025-03-10 21:36:40,012 - manager - general_logger - INFO - Updated operation ID 1431 for object 36115
+2025-03-10 21:36:51,699 - manager - general_logger - INFO - ({'id': 1411, 'date': datetime.datetime(2025, 3, 6, 23, 3, 50, 780538), 'symbol': 'SUI-USDT', 'size': Decimal('1225.95665198206'), 'side': 'buy'}, {'sell'})
+2025-03-10 21:36:51,700 - director - general_logger - INFO - Intervalo valido!
+2025-03-10 21:47:33,562 - manager - general_logger - INFO - ({'id': 1431, 'date': datetime.datetime(2025, 3, 10, 21, 36, 33, 944701), 'symbol': 'PEPE-USDT', 'size': Decimal('9536301.5932'), 'side': 'sell'}, {'buy'})
+2025-03-10 21:47:35,141 - manager - general_logger - INFO - ({'id': 1431, 'date': datetime.datetime(2025, 3, 10, 21, 36, 33, 944701), 'symbol': 'PEPE-USDT', 'size': Decimal('9536301.5932'), 'side': 'sell'}, {'buy'})
+2025-03-10 21:47:35,142 - director - general_logger - INFO - Intervalo valido!
+2025-03-10 21:47:44,465 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-10 21:47:45,027 - manager - general_logger - INFO - Balance: 59.23628582082978 USDT
+2025-03-10 21:47:45,496 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-10 21:47:47,414 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:5.413e-06
+2025-03-10 21:47:50,897 - manager - general_logger - INFO - Updated operation ID 1432 for object 36113
+2025-03-10 21:47:52,656 - manager - general_logger - INFO - Updated operation ID 1432 for object 36114
+2025-03-10 21:47:54,413 - manager - general_logger - INFO - Updated operation ID 1432 for object 36128
+2025-03-10 21:48:25,425 - manager - general_logger - INFO - ({'id': 1432, 'date': datetime.datetime(2025, 3, 10, 21, 47, 47, 415201), 'symbol': 'PEPE-USDT', 'size': Decimal('59.2362858208298'), 'side': 'buy'}, {'sell'})
+2025-03-10 21:48:26,988 - manager - general_logger - INFO - ({'id': 1432, 'date': datetime.datetime(2025, 3, 10, 21, 47, 47, 415201), 'symbol': 'PEPE-USDT', 'size': Decimal('59.2362858208298'), 'side': 'buy'}, {'sell'})
+2025-03-10 21:48:26,989 - director - general_logger - INFO - Intervalo valido!
+2025-03-10 21:48:36,269 - manager - general_logger - INFO - **Filled Condition Performing Operation...**
+2025-03-10 21:48:36,759 - manager - general_logger - INFO - Balance: 20440242.58 PEPE
+2025-03-10 21:48:37,180 - manager - general_logger - INFO - Ordem enviada, aguardando execução....
+2025-03-10 21:50:07,707 - manager - general_logger - INFO - Operation Executed on: symbol:PEPE-USDT price:0.0
+2025-03-10 21:50:11,244 - manager - general_logger - INFO - Updated operation ID 1433 for object 36119
+2025-03-10 21:50:13,256 - manager - general_logger - INFO - Updated operation ID 1433 for object 36126
+2025-03-10 21:50:15,089 - manager - general_logger - INFO - Updated operation ID 1433 for object 36127
+2025-03-10 21:50:16,891 - manager - general_logger - INFO - Updated operation ID 1433 for object 36130

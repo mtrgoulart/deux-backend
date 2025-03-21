@@ -14,7 +14,6 @@ WITH sell_operations AS (
         price <> 0 
         AND status = 'realizada'
         AND side = 'sell'
-        and cast(date as DATE)>='2025-02-21'
 ),
 buy_operations AS (
     SELECT 
@@ -27,7 +26,6 @@ buy_operations AS (
         price <> 0 
         AND status = 'realizada'
         AND side = 'buy'
-        and cast(date as DATE)>='2025-02-21'
     GROUP BY 
         date, symbol
 ),
@@ -71,12 +69,15 @@ ORDER BY symbol, sell_order
 
 -----------------------------------------------------
 --Estrategias por usuario 
-SELECT i.name as instance_name
+select i.id 
+,i.name as instance_name
 ,n.username as creator
 ,s.symbol 
 ,s.side 
 ,s.status 
 ,s.created_at
+,s.condition_limit 
+,s.simultaneous_operations 
 from INSTANCES i
 join instance_strategy i_s
 on i_s.instance_id =i.id
@@ -84,5 +85,36 @@ join strategy s
 on s.id =i_s.strategy_id 
 join neouser n
 on n.id =i.user_id
-where s.created_at >='2025-02-23'
+where n.id=6
 
+
+select i.id as instance_id
+,i.name as instance_name
+,n.username as creator
+,s.symbol 
+,s.side 
+,s.status 
+,s.created_at
+,s.condition_limit 
+,s."interval" 
+,i.status 
+from INSTANCES i
+join instance_strategy i_s
+on i_s.instance_id =i.id
+join strategy s 
+on s.id =i_s.strategy_id 
+join neouser n
+on n.id =i.user_id
+where n.id=6
+
+
+update operations 
+set price=0.714
+where id=1447
+
+
+select * from operations where symbol='BTC-USDT' order by "date" desc
+
+select * from hourly_prices where symbol='BTC-USDT' order by date desc
+
+select * from operations where symbol='ADA-USDT' order by "date" desc
