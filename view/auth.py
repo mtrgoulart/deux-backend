@@ -46,26 +46,27 @@ class AuthService:
         """
         try:
             with self.get_db_connection() as db_client:
-                query = 'SELECT id,  password_hash FROM neouser WHERE username = %s'
+                query = 'SELECT id, password_hash FROM neouser WHERE username = %s'
                 db_client.cursor.execute(query, (username,))
                 user = db_client.cursor.fetchone()
 
             if user and check_password_hash(user[1], password):
                 user_id = user[0]
-                #user_name = user[1]  # Obtem o username
                 token = self._generate_jwt(user_id)
 
-                # Armazena o token e o username na sessão
+                # Armazena o token na sessão
                 session['user_token'] = token
-                #session['user_name'] = user_name
 
                 flash("Login successful!", "success")
                 return {"token": token}
 
+            # Retorno em caso de falha
+            return {"error": "Usuário ou senha incorretos"}
+
         except Exception as e:
-            general_logger(f"Login Error: {e}")  # Log do erro para depuração
-            flash("Invalid username or password.", "error")
-            return {"error": "Invalid credentials"}
+            # Loga o erro e retorna um erro padrão
+            print(f"Erro no login_user: {e}")
+            return {"error": "Erro no login"}
 
     def register_user(self, username, password):
         """

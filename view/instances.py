@@ -301,19 +301,8 @@ def get_instances(api_key):
                         "status": row[3],
                         "created_at": row[4],
                         "updated_at": row[5],
-                        "strategies": {"buy": None, "sell": None}  # Estruturas separadas para `buy` e `sell`
+                        "start_date":row[6]
                     }
-                
-                # Adiciona a estratégia de `buy` ou `sell`
-                strategy_side = row[8]  # `buy` ou `sell`
-                instances[instance_id]["strategies"][strategy_side] = {
-                    "strategy_id": row[6],
-                    "symbol": row[7],
-                    "percent": row[9],
-                    "condition_limit": row[10],
-                    "interval": row[11],
-                    "simultaneous_operations": row[12] if strategy_side == 'buy' else None,
-                }
             
             return jsonify({"instances": list(instances.values())}), 200
     except Exception as e:

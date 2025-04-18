@@ -112,9 +112,49 @@ update operations
 set price=0.714
 where id=1447
 
+SELECT o.id,
+            o.date,
+            o.side,
+            o.symbol,
+            o.price,
+            o.size,
+            COALESCE(NULLIF(o.price, 0),
+                (
+                    SELECT hp.price
+                    FROM hourly_prices hp
+                    WHERE hp.symbol = o.symbol
+                    AND DATE_TRUNC('hour', hp.date) = DATE_TRUNC('hour', o.date)
+                    LIMIT 1
+                )
+            ) as price_adjust,
+            o.size * COALESCE(NULLIF(o.price, 0),
+                (
+                    SELECT hp.price
+                    FROM hourly_prices hp
+                    WHERE hp.symbol = o.symbol
+                    AND DATE_TRUNC('hour', hp.date) = DATE_TRUNC('hour', o.date)
+                    LIMIT 1
+                )
+            ) AS sell_value,
+            row_number() OVER (PARTITION BY o.symbol ORDER BY o.date) AS sell_order
+           FROM operations o
+          where symbol='AVAX-USDT' 
+and date>='2025-03-20'
+order by "date" desc
 
-select * from operations where symbol='BTC-USDT' order by "date" desc
+delete from operations where id=1731
+
+update operations set date='2025-03-23 01:35:32.632' where id=2698
+
+select * from operations
+where symbol='ETH-USDT' 
+and date>='2025-03-20'
+order by "date" desc
 
 select * from hourly_prices where symbol='BTC-USDT' order by date desc
 
-select * from operations where symbol='ADA-USDT' order by "date" desc
+select * from operations where smbol='ADA-USDT' order by "date" desc
+
+
+
+select * from okx_operations oo 

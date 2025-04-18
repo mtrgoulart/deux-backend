@@ -11,18 +11,11 @@ from datetime import datetime
 from types import SimpleNamespace
 import hmac
 import hashlib
-#from mexc_api.spot import Spot
-#from mexc_sdk.constant import OrderSide, OrderType
-from datetime import datetime
+from datetime import datetime,timedelta
+from urllib.parse import urlencode
 
-
-
-class OKXClient:
-    def __init__(self, credentials, url='https://www.okx.com'):
-        self.api_key = credentials["api_key"]
-        self.secret_key = credentials["secret_key"]
-        self.passphrase = credentials["passphrase"]
-        self.url = url
+class BaseClient:
+    def __init__(self):
         self.session = self.create_session_with_retries()
 
     def create_session_with_retries(self):
@@ -33,13 +26,23 @@ class OKXClient:
         session.mount('http://', adapter)
         return session
 
+class OKXClient(BaseClient):
+    def __init__(self, credentials, url='https://www.okx.com'):
+        super().__init__()
+        self.api_key = credentials["api_key"]
+        self.secret_key = credentials["secret_key"]
+        self.passphrase = credentials["passphrase"]
+        self.url = url
+        self.simulated = False 
+
+
     def generate_signature(self, timestamp, method, request_path, body):
         message = timestamp + method + request_path + body
         mac = hmac.new(bytes(self.secret_key, 'utf-8'), bytes(message, 'utf-8'), digestmod='sha256')
         d = mac.digest()
         return base64.b64encode(d).decode()
 
-    def send_request(self, method, request_path, body, timeout=30):
+    def send_request(self, method, request_path, body=None):
         timestamp = datetime.now(timezone.utc).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
         body_str = json.dumps(body) if body else ''
         headers = {
@@ -48,15 +51,16 @@ class OKXClient:
             'OK-ACCESS-SIGN': self.generate_signature(timestamp, method, request_path, body_str),
             'OK-ACCESS-TIMESTAMP': timestamp,
             'OK-ACCESS-PASSPHRASE': self.passphrase,
-            'x-simulated-trading': '1'  # Simulated trading environment
         }
+        if self.simulated:
+            headers['x-simulated-trading'] = '1'
 
         try:
-            response = self.session.request(method, self.url + request_path, headers=headers, data=body_str, timeout=timeout)
-            response.raise_for_status()  # Raises HTTPError for bad responses (4xx or 5xx)
+            response = self.session.request(method, self.url + request_path, headers=headers, data=body_str)
+            response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
-            print(f"Error during request: {e}")
+            print(f"[OKX] Error: {e}")
             return None
         
 
@@ -188,195 +192,291 @@ class OKXClient:
         
         return None
 
-class BinanceClient:
+    def get_recent_trades_last_7_days(self):
+
+        def save_trades_to_csv(trades, filename='trades23.csv'):
+            import csv
+            """
+            Salva a lista de trades em um arquivo CSV.
+
+            :param trades: Lista de dicionários com os dados dos trades
+            :param filename: Nome do arquivo CSV a ser gerado
+            """
+            if not trades:
+                print("Nenhum trade para salvar.")
+                return
+
+            # Garante que todos os campos estejam presentes
+            fieldnames = list(trades[0].keys()) + ["datetime"]
+
+            with open(filename, mode='w', newline='', encoding='utf-8') as file:
+                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                writer.writeheader()
+
+                for trade in trades:
+                    # Converte o timestamp para datetime legível
+                    ts = int(trade["ts"])
+                    trade["datetime"] = datetime.fromtimestamp(ts / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                    writer.writerow(trade)
+        """
+        Retorna todas as operações realizadas nos últimos 7 dias.
+
+        :return: Lista de dicionários com as operações filtradas.
+        """
+        now = datetime.now(timezone.utc)
+        seven_days_ago = int((now - timedelta(days=7)).timestamp() * 1000)
+
+        all_trades = []
+        body = {
+            "limit": "100",
+            "end": int(now.timestamp() * 1000)
+        }
+
+        response = self.send_request('GET', '/api/v5/trade/fills', body)
+        trades_batch = response["data"]
+        all_trades.extend(trades_batch)
+
+        if not trades_batch:
+            return []
+
+        timestamps = [int(trade["ts"]) for trade in trades_batch]
+        min_ts = min(timestamps)
+        oldest_trade = min(trades_batch, key=lambda t: int(t["ts"]))
+        oldest_bill_id = oldest_trade.get("billId")
+
+        while min_ts > seven_days_ago:
+            body = {
+                "limit": "100",
+                "before": 2379324521940650000
+            }
+            response = self.send_request('GET', '/api/v5/trade/fills', body)
+            trades_batch = response["data"]
+            if not trades_batch:
+                break
+            all_trades.extend(trades_batch)
+            timestamps = [int(trade["ts"]) for trade in trades_batch]
+            save_trades_to_csv(all_trades)
+            min_ts = min(timestamps)
+            oldest_trade = min(trades_batch, key=lambda t: int(t["ts"]))
+            oldest_bill_id = oldest_trade.get("billId")
+            print(f"Oldest billId: {oldest_bill_id}, timestamp: {min_ts}")
+            break
+
+        return all_trades
+
+class OKXDemoClient(OKXClient):
+    def __init__(self, credentials, url='https://www.okx.com'):
+        super().__init__(credentials, url)
+        self.simulated = True
+
+class BinanceClient(BaseClient):
     def __init__(self, credentials, url='https://api.binance.com'):
-        """
-        Cliente para a API da Binance.
-        :param credentials: Dicionário contendo as credenciais de API (api_key, secret_key).
-        :param url: URL base da API da Binance.
-        """
+        super().__init__()
         self.api_key = credentials["api_key"]
         self.secret_key = credentials["secret_key"]
         self.url = url
-        self.session = self.create_session_with_retries()
 
-    def create_session_with_retries(self):
-        session = requests.Session()
-        retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
-        adapter = HTTPAdapter(max_retries=retries)
-        session.mount('https://', adapter)
-        session.mount('http://', adapter)
-        return session
+    def sign(self, params):
+        query_string = '&'.join([f"{k}={params[k]}" for k in sorted(params)])
+        signature = hmac.new(self.secret_key.encode(), query_string.encode(), hashlib.sha256).hexdigest()
+        params['signature'] = signature
+        return params
 
-    def _generate_signature(self, params):
-        query_string = '&'.join([f"{key}={value}" for key, value in params.items() if value is not None])
-        return hmac.new(self.secret_key.encode('utf-8'), query_string.encode('utf-8'), hashlib.sha256).hexdigest()
-
-    def _send_request(self, method, endpoint, params=None):
-        if params is None:
-            params = {}
-        
+    def send_signed_request(self, method, endpoint, params=None):
+        params = params or {}
         params['timestamp'] = int(time.time() * 1000)
-        params['signature'] = self._generate_signature(params)
-        headers = {
-            'X-MBX-APIKEY': self.api_key
-        }
-
-        url = f"{self.url}{endpoint}"
-
+        signed_params = self.sign(params)
+        headers = {'X-MBX-APIKEY': self.api_key}
         try:
             if method == 'GET':
-                response = self.session.get(url, headers=headers, params=params)
-            elif method == 'POST':
-                response = self.session.post(url, headers=headers, params=params)
-            elif method == 'DELETE':
-                response = self.session.delete(url, headers=headers, params=params)
+                res = self.session.get(self.url + endpoint, headers=headers, params=signed_params)
             else:
-                raise ValueError("HTTP method not supported.")
-
-            response.raise_for_status()
-            return response.json()
-        except requests.RequestException as e:
-            print(f"Error during request: {e}")
+                res = self.session.post(self.url + endpoint, headers=headers, params=signed_params)
+            res.raise_for_status()
+            return res.json()
+        except Exception as e:
+            print(f"[Binance] Error: {e}")
             return None
 
     def get_current_price(self, symbol):
-        """
-        Obtém o preço atual do ativo na Binance.
-        """
         try:
-            response = self._send_request('GET', f'/api/v3/ticker/price?symbol={symbol}')
-            if response and 'price' in response:
-                return float(response['price'])
-            else:
-                print(f"Erro ao obter preço atual na Binance para {symbol}")
-                return None
-        except Exception as e:
-            print(f"Erro ao obter preço atual na Binance: {e}")
+            response = self.session.get(f"{self.url}/api/v3/ticker/price", params={"symbol": symbol})
+            return float(response.json()["price"])
+        except:
             return None
 
-    def place_order(self, symbol, side, order_type, quantity, price=None):
+    def place_order(self, symbol, side, order_type, size, currency, price=None):
+        params = {
+            "symbol": symbol,
+            "side": side.upper(),
+            "type": order_type.upper(),
+            "quantity": size
+        }
+        if price:
+            params["price"] = price
+            params["timeInForce"] = "GTC"
+        response = self.send_signed_request("POST", "/api/v3/order", params)
+        return response.get("orderId") if response else None
+
+    def wait_for_fill_price(self, order_id, symbol, check_interval=1, timeout=90):
+        start_time = time.time()
+        while time.time() - start_time <= timeout:
+            order = self.get_order_status(symbol, order_id)
+            if order and order.get("status") == "FILLED":
+                return float(order.get("price", 0.0))
+            time.sleep(check_interval)
+        return 0.0
+
+    def cancel_order(self, symbol, order_id):
+        return self.send_signed_request("DELETE", "/api/v3/order", {"symbol": symbol, "orderId": order_id})
+
+    def get_open_orders(self, symbol):
+        return self.send_signed_request("GET", "/api/v3/openOrders", {"symbol": symbol})
+
+    def get_order_status(self, symbol, order_id):
+        return self.send_signed_request("GET", "/api/v3/order", {"symbol": symbol, "orderId": order_id})
+
+    def get_balance(self, asset=None):
+        data = self.send_signed_request("GET", "/api/v3/account")
+        if asset:
+            balances = [x for x in data.get("balances", []) if x["asset"] == asset]
+            return balances[0] if balances else None
+        return data.get("balances", [])
+
+    def get_last_trade(self, symbol):
+        trades = self.send_signed_request("GET", "/api/v3/myTrades", {"symbol": symbol, "limit": 1})
+        if trades:
+            trade = trades[-1]
+            time_obj = datetime.fromtimestamp(trade["time"] / 1000)
+            return SimpleNamespace(
+                id=trade["id"],
+                order_id=trade["orderId"],
+                price=trade["price"],
+                qty=trade["qty"],
+                time=time_obj,
+                is_buyer=trade["isBuyer"]
+            )
+        return None
+
+class BinanceDemoClient(BinanceClient):
+    def __init__(self, credentials):
+        super().__init__(credentials, url='https://testnet.binance.vision')
+
+class BingXClient:
+    def __init__(self, credentials, base_url='https://open-api.bingx.com'):
+        self.api_key = credentials['api_key']
+        self.secret_key = credentials['secret_key']
+        self.base_url = base_url
+        self.session = requests.Session()
+
+    def sign(self, params):
+        query_string = urlencode(params)
+        return hmac.new(self.secret_key.encode('utf-8'), query_string.encode('utf-8'), hashlib.sha256).hexdigest()
+
+    def send_request(self, method, path, params=None):
+        if params is None:
+            params = {}
+        params['timestamp'] = int(time.time() * 1000)
+        params['signature'] = self.sign(params)
+        headers = {
+            'X-BX-APIKEY': self.api_key,
+            'Content-Type': 'application/json'
+        }
+
+        url = f"{self.base_url}{path}"
+        if method.upper() == 'GET':
+            response = self.session.get(url, headers=headers, params=params)
+        else:
+            response = self.session.post(url, headers=headers, json=params)
+        try:
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            print(f"[BingX] Error: {e}")
+            return None
+
+    def get_current_price(self, symbol):
+        path = '/openApi/spot/v1/ticker/price'
+        return self.send_request('GET', path, {'symbol': symbol})
+
+    def place_order(self, symbol, side, order_type, size, currency, price=None):
+        path = '/openApi/spot/v1/trade/order'
         params = {
             'symbol': symbol,
             'side': side.upper(),
             'type': order_type.upper(),
-            'quantity': quantity,
-            'price': price,
-            'timeInForce': 'GTC' if price else None
+            'quantity': size
         }
-        return self._send_request('POST', '/api/v3/order', params)
+        if price:
+            params['price'] = price
+            params['timeInForce'] = 'GTC'
+        result = self.send_request('POST', path, params)
+        return result.get('data', {}).get('orderId')
+
+    def wait_for_fill_price(self, order_id, symbol, check_interval=1, timeout=90):
+        path = '/openApi/spot/v1/trade/query'
+        start_time = time.time()
+        while time.time() - start_time <= timeout:
+            response = self.send_request('GET', path, {'symbol': symbol, 'orderId': order_id})
+            if response and response.get('data', {}).get('status') == 'FILLED':
+                return float(response['data'].get('price', 0.0))
+            time.sleep(check_interval)
+        return 0.0
 
     def cancel_order(self, symbol, order_id):
-        params = {
-            'symbol': symbol,
-            'orderId': order_id
-        }
-        return self._send_request('DELETE', '/api/v3/order', params)
+        path = '/openApi/spot/v1/trade/cancel'
+        return self.send_request('POST', path, {'symbol': symbol, 'orderId': order_id})
 
-    def get_open_orders(self, symbol=None):
-        params = {
-            'symbol': symbol
-        }
-        return self._send_request('GET', '/api/v3/openOrders', params)
+    def get_open_orders(self, symbol):
+        path = '/openApi/spot/v1/trade/openOrders'
+        return self.send_request('GET', path, {'symbol': symbol})
 
     def get_order_status(self, symbol, order_id):
-        params = {
-            'symbol': symbol,
-            'orderId': order_id
-        }
-        return self._send_request('GET', '/api/v3/order', params)
+        path = '/openApi/spot/v1/trade/query'
+        return self.send_request('GET', path, {'symbol': symbol, 'orderId': order_id})
 
-    def get_balance(self, asset=None):
-        endpoint = '/api/v3/account'
-        response = self._send_request('GET', endpoint)
-        if response and 'balances' in response:
-            balances = {item['asset']: float(item['free']) for item in response['balances']}
-            if asset:
-                return balances.get(asset, 0.0)
-            return balances
-        return {}
+    def get_balance(self):
+        path = '/openApi/spot/v1/account/balance'
+        return self.send_request('GET', path)
 
     def get_last_trade(self, symbol):
-        params = {
-            'symbol': symbol,
-            'limit': 1
-        }
-        response = self._send_request('GET', '/api/v3/myTrades', params)
-        if response:
-            return response[-1]  # Retorna o último trade
+        path = '/openApi/spot/v1/trade/myTrades'
+        response = self.send_request('GET', path, {'symbol': symbol, 'limit': 1})
+        if response and response.get('data'):
+            trade = response['data'][-1]
+            return SimpleNamespace(
+                id=trade.get('id'),
+                order_id=trade.get('orderId'),
+                symbol=trade.get('symbol'),
+                price=trade.get('price'),
+                qty=trade.get('qty'),
+                time=datetime.fromtimestamp(int(trade.get('time', 0)) / 1000),
+                is_buyer=trade.get('isBuyer')
+            )
         return None
-'''
-class MEXCClient:
-    def __init__(self, credentials, url='https://api.mexc.com'):
-        self.api_key = credentials["api_key"]
-        self.secret_key = credentials["secret_key"]
-        self.url = url
-        self.client = Spot(api_key=self.api_key, api_secret=self.secret_key)
 
-    def get_current_price(self, symbol):
-        try:
-            response = self.client.market.ticker_price(symbol)
-            price_data=response[0]
-            return float(price_data['price'])
-        except Exception as e:
-            print(f"Erro ao obter preço atual na MEXC: {e}")
-            return None
+    def get_recent_trades_last_7_days(self, symbol):
+        path = '/openApi/spot/v1/trade/myTrades'
+        now = int(datetime.now(timezone.utc).timestamp() * 1000)
+        seven_days_ago = int((datetime.now(timezone.utc) - timedelta(days=7)).timestamp() * 1000)
+        all_trades = []
 
-    def place_order(self, symbol, side, order_type, quantity, price=None):
-        try:
-            order_params = {
-                "symbol": symbol,
-                "side": side.upper(),
-                "type": order_type.upper(),
-                "quantity": quantity,
-            }
-            if price:
-                order_params["price"] = price
-                order_params["timeInForce"] = "GTC"
-            response = self.client.trade.order_new(**order_params)
-            return response.get('orderId')
-        except Exception as e:
-            print(f"Erro ao colocar ordem na MEXC: {e}")
-            return None
+        params = {
+            'symbol': symbol,
+            'startTime': seven_days_ago,
+            'endTime': now,
+            'limit': 100
+        }
 
-    def cancel_order(self, symbol, order_id):
-        try:
-            response = self.client.trade.order_cancel(symbol=symbol, orderId=order_id)
-            return response.get('status') == 'CANCELED'
-        except Exception as e:
-            print(f"Erro ao cancelar ordem na MEXC: {e}")
-            return False
-
-    def get_order_status(self, symbol, order_id):
-        try:
-            response = self.client.trade.order_query(symbol=symbol, orderId=order_id)
-            return response
-        except Exception as e:
-            print(f"Erro ao obter status da ordem na MEXC: {e}")
-            return None
-
-    def get_open_orders(self, symbol=None):
-        try:
-            response = self.client.trade.open_orders(symbol=symbol)
-            return response
-        except Exception as e:
-            print(f"Erro ao obter ordens abertas na MEXC: {e}")
-            return None
-
-    def get_balance(self, asset=None):
-        try:
-            response = self.client.account.get_account_info()
-            balances = {item['asset']: float(item['free']) for item in response['balances']}
-            return {asset: balances.get(asset, 0.0)} if asset else balances
-        except Exception as e:
-            print(f"Erro ao obter saldo na MEXC: {e}")
-            return None
-
-    def get_last_trade(self, symbol):
-        try:
-            response = self.client.market.trades(symbol=symbol, limit=1)
-            return response[0] if response else None
-        except Exception as e:
-            print(f"Erro ao obter última negociação na MEXC: {e}")
-            return None
-'''
+        response = self.send_request('GET', path, params)
+        trades = response.get('data', [])
+        if trades:
+            all_trades.extend(trades)
+            with open('bingx_trades.csv', 'w', newline='') as csvfile:
+                fieldnames = list(trades[0].keys()) + ['datetime']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                for trade in trades:
+                    trade['datetime'] = datetime.fromtimestamp(int(trade['time']) / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                    writer.writerow(trade)
+        return all_trades

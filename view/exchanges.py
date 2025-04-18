@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, Response
 from source.dbmanager import load_query
 from log.log import general_logger
 from source.context import get_db_connection
@@ -108,6 +108,10 @@ def get_user_apikeys(user_id):
     """
     Busca todas as credenciais de API de um usuário.
     """
+    if isinstance(user_id, Response):
+        # Garante que nunca caia aqui com um objeto de erro Response
+        return user_id
+
     query = load_query('select_user_apikeys.sql')
     try:
         with get_db_connection() as db_client:
@@ -115,19 +119,50 @@ def get_user_apikeys(user_id):
             apikeys = []
 
             for row in results:
-                # Decodifica o JSON armazenado no campo api_credentials
                 api_credentials = row[3] if isinstance(row[3], dict) else {}
 
                 apikey = {
-                    "api_key_id": row[0],  # ID da API Key
-                    "exchange_id": row[1],  # ID da exchange
-                    "exchange_name": row[2],  # Nome da exchange
-                    "api_credentials": api_credentials,  # Diretamente os valores salvos no JSON
-                    "created_at": row[4],  # Data de criação
+                    "api_key_id": row[0],
+                    "exchange_id": row[1],
+                    "exchange_name": row[2],
+                    "api_credentials": api_credentials,
+                    "created_at": row[4],
+                    "name":row[5]
                 }
                 apikeys.append(apikey)
 
             return jsonify({"user_apikeys": apikeys}), 200
     except Exception as e:
-        general_logger.error(f"Error fetching user API keys: {str(e)}")
-        return jsonify({"error": str(e)}), 500
+        general_logger.error(f"Erro ao buscar API Keys: {e}")
+        return jsonify({"error": "Erro ao buscar API Keys"}), 500
+    
+
+def search_symbols(api_key_id: str, query: str = '', limit: int = 20):
+    """
+    Busca símbolos vinculados à exchange de uma API Key com filtro textual.
+    """
+    sql = load_query("select_symbols_by_api_key.sql")
+
+    try:
+        with get_db_connection() as db_client:
+            results = db_client.fetch_data(sql, (api_key_id, f"{query}%", limit))
+            symbols = [row[0] for row in results]
+            return jsonify({"symbols": symbols}), 200
+    except Exception as e:
+        general_logger.error(f"Erro ao buscar símbolos para api_key_id={api_key_id}, query='{query}': {e}")
+        return jsonify({"error": "Erro ao buscar símbolos"}), 500
+    
+def get_symbols_by_api(api_key_id: str):
+    """
+    Retorna todos os símbolos vinculados à API Key informada.
+    """
+    query = load_query("select_symbols_by_api_key.sql")
+
+    try:
+        with get_db_connection() as db_client:
+            results = db_client.fetch_data(query, (api_key_id, '%', 10000))  # % para todos
+            symbols = [row[0] for row in results]
+            return jsonify({"symbols": symbols}), 200
+    except Exception as e:
+        general_logger.error(f"Erro ao buscar símbolos por API Key ID={api_key_id}: {e}")
+        return jsonify({"error": "Erro ao buscar símbolos"}), 500

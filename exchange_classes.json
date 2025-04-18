@@ -1,4 +1,7 @@
 {
-    "1": "source.exchange_interface.OKXInterface",
-    "2": "source.exchange_interface.BinanceInterface"
+    "1": "source.exchange_interface.OKXRealInterface",
+    "2": "source.exchange_interface.BinanceRealInterface",
+    "3": "source.exchange_interface.OKXDemoInterface",
+    "4": "source.exchange_interface.BinanceDemoInterface",
+    "5": "source.exchange_interface.BingXInterface"
 }

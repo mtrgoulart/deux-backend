@@ -2147,3 +2147,137 @@ DETAIL:  Failing row contains (9, 1, 2, null, 1, 2025-01-19 04:04:11.653763, 202
 2025-03-10 21:50:13,256 - manager - general_logger - INFO - Updated operation ID 1433 for object 36126
 2025-03-10 21:50:15,089 - manager - general_logger - INFO - Updated operation ID 1433 for object 36127
 2025-03-10 21:50:16,891 - manager - general_logger - INFO - Updated operation ID 1433 for object 36130
+2025-04-06 12:59:58,544 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 13:17:22,956 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 13:20:47,053 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 13:36:49,566 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 13:39:28,465 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 13:42:04,093 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:10:27,097 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:19:57,318 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:20:02,297 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:20:05,688 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:22:05,570 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:27:02,005 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:27:07,121 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:27:09,784 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:30:34,533 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:30:39,329 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:30:42,642 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:31:46,752 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:31:50,845 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:31:53,389 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:33:42,480 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:35:29,383 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:35:34,216 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:35:36,783 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:35:57,932 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:36:01,687 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:36:04,271 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:36:46,224 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:37:13,082 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:37:44,615 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:37:50,855 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:37:53,560 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:39:04,421 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:39:08,427 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:39:11,124 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:41:59,360 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:42:07,077 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:42:10,601 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:42:38,660 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:42:42,292 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:46:18,752 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:46:23,597 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:46:26,114 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:48:21,705 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 17:48:27,539 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:48:30,129 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:50:58,877 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:51:01,864 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-06 17:59:20,153 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 19:16:37,470 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 22:03:27,790 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 22:05:43,482 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 22:06:09,205 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 22:09:09,064 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 22:13:57,393 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 22:15:17,932 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 22:15:48,427 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 22:17:47,113 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 22:19:24,916 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-06 22:21:31,517 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-07 21:45:18,858 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-08 07:48:03,680 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-08 07:50:10,417 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-08 22:24:09,351 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-08 22:53:16,073 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-08 22:55:51,980 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 19:40:35,441 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 19:40:41,129 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-11 19:48:02,314 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 19:48:08,191 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-11 20:41:46,343 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 20:41:52,312 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-11 20:47:20,564 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 20:49:35,083 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 20:49:40,517 - exchanges - general_logger - ERROR - Error fetching user API keys: 'NoneType' object is not iterable
+2025-04-11 20:53:04,606 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 20:53:35,395 - exchanges - general_logger - ERROR - Erro ao buscar API Keys: 'NoneType' object is not iterable
+2025-04-11 21:10:13,265 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 21:10:19,195 - exchanges - general_logger - ERROR - Erro ao buscar API Keys: 'NoneType' object is not iterable
+2025-04-11 21:11:03,704 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 21:11:07,800 - exchanges - general_logger - ERROR - Erro ao buscar API Keys: 'NoneType' object is not iterable
+2025-04-11 21:11:27,552 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 21:11:32,214 - exchanges - general_logger - ERROR - Erro ao buscar API Keys: 'NoneType' object is not iterable
+2025-04-11 21:13:45,398 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 21:13:48,490 - exchanges - general_logger - ERROR - Erro ao buscar API Keys: 'NoneType' object is not iterable
+2025-04-11 21:14:08,341 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 21:14:15,758 - exchanges - general_logger - ERROR - Erro ao buscar API Keys: 'NoneType' object is not iterable
+2025-04-11 21:24:21,854 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 21:37:00,387 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 21:51:04,038 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 22:38:30,085 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 22:40:07,892 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 22:41:19,817 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 22:43:00,353 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 22:43:57,151 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 23:31:36,050 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 23:39:49,084 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 23:42:51,895 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 23:44:58,428 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 23:46:56,493 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 23:47:40,653 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 23:48:19,636 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 23:51:17,174 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 23:52:45,598 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-11 23:54:57,203 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 00:00:48,763 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 00:18:01,528 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 00:20:17,718 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 13:20:20,950 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 13:30:09,090 - instances - general_logger - ERROR - Error fetching instances: 'NoneType' object is not iterable
+2025-04-12 13:34:01,257 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 13:34:07,101 - instances - general_logger - ERROR - Error fetching instances: 'NoneType' object is not iterable
+2025-04-12 13:34:10,271 - instances - general_logger - ERROR - Error fetching instances: 'NoneType' object is not iterable
+2025-04-12 13:34:13,966 - instances - general_logger - ERROR - Error fetching instances: 'NoneType' object is not iterable
+2025-04-12 13:34:40,482 - instances - general_logger - ERROR - Error fetching instances: 'NoneType' object is not iterable
+2025-04-12 13:35:42,471 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 13:51:31,223 - instances - general_logger - ERROR - Error saving instance: Strategy ID is required to create an instance.
+2025-04-12 22:35:43,998 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 22:35:47,869 - exchanges - general_logger - ERROR - Erro ao buscar símbolos por API Key ID=2: 'NoneType' object is not iterable
+2025-04-12 22:35:59,630 - exchanges - general_logger - ERROR - Erro ao buscar símbolos por API Key ID=2: 'NoneType' object is not iterable
+2025-04-12 22:36:40,505 - exchanges - general_logger - ERROR - Erro ao buscar símbolos por API Key ID=2: 'NoneType' object is not iterable
+2025-04-12 22:37:28,202 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 22:37:33,594 - exchanges - general_logger - ERROR - Erro ao buscar símbolos por API Key ID=2: 'NoneType' object is not iterable
+2025-04-12 22:37:47,497 - exchanges - general_logger - ERROR - Erro ao buscar símbolos por API Key ID=2: 'NoneType' object is not iterable
+2025-04-12 22:38:43,922 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 22:38:53,829 - dbmanager - general_logger - ERROR - Erro ao buscar dados: column es.symbols does not exist
+LINE 10: group by es.symbols
+                  ^
+HINT:  Perhaps you meant to reference the column "es.symbol".
+2025-04-12 22:38:53,830 - exchanges - general_logger - ERROR - Erro ao buscar símbolos por API Key ID=2: 'NoneType' object is not iterable
+2025-04-12 22:39:10,197 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 22:42:43,523 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-12 23:28:01,757 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-04-13 13:36:51,293 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.

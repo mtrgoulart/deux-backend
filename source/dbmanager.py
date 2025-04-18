@@ -60,7 +60,8 @@ class DatabaseClient:
             results = self.cursor.fetchall()
             return results
         except Exception as e:
-            general_logger.error("Erro ao buscar dados:", e)
+            general_logger.error(f"Erro ao buscar dados: {e}")
+            return None
         finally:
             self.close()
 
