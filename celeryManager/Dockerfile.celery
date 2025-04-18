@@ -1,0 +1,19 @@
+# celery_manager/Dockerfile.celery
+
+# Use a imagem base do Python
+FROM python:3.9-slim
+
+# Define o diretório de trabalho
+WORKDIR /app
+
+# Copia TODO o projeto para o contêiner
+COPY .. .
+
+# Define o PYTHONPATH para incluir o diretório raiz
+ENV PYTHONPATH="/app"
+
+# Instala as dependências
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Comando para iniciar o worker do Celery
+CMD ["celery", "--app", "celeryManager.celery_app", "worker", "--loglevel=info"]

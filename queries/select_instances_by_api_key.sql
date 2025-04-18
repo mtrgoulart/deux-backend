@@ -5,6 +5,7 @@ SELECT
     i.status AS instance_status,
     i.created_at AS instance_created_at,
     i.updated_at AS instance_updated_at,
+    i.start_date AS instance_startdate,
     s.id AS strategy_id,
     s.symbol,
     s.side,

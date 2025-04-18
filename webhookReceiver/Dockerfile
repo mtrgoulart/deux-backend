@@ -10,14 +10,14 @@ RUN apt-get update && apt-get install -y tzdata
 ENV TZ=America/Sao_Paulo
 
 # Copia os arquivos necessários para o contêiner
-COPY pipeline_app.py config.ini /app/
+COPY .. .
 
 # Instala as dependências
-RUN pip install --no-cache-dir Flask psycopg2-binary pika
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Expõe a porta do Flask
 EXPOSE 5000
 
 # Comando para iniciar o app
-CMD ["python", "pipeline_app.py"]
+CMD ["python", "webhookReceiver/pipeline_app.py"]
 

@@ -1,5 +1,5 @@
 SELECT 
-    i.api_key, i.name, k.exchange_id
+    i.api_key, i.name, k.exchange_id, i.start_date
 FROM 
     instances i
 JOIN 

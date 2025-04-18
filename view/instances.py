@@ -6,8 +6,6 @@ from source.director import OperationManager
 
 operation_managers = {}
 
-import concurrent.futures
-
 def start_running_instances():
     """
     Verifica e inicia todas as instâncias que estavam rodando antes da reinicialização da aplicação.
@@ -37,7 +35,6 @@ def start_running_instances():
 
     except Exception as e:
         general_logger.error(f"Error starting running instance: {str(e)}")
-
 
 def save_instance(data, user_id):
     """
@@ -86,6 +83,19 @@ def remove_instance(instance_id, user_id):
         general_logger.error(f"Error removing instance: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
+def start_instance(instance_id, user_id):
+    with get_db_connection() as db_client:
+        # Busca detalhes da instância e API Key
+        query_instance = load_query('select_instance_details.sql')
+        instance_details = db_client.fetch_data(query_instance, (instance_id, user_id))
+        if not instance_details:
+            return False, "Instance not found"
+        
+        update_instance_query=load_query('update_starting_instance.sql')
+        db_client.update_data(update_instance_query,(2,instance_id))
+
+        return True, "Instância iniciada com sucesso!"
+
 def start_instance_operation(instance_id, user_id):
     global operation_managers
     try:
@@ -114,6 +124,13 @@ def start_instance_operation(instance_id, user_id):
                 strategy_uuid = strategy[1]  # UUID da estratégia
                 symbol = strategy[2]  # Símbolo
                 side = strategy[3]  # "buy" ou "sell"
+                operation_key = f"{instance_id}_{strategy_uuid}_{side}"
+
+                # Verifica se já existe uma operação com a mesma chave
+                if operation_key in operation_managers:
+                    general_logger.warning(f"Operation for instance {instance_id}, strategy {strategy_uuid}, side {side} already running.")
+                    continue  # Pula para a próxima estratégia
+
                 operation_data = {
                     "strategy_id": strategy_id,
                     "symbol": symbol,
@@ -141,9 +158,7 @@ def start_instance_operation(instance_id, user_id):
 
                 # Atualiza o status da estratégia para "running"
                 update_query = load_query('update_strategy_status.sql')
-                db_client.update_data(update_query, ('running', strategy_uuid, user_id))
-
-                
+                db_client.update_data(update_query, ('running', strategy_uuid, user_id))                
 
                 general_logger.info(f"Started {side} operation for instance {instance_id}, strategy {strategy_uuid}, user {user_id}.")
                 responses.append({"strategy_uuid": strategy_uuid, "side": side, "status": "running"})
@@ -157,10 +172,88 @@ def start_instance_operation(instance_id, user_id):
         general_logger.error(f"Error starting instance operations: {str(e)}")
         return False, str(e)
 
+def execute_instance_operation(instance_id, user_id, side):
+    """
+    Executa a operação de compra ou venda para uma instância específica.
+    """
+    with get_db_connection() as db_client:
+        # Busca detalhes da instância e API Key
+        
+        query_instance = load_query('select_instance_details.sql')
+        instance_details = db_client.fetch_data(query_instance, (instance_id, user_id))
+
+        if not instance_details:
+            return False, "Instance not found"
+
+        api_key_id, instance_name, exchange_id, start_date = instance_details[0]
+
+        # Define a query correta com base no tipo de operação
+        strategy_query = 'select_buy_strategy_by_instance.sql' if side == 'buy' else 'select_sell_strategy_by_instance.sql'
+        query_strategies = load_query(strategy_query)
+        strategy = db_client.fetch_data(query_strategies, (instance_id,))
+        
+
+        if not strategy:
+            return False, f"No {side} strategies found for the instance"
+        
+        strategy_data = strategy[0]
+
+        # Mapeamento dos dados da estratégia
+        (
+            strategy_id, 
+            strategy_uuid, 
+            symbol, 
+            strategy_side, 
+            percent, 
+            condition_limit, 
+            interval, 
+            simultaneos_operations, 
+            status,  # Adicionando a variável para armazenar o valor
+            tp, 
+            sl
+        ) = strategy_data
+
+        # Definindo None para os valores de tp e sl caso estejam vazios
+        tp = tp if tp is not None else 0
+        sl = sl if sl is not None else 0
+
+        simultaneos_operations = simultaneos_operations if side == "buy" else 1
+
+        operation_data = {
+            "strategy_id": strategy_id,
+            "symbol": symbol,
+            "side": side,
+            "percent": percent,
+            "condition_limit": condition_limit,
+            "interval": interval,
+            "simultaneous_operations": simultaneos_operations,
+            "tp": tp,
+            "sl": sl
+        }
+
+        manager = OperationManager(
+            user_id=user_id,
+            data=operation_data,
+            exchange_id=exchange_id,
+            api_key=api_key_id,
+            instance_id=instance_id
+        )
+        
+        result=manager.execute_operation_handler(start_date)
+        return result
+
+def get_instance_status(instance_id,user_id):
+    with get_db_connection() as db_client:
+        # Busca detalhes da instância e API Key
+        
+        query_instance = load_query('select_instance_status.sql')
+        instance_status = db_client.fetch_data(query_instance, (instance_id, user_id))
+        instance_status=instance_status[0][0]
+        return instance_status
+
 def stop_instance_operation(instance_id):
     global operation_managers
     try:
-        # Filtrar os gerenciadores que pertencem à instância
         instance_keys = [key for key in operation_managers if key.startswith(f"{instance_id}_")]
 
         if not instance_keys:
@@ -169,11 +262,18 @@ def stop_instance_operation(instance_id):
         for key in instance_keys:
             manager = operation_managers.pop(key)
             manager.stop_operation()
+
+            # Garante que todas as threads foram finalizadas
+            if manager.monitoring_thread and manager.monitoring_thread.is_alive():
+                manager.monitoring_thread.join()
+            if manager.tp_sl_thread and manager.tp_sl_thread.is_alive():
+                manager.tp_sl_thread.join()
+
             general_logger.info(f"Stopped operation for key {key}.")
 
         with get_db_connection() as db_client:
-            update_instance_query=load_query('update_instance_status.sql')
-            db_client.update_data(update_instance_query,(1,instance_id))
+            update_instance_query = load_query('update_instance_status.sql')
+            db_client.update_data(update_instance_query, (1, instance_id))
 
         return jsonify({"message": "All operations for the instance stopped successfully"}), 200
     except Exception as e:
@@ -201,19 +301,8 @@ def get_instances(api_key):
                         "status": row[3],
                         "created_at": row[4],
                         "updated_at": row[5],
-                        "strategies": {"buy": None, "sell": None}  # Estruturas separadas para `buy` e `sell`
+                        "start_date":row[6]
                     }
-                
-                # Adiciona a estratégia de `buy` ou `sell`
-                strategy_side = row[8]  # `buy` ou `sell`
-                instances[instance_id]["strategies"][strategy_side] = {
-                    "strategy_id": row[6],
-                    "symbol": row[7],
-                    "percent": row[9],
-                    "condition_limit": row[10],
-                    "interval": row[11],
-                    "simultaneous_operations": row[12] if strategy_side == 'buy' else None,
-                }
             
             return jsonify({"instances": list(instances.values())}), 200
     except Exception as e:

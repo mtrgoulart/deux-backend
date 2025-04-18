@@ -1,0 +1,492 @@
+2025-03-03 20:07:24 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.100.2:5000
+2025-03-03 20:07:24 [INFO] [33mPress CTRL+C to quit[0m
+2025-03-03 20:07:24 [INFO]  * Restarting with stat
+2025-03-03 20:07:26 [WARNING]  * Debugger is active!
+2025-03-03 20:07:26 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 20:10:39 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=111,instance_id=22
+2025-03-03 20:10:39 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-03 20:10:41 [INFO] 127.0.0.1 - - [03/Mar/2025 20:10:41] "POST /webhook HTTP/1.1" 200 -
+2025-03-03 20:10:47 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=1,instance_id=22
+2025-03-03 20:10:47 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1', 'instance_id': '22'}
+2025-03-03 20:10:47 [INFO] 127.0.0.1 - - [03/Mar/2025 20:10:47] "POST /webhook HTTP/1.1" 200 -
+2025-03-03 20:12:13 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=1111,instance_id=22
+2025-03-03 20:12:13 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1111', 'instance_id': '22'}
+2025-03-03 20:12:13 [INFO] 127.0.0.1 - - [03/Mar/2025 20:12:13] "POST /webhook HTTP/1.1" 200 -
+2025-03-03 20:16:09 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\view\\instances.py', reloading
+2025-03-03 20:16:09 [INFO]  * Restarting with stat
+2025-03-03 20:16:11 [WARNING]  * Debugger is active!
+2025-03-03 20:16:11 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 20:16:57 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\manager.py', reloading
+2025-03-03 20:16:57 [INFO]  * Restarting with stat
+2025-03-03 20:16:58 [WARNING]  * Debugger is active!
+2025-03-03 20:16:58 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 20:17:10 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=1111,instance_id=22
+2025-03-03 20:17:10 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1111', 'instance_id': '22'}
+2025-03-03 20:17:12 [INFO] 127.0.0.1 - - [03/Mar/2025 20:17:12] "POST /webhook HTTP/1.1" 200 -
+2025-03-03 20:41:49 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\director.py', reloading
+2025-03-03 20:41:49 [INFO]  * Restarting with stat
+2025-03-03 20:41:52 [WARNING]  * Debugger is active!
+2025-03-03 20:41:52 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 20:42:08 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=111,instance_id=22
+2025-03-03 20:42:08 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-03 20:42:09 [INFO] 127.0.0.1 - - [03/Mar/2025 20:42:09] "POST /webhook HTTP/1.1" 200 -
+2025-03-03 22:33:11 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\view\\instances.py', reloading
+2025-03-03 22:33:12 [INFO]  * Restarting with stat
+2025-03-03 22:33:24 [WARNING]  * Debugger is active!
+2025-03-03 22:33:24 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 23:17:46 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-03 23:17:46 [INFO]  * Restarting with stat
+2025-03-03 23:17:48 [WARNING]  * Debugger is active!
+2025-03-03 23:17:48 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 23:20:02 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-03 23:20:02 [INFO]  * Restarting with stat
+2025-03-03 23:20:04 [WARNING]  * Debugger is active!
+2025-03-03 23:20:04 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 23:44:56 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-03 23:44:56 [INFO]  * Restarting with stat
+2025-03-03 23:44:59 [WARNING]  * Debugger is active!
+2025-03-03 23:44:59 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 23:48:30 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=111,instance_id=22
+2025-03-03 23:48:30 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-03 23:48:32 [INFO] 127.0.0.1 - - [03/Mar/2025 23:48:32] "POST /webhook HTTP/1.1" 200 -
+2025-03-03 23:55:54 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\view\\instances.py', reloading
+2025-03-03 23:55:54 [INFO]  * Restarting with stat
+2025-03-03 23:55:56 [WARNING]  * Debugger is active!
+2025-03-03 23:55:56 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 23:56:06 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=111,instance_id=22
+2025-03-03 23:56:06 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-03 23:56:08 [INFO] 127.0.0.1 - - [03/Mar/2025 23:56:08] "POST /webhook HTTP/1.1" 200 -
+2025-03-03 23:56:53 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\view\\instances.py', reloading
+2025-03-03 23:56:53 [INFO]  * Restarting with stat
+2025-03-03 23:56:55 [WARNING]  * Debugger is active!
+2025-03-03 23:56:55 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 23:57:09 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=111,instance_id=22
+2025-03-03 23:57:09 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-03 23:57:11 [INFO] 127.0.0.1 - - [03/Mar/2025 23:57:11] "POST /webhook HTTP/1.1" 200 -
+2025-03-03 23:57:32 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\view\\instances.py', reloading
+2025-03-03 23:57:32 [INFO]  * Restarting with stat
+2025-03-03 23:57:34 [WARNING]  * Debugger is active!
+2025-03-03 23:57:34 [INFO]  * Debugger PIN: 569-043-575
+2025-03-03 23:57:47 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=111,instance_id=22
+2025-03-03 23:57:47 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-03 23:57:49 [INFO] 127.0.0.1 - - [03/Mar/2025 23:57:49] "POST /webhook HTTP/1.1" 200 -
+2025-03-03 23:58:19 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-03 23:58:19 [INFO]  * Restarting with stat
+2025-03-03 23:58:20 [WARNING]  * Debugger is active!
+2025-03-03 23:58:21 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:00:06 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-04 00:00:07 [INFO]  * Restarting with stat
+2025-03-04 00:00:09 [WARNING]  * Debugger is active!
+2025-03-04 00:00:09 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:00:41 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-04 00:00:41 [INFO]  * Restarting with stat
+2025-03-04 00:00:43 [WARNING]  * Debugger is active!
+2025-03-04 00:00:43 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:00:48 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=111,instance_id=22
+2025-03-04 00:00:48 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-04 00:00:50 [INFO] 127.0.0.1 - - [04/Mar/2025 00:00:50] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:04:02 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\view\\instances.py', reloading
+2025-03-04 00:04:02 [INFO]  * Restarting with stat
+2025-03-04 00:04:05 [WARNING]  * Debugger is active!
+2025-03-04 00:04:05 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:05:17 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=11,instance_id=22
+2025-03-04 00:05:17 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '11', 'instance_id': '22'}
+2025-03-04 00:05:19 [INFO] 127.0.0.1 - - [04/Mar/2025 00:05:19] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:06:32 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\view\\instances.py', reloading
+2025-03-04 00:06:32 [INFO]  * Restarting with stat
+2025-03-04 00:06:34 [WARNING]  * Debugger is active!
+2025-03-04 00:06:34 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:07:38 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=11,instance_id=22
+2025-03-04 00:07:38 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '11', 'instance_id': '22'}
+2025-03-04 00:07:40 [INFO] 127.0.0.1 - - [04/Mar/2025 00:07:40] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:07:58 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=1,instance_id=22
+2025-03-04 00:07:58 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1', 'instance_id': '22'}
+2025-03-04 00:07:58 [INFO] 127.0.0.1 - - [04/Mar/2025 00:07:58] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:09:07 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=1,instance_id=22
+2025-03-04 00:09:07 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1', 'instance_id': '22'}
+2025-03-04 00:09:07 [INFO] 127.0.0.1 - - [04/Mar/2025 00:09:07] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:12:15 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-04 00:12:15 [INFO]  * Restarting with stat
+2025-03-04 00:12:17 [WARNING]  * Debugger is active!
+2025-03-04 00:12:17 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:12:23 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-04 00:12:23 [INFO]  * Restarting with stat
+2025-03-04 00:12:25 [WARNING]  * Debugger is active!
+2025-03-04 00:12:25 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:12:35 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=1,instance_id=22
+2025-03-04 00:12:35 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1', 'instance_id': '22'}
+2025-03-04 00:12:37 [INFO] 127.0.0.1 - - [04/Mar/2025 00:12:37] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:13:36 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-04 00:13:36 [INFO]  * Restarting with stat
+2025-03-04 00:13:39 [WARNING]  * Debugger is active!
+2025-03-04 00:13:39 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:13:42 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-04 00:13:42 [INFO]  * Restarting with stat
+2025-03-04 00:13:44 [WARNING]  * Debugger is active!
+2025-03-04 00:13:44 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:13:48 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\director.py', reloading
+2025-03-04 00:13:49 [INFO]  * Restarting with stat
+2025-03-04 00:13:51 [WARNING]  * Debugger is active!
+2025-03-04 00:13:51 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:14:02 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=1,instance_id=22
+2025-03-04 00:14:02 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1', 'instance_id': '22'}
+2025-03-04 00:14:04 [INFO] 127.0.0.1 - - [04/Mar/2025 00:14:04] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:14:28 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=11,instance_id=22
+2025-03-04 00:14:28 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '11', 'instance_id': '22'}
+2025-03-04 00:14:28 [INFO] 127.0.0.1 - - [04/Mar/2025 00:14:28] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:16:35 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\view\\instances.py', reloading
+2025-03-04 00:16:35 [INFO]  * Restarting with stat
+2025-03-04 00:16:36 [WARNING]  * Debugger is active!
+2025-03-04 00:16:36 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:19:41 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\director.py', reloading
+2025-03-04 00:19:41 [INFO]  * Restarting with stat
+2025-03-04 00:19:43 [WARNING]  * Debugger is active!
+2025-03-04 00:19:43 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:20:13 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=11,instance_id=22
+2025-03-04 00:20:13 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '11', 'instance_id': '22'}
+2025-03-04 00:20:15 [INFO] 127.0.0.1 - - [04/Mar/2025 00:20:15] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:20:33 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-04 00:20:33 [INFO]  * Restarting with stat
+2025-03-04 00:20:35 [WARNING]  * Debugger is active!
+2025-03-04 00:20:35 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:21:42 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\director.py', reloading
+2025-03-04 00:21:42 [INFO]  * Restarting with stat
+2025-03-04 00:21:44 [WARNING]  * Debugger is active!
+2025-03-04 00:21:44 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:22:02 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\director.py', reloading
+2025-03-04 00:22:03 [INFO]  * Restarting with stat
+2025-03-04 00:22:05 [WARNING]  * Debugger is active!
+2025-03-04 00:22:05 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:22:09 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=11,instance_id=22
+2025-03-04 00:22:09 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '11', 'instance_id': '22'}
+2025-03-04 00:22:11 [INFO] 127.0.0.1 - - [04/Mar/2025 00:22:11] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:23:36 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\manager.py', reloading
+2025-03-04 00:23:36 [INFO]  * Restarting with stat
+2025-03-04 00:23:38 [WARNING]  * Debugger is active!
+2025-03-04 00:23:38 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:25:05 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=11,instance_id=22
+2025-03-04 00:25:05 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '11', 'instance_id': '22'}
+2025-03-04 00:25:07 [INFO] 127.0.0.1 - - [04/Mar/2025 00:25:07] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:26:31 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\director.py', reloading
+2025-03-04 00:26:31 [INFO]  * Restarting with stat
+2025-03-04 00:26:33 [WARNING]  * Debugger is active!
+2025-03-04 00:26:33 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:26:42 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\director.py', reloading
+2025-03-04 00:26:42 [INFO]  * Restarting with stat
+2025-03-04 00:26:44 [WARNING]  * Debugger is active!
+2025-03-04 00:26:44 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:27:04 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=11,instance_id=22
+2025-03-04 00:27:04 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '11', 'instance_id': '22'}
+2025-03-04 00:27:06 [INFO] 127.0.0.1 - - [04/Mar/2025 00:27:06] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 00:28:18 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-04 00:28:19 [INFO]  * Restarting with stat
+2025-03-04 00:28:21 [WARNING]  * Debugger is active!
+2025-03-04 00:28:21 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 00:28:53 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=sell,indicator=11,instance_id=22
+2025-03-04 00:28:53 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'sell', 'indicator': '11', 'instance_id': '22'}
+2025-03-04 00:28:55 [INFO] 127.0.0.1 - - [04/Mar/2025 00:28:55] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 15:53:09 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\manager.py', reloading
+2025-03-04 15:53:09 [INFO]  * Restarting with stat
+2025-03-04 15:53:12 [WARNING]  * Debugger is active!
+2025-03-04 15:53:12 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 15:58:20 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\manager.py', reloading
+2025-03-04 15:58:20 [INFO]  * Restarting with stat
+2025-03-04 15:58:21 [WARNING]  * Debugger is active!
+2025-03-04 15:58:21 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 15:58:54 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\manager.py', reloading
+2025-03-04 15:58:54 [INFO]  * Restarting with stat
+2025-03-04 15:58:55 [WARNING]  * Debugger is active!
+2025-03-04 15:58:55 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 15:59:23 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=111,instance_id=22
+2025-03-04 15:59:23 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-04 15:59:25 [INFO] 127.0.0.1 - - [04/Mar/2025 15:59:25] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 16:12:19 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\exchange_interface.py', reloading
+2025-03-04 16:12:19 [INFO]  * Restarting with stat
+2025-03-04 16:12:20 [WARNING]  * Debugger is active!
+2025-03-04 16:12:20 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 16:16:22 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\dbmanager.py', reloading
+2025-03-04 16:16:22 [INFO]  * Restarting with stat
+2025-03-04 16:16:24 [WARNING]  * Debugger is active!
+2025-03-04 16:16:24 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 16:16:25 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\manager.py', reloading
+2025-03-04 16:16:25 [INFO]  * Restarting with stat
+2025-03-04 16:16:26 [WARNING]  * Debugger is active!
+2025-03-04 16:16:26 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 16:16:58 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\dbmanager.py', reloading
+2025-03-04 16:16:58 [INFO]  * Restarting with stat
+2025-03-04 16:17:00 [WARNING]  * Debugger is active!
+2025-03-04 16:17:00 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 16:17:19 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\pp.py', reloading
+2025-03-04 16:17:20 [INFO]  * Restarting with stat
+2025-03-04 16:17:21 [WARNING]  * Debugger is active!
+2025-03-04 16:17:21 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 16:18:40 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\director.py', reloading
+2025-03-04 16:18:40 [INFO]  * Restarting with stat
+2025-03-04 16:18:41 [WARNING]  * Debugger is active!
+2025-03-04 16:18:41 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 16:18:51 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=sell,indicator=11,instance_id=22
+2025-03-04 16:18:51 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'sell', 'indicator': '11', 'instance_id': '22'}
+2025-03-04 16:18:53 [INFO] 127.0.0.1 - - [04/Mar/2025 16:18:53] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 16:47:14 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\dbmanager.py', reloading
+2025-03-04 16:47:14 [INFO]  * Restarting with stat
+2025-03-04 16:47:16 [WARNING]  * Debugger is active!
+2025-03-04 16:47:16 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 16:50:51 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=sell,indicator=11,instance_id=22
+2025-03-04 16:50:51 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'sell', 'indicator': '11', 'instance_id': '22'}
+2025-03-04 16:50:53 [INFO] 127.0.0.1 - - [04/Mar/2025 16:50:53] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 16:51:45 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=11,instance_id=22
+2025-03-04 16:51:45 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '11', 'instance_id': '22'}
+2025-03-04 16:51:45 [INFO] 127.0.0.1 - - [04/Mar/2025 16:51:45] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 16:53:49 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=1,instance_id=22
+2025-03-04 16:53:49 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1', 'instance_id': '22'}
+2025-03-04 16:53:49 [INFO] 127.0.0.1 - - [04/Mar/2025 16:53:49] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 16:56:25 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=1111,instance_id=22
+2025-03-04 16:56:25 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1111', 'instance_id': '22'}
+2025-03-04 16:56:25 [INFO] 127.0.0.1 - - [04/Mar/2025 16:56:25] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 16:57:33 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=1111111,instance_id=22
+2025-03-04 16:57:33 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1111111', 'instance_id': '22'}
+2025-03-04 16:57:33 [INFO] 127.0.0.1 - - [04/Mar/2025 16:57:33] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:00:02 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=sell,indicator=1111111,instance_id=22
+2025-03-04 17:00:02 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'sell', 'indicator': '1111111', 'instance_id': '22'}
+2025-03-04 17:00:02 [INFO] 127.0.0.1 - - [04/Mar/2025 17:00:02] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:05:02 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\director.py', reloading
+2025-03-04 17:05:02 [INFO]  * Restarting with stat
+2025-03-04 17:05:03 [WARNING]  * Debugger is active!
+2025-03-04 17:05:03 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 17:06:58 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\manager.py', reloading
+2025-03-04 17:06:58 [INFO]  * Restarting with stat
+2025-03-04 17:06:59 [WARNING]  * Debugger is active!
+2025-03-04 17:06:59 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 17:07:59 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\source\\manager.py', reloading
+2025-03-04 17:07:59 [INFO]  * Restarting with stat
+2025-03-04 17:08:00 [WARNING]  * Debugger is active!
+2025-03-04 17:08:00 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 17:11:57 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=1111111,instance_id=22
+2025-03-04 17:11:57 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '1111111', 'instance_id': '22'}
+2025-03-04 17:11:59 [INFO] 127.0.0.1 - - [04/Mar/2025 17:11:59] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:14:36 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=sell,indicator=1111111,instance_id=22
+2025-03-04 17:14:36 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'sell', 'indicator': '1111111', 'instance_id': '22'}
+2025-03-04 17:14:37 [INFO] 127.0.0.1 - - [04/Mar/2025 17:14:37] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:18:12 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=1111111,instance_id=22
+2025-03-04 17:18:12 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '1111111', 'instance_id': '22'}
+2025-03-04 17:18:12 [INFO] 127.0.0.1 - - [04/Mar/2025 17:18:12] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:18:54 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=1,instance_id=22
+2025-03-04 17:18:54 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '1', 'instance_id': '22'}
+2025-03-04 17:18:54 [INFO] 127.0.0.1 - - [04/Mar/2025 17:18:54] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:24:15 [INFO] Usando corpo bruto para validação: {"query":"\n    query IntrospectionQuery {\n      __schema {\n        \n        queryType { name }\n        mutationType { name }\n        subscriptionType { name }\n        types {\n          ...FullType\n        }\n        directives {\n          name\n          description\n          \n          locations\n          args {\n            ...InputValue\n          }\n        }\n      }\n    }\n\n    fragment FullType on __Type {\n      kind\n      name\n      description\n      \n      fields(includeDeprecated: true) {\n        name\n        description\n        args {\n          ...InputValue\n        }\n        type {\n          ...TypeRef\n        }\n        isDeprecated\n        deprecationReason\n      }\n      inputFields {\n        ...InputValue\n      }\n      interfaces {\n        ...TypeRef\n      }\n      enumValues(includeDeprecated: true) {\n        name\n        description\n        isDeprecated\n        deprecationReason\n      }\n      possibleTypes {\n        ...TypeRef\n      }\n    }\n\n    fragment InputValue on __InputValue {\n      name\n      description\n      type { ...TypeRef }\n      defaultValue\n      \n      \n    }\n\n    fragment TypeRef on __Type {\n      kind\n      name\n      ofType {\n        kind\n        name\n        ofType {\n          kind\n          name\n          ofType {\n            kind\n            name\n            ofType {\n              kind\n              name\n              ofType {\n                kind\n                name\n                ofType {\n                  kind\n                  name\n                  ofType {\n                    kind\n                    name\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  "}
+2025-03-04 17:24:15 [WARNING] Dados inválidos recebidos: {"query":"\n    query IntrospectionQuery {\n      __schema {\n        \n        queryType { name }\n        mutationType { name }\n        subscriptionType { name }\n        types {\n          ...FullType\n        }\n        directives {\n          name\n          description\n          \n          locations\n          args {\n            ...InputValue\n          }\n        }\n      }\n    }\n\n    fragment FullType on __Type {\n      kind\n      name\n      description\n      \n      fields(includeDeprecated: true) {\n        name\n        description\n        args {\n          ...InputValue\n        }\n        type {\n          ...TypeRef\n        }\n        isDeprecated\n        deprecationReason\n      }\n      inputFields {\n        ...InputValue\n      }\n      interfaces {\n        ...TypeRef\n      }\n      enumValues(includeDeprecated: true) {\n        name\n        description\n        isDeprecated\n        deprecationReason\n      }\n      possibleTypes {\n        ...TypeRef\n      }\n    }\n\n    fragment InputValue on __InputValue {\n      name\n      description\n      type { ...TypeRef }\n      defaultValue\n      \n      \n    }\n\n    fragment TypeRef on __Type {\n      kind\n      name\n      ofType {\n        kind\n        name\n        ofType {\n          kind\n          name\n          ofType {\n            kind\n            name\n            ofType {\n              kind\n              name\n              ofType {\n                kind\n                name\n                ofType {\n                  kind\n                  name\n                  ofType {\n                    kind\n                    name\n                  }\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  "}
+2025-03-04 17:24:15 [WARNING] Requisição falhou devido a dados inválidos.
+2025-03-04 17:24:15 [INFO] 127.0.0.1 - - [04/Mar/2025 17:24:15] "[31m[1mPOST /webhook HTTP/1.1[0m" 400 -
+2025-03-04 17:24:19 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=1,instance_id=22
+2025-03-04 17:24:19 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '1', 'instance_id': '22'}
+2025-03-04 17:24:19 [INFO] 127.0.0.1 - - [04/Mar/2025 17:24:19] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:24:21 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=12,instance_id=22
+2025-03-04 17:24:21 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '12', 'instance_id': '22'}
+2025-03-04 17:24:21 [INFO] 127.0.0.1 - - [04/Mar/2025 17:24:21] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:25:18 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=12,instance_id=22
+2025-03-04 17:25:18 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '12', 'instance_id': '22'}
+2025-03-04 17:25:18 [INFO] 127.0.0.1 - - [04/Mar/2025 17:25:18] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:25:44 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=sell,indicator=12,instance_id=22
+2025-03-04 17:25:44 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'sell', 'indicator': '12', 'instance_id': '22'}
+2025-03-04 17:25:44 [INFO] 127.0.0.1 - - [04/Mar/2025 17:25:44] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:43:19 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=sell,indicator=12,instance_id=22
+2025-03-04 17:43:19 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'sell', 'indicator': '12', 'instance_id': '22'}
+2025-03-04 17:43:19 [INFO] 127.0.0.1 - - [04/Mar/2025 17:43:19] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:46:20 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=12,instance_id=22
+2025-03-04 17:46:20 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '12', 'instance_id': '22'}
+2025-03-04 17:46:20 [INFO] 127.0.0.1 - - [04/Mar/2025 17:46:20] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:46:21 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=12,instance_id=22
+2025-03-04 17:46:21 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '12', 'instance_id': '22'}
+2025-03-04 17:46:21 [INFO] 127.0.0.1 - - [04/Mar/2025 17:46:21] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:46:22 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=12,instance_id=22
+2025-03-04 17:46:22 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '12', 'instance_id': '22'}
+2025-03-04 17:46:22 [INFO] 127.0.0.1 - - [04/Mar/2025 17:46:22] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:46:23 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=12,instance_id=22
+2025-03-04 17:46:23 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '12', 'instance_id': '22'}
+2025-03-04 17:46:23 [INFO] 127.0.0.1 - - [04/Mar/2025 17:46:23] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:46:26 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=1222,instance_id=22
+2025-03-04 17:46:26 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '1222', 'instance_id': '22'}
+2025-03-04 17:46:26 [INFO] 127.0.0.1 - - [04/Mar/2025 17:46:26] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:46:27 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=1222,instance_id=22
+2025-03-04 17:46:27 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '1222', 'instance_id': '22'}
+2025-03-04 17:46:27 [INFO] 127.0.0.1 - - [04/Mar/2025 17:46:27] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:46:30 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=1222,instance_id=2211
+2025-03-04 17:46:30 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '1222', 'instance_id': '2211'}
+2025-03-04 17:46:30 [INFO] 127.0.0.1 - - [04/Mar/2025 17:46:30] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:46:36 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=sell,indicator=1222,instance_id=2
+2025-03-04 17:46:36 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'sell', 'indicator': '1222', 'instance_id': '2'}
+2025-03-04 17:46:36 [INFO] 127.0.0.1 - - [04/Mar/2025 17:46:36] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:46:38 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=sell,indicator=122,instance_id=2
+2025-03-04 17:46:38 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'sell', 'indicator': '122', 'instance_id': '2'}
+2025-03-04 17:46:38 [INFO] 127.0.0.1 - - [04/Mar/2025 17:46:38] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:46:39 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=sell,indicator=122,instance_id=2
+2025-03-04 17:46:39 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'sell', 'indicator': '122', 'instance_id': '2'}
+2025-03-04 17:46:39 [INFO] 127.0.0.1 - - [04/Mar/2025 17:46:39] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 17:46:42 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=122,instance_id=2
+2025-03-04 17:46:42 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '122', 'instance_id': '2'}
+2025-03-04 17:46:42 [INFO] 127.0.0.1 - - [04/Mar/2025 17:46:42] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 18:12:23 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=122,instance_id=22
+2025-03-04 18:12:23 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '122', 'instance_id': '22'}
+2025-03-04 18:12:23 [INFO] 127.0.0.1 - - [04/Mar/2025 18:12:23] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 18:12:24 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=122,instance_id=22
+2025-03-04 18:12:24 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '122', 'instance_id': '22'}
+2025-03-04 18:12:24 [INFO] 127.0.0.1 - - [04/Mar/2025 18:12:24] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 18:12:27 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=sell,indicator=122,instance_id=22
+2025-03-04 18:12:27 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'sell', 'indicator': '122', 'instance_id': '22'}
+2025-03-04 18:12:27 [INFO] 127.0.0.1 - - [04/Mar/2025 18:12:27] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 18:12:33 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=122,instance_id=22
+2025-03-04 18:12:33 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '122', 'instance_id': '22'}
+2025-03-04 18:12:33 [INFO] 127.0.0.1 - - [04/Mar/2025 18:12:33] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 18:12:35 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=buy,indicator=1122,instance_id=22
+2025-03-04 18:12:35 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'buy', 'indicator': '1122', 'instance_id': '22'}
+2025-03-04 18:12:35 [INFO] 127.0.0.1 - - [04/Mar/2025 18:12:35] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 18:12:38 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=sell,indicator=1122,instance_id=22
+2025-03-04 18:12:38 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'sell', 'indicator': '1122', 'instance_id': '22'}
+2025-03-04 18:12:38 [INFO] 127.0.0.1 - - [04/Mar/2025 18:12:38] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 18:57:06 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-04 18:57:07 [INFO]  * Restarting with stat
+2025-03-04 19:11:52 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.100.2:5000
+2025-03-04 19:11:52 [INFO] [33mPress CTRL+C to quit[0m
+2025-03-04 19:11:52 [INFO]  * Restarting with stat
+2025-03-04 19:11:54 [WARNING]  * Debugger is active!
+2025-03-04 19:11:54 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 19:12:36 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\celery_app.py', reloading
+2025-03-04 19:12:37 [INFO]  * Restarting with stat
+2025-03-04 19:12:38 [WARNING]  * Debugger is active!
+2025-03-04 19:12:38 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 19:13:26 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\celery_app.py', reloading
+2025-03-04 19:13:26 [INFO]  * Restarting with stat
+2025-03-04 19:13:28 [WARNING]  * Debugger is active!
+2025-03-04 19:13:28 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 19:14:04 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\celery_app.py', reloading
+2025-03-04 19:14:04 [INFO]  * Restarting with stat
+2025-03-04 19:14:05 [WARNING]  * Debugger is active!
+2025-03-04 19:14:05 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 19:14:12 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=sell,indicator=1122,instance_id=22
+2025-03-04 19:14:12 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'sell', 'indicator': '1122', 'instance_id': '22'}
+2025-03-04 19:14:14 [INFO] 127.0.0.1 - - [04/Mar/2025 19:14:14] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 19:16:15 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=sell,indicator=1122,instance_id=22
+2025-03-04 19:16:15 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'sell', 'indicator': '1122', 'instance_id': '22'}
+2025-03-04 19:16:15 [INFO] 127.0.0.1 - - [04/Mar/2025 19:16:15] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 19:25:52 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\celery_app.py', reloading
+2025-03-04 19:25:52 [INFO]  * Restarting with stat
+2025-03-04 19:25:54 [WARNING]  * Debugger is active!
+2025-03-04 19:25:54 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 19:26:21 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-04 19:26:21 [INFO]  * Restarting with stat
+2025-03-04 19:26:22 [WARNING]  * Debugger is active!
+2025-03-04 19:26:22 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 19:27:42 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\celery_app.py', reloading
+2025-03-04 19:27:42 [INFO]  * Restarting with stat
+2025-03-04 19:27:44 [WARNING]  * Debugger is active!
+2025-03-04 19:27:44 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 19:29:41 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=sell,indicator=1122,instance_id=22
+2025-03-04 19:29:41 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'sell', 'indicator': '1122', 'instance_id': '22'}
+2025-03-04 19:29:43 [INFO] 127.0.0.1 - - [04/Mar/2025 19:29:43] "POST /webhook HTTP/1.1" 200 -
+2025-03-04 19:52:05 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\celery_app.py', reloading
+2025-03-04 19:52:05 [INFO]  * Restarting with stat
+2025-03-04 19:52:07 [WARNING]  * Debugger is active!
+2025-03-04 19:52:07 [INFO]  * Debugger PIN: 569-043-575
+2025-03-04 19:53:11 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-04 19:53:11 [INFO]  * Restarting with stat
+2025-03-04 19:54:08 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.100.2:5000
+2025-03-04 19:54:08 [INFO] [33mPress CTRL+C to quit[0m
+2025-03-04 19:54:08 [INFO]  * Restarting with stat
+2025-03-04 19:54:09 [WARNING]  * Debugger is active!
+2025-03-04 19:54:09 [INFO]  * Debugger PIN: 569-043-575
+2025-03-05 07:26:32 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-05 07:26:32 [INFO]  * Restarting with stat
+2025-03-05 07:26:34 [WARNING]  * Debugger is active!
+2025-03-05 07:26:34 [INFO]  * Debugger PIN: 569-043-575
+2025-03-05 07:30:53 [INFO] Usando corpo bruto para validação: key=1,symbol=PEPE-USDT,side=sell,indicator=1122,instance_id=22
+2025-03-05 07:30:53 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'PEPE-USDT', 'side': 'sell', 'indicator': '1122', 'instance_id': '22'}
+2025-03-05 07:30:53 [ERROR] Erro ao processar a requisição: 'user_id'
+2025-03-05 07:30:53 [INFO] 127.0.0.1 - - [05/Mar/2025 07:30:53] "[35m[1mPOST /webhook HTTP/1.1[0m" 500 -
+2025-03-05 07:31:13 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=111,instance_id=22
+2025-03-05 07:31:13 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-05 07:31:13 [ERROR] Erro ao processar a requisição: 'user_id'
+2025-03-05 07:31:13 [INFO] 127.0.0.1 - - [05/Mar/2025 07:31:13] "[35m[1mPOST /webhook HTTP/1.1[0m" 500 -
+2025-03-06 21:06:59 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5004
+ * Running on http://192.168.100.2:5004
+2025-03-06 21:06:59 [INFO] [33mPress CTRL+C to quit[0m
+2025-03-06 21:06:59 [INFO]  * Restarting with stat
+2025-03-06 21:07:01 [WARNING]  * Debugger is active!
+2025-03-06 21:07:01 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:10:01 [INFO] Usando corpo bruto para validação: key=1,symbol=BTC-USDT,side=buy,indicator=111,instance_id=22
+2025-03-06 21:10:01 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:10:03 [INFO] 127.0.0.1 - - [06/Mar/2025 21:10:03] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:11:05 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:11:05 [INFO]  * Restarting with stat
+2025-03-06 21:11:06 [WARNING]  * Debugger is active!
+2025-03-06 21:11:06 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:12:35 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:12:36 [INFO]  * Restarting with stat
+2025-03-06 21:12:37 [WARNING]  * Debugger is active!
+2025-03-06 21:12:37 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:12:38 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:12:39 [INFO] 127.0.0.1 - - [06/Mar/2025 21:12:39] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:14:14 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:14:14 [INFO]  * Restarting with stat
+2025-03-06 21:14:15 [WARNING]  * Debugger is active!
+2025-03-06 21:14:15 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:14:17 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:14:18 [INFO] 127.0.0.1 - - [06/Mar/2025 21:14:18] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:15:45 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:15:45 [INFO]  * Restarting with stat
+2025-03-06 21:15:46 [WARNING]  * Debugger is active!
+2025-03-06 21:15:46 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:15:54 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5004
+ * Running on http://192.168.100.2:5004
+2025-03-06 21:15:54 [INFO] [33mPress CTRL+C to quit[0m
+2025-03-06 21:15:54 [INFO]  * Restarting with stat
+2025-03-06 21:15:55 [WARNING]  * Debugger is active!
+2025-03-06 21:15:55 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:15:57 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:15:58 [INFO] 127.0.0.1 - - [06/Mar/2025 21:15:58] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:19:32 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:19:32 [INFO]  * Restarting with stat
+2025-03-06 21:19:34 [WARNING]  * Debugger is active!
+2025-03-06 21:19:34 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:19:36 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:19:37 [INFO] 127.0.0.1 - - [06/Mar/2025 21:19:37] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:20:16 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\pipeline_app.py', reloading
+2025-03-06 21:20:16 [INFO]  * Restarting with stat
+2025-03-06 21:20:17 [WARNING]  * Debugger is active!
+2025-03-06 21:20:18 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:20:21 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:20:22 [INFO] 127.0.0.1 - - [06/Mar/2025 21:20:22] "POST /webhook HTTP/1.1" 200 -
+2025-03-06 21:23:04 [INFO]  * Detected change in 'C:\\Project\\github\\DeuxTradingBot\\webhookReceiver\\celery_manager\\tasks.py', reloading
+2025-03-06 21:23:04 [INFO]  * Restarting with stat
+2025-03-06 21:23:05 [WARNING]  * Debugger is active!
+2025-03-06 21:23:05 [INFO]  * Debugger PIN: 569-043-575
+2025-03-06 21:23:08 [INFO] Dados modelados com sucesso: {'key': '1', 'symbol': 'BTC-USDT', 'side': 'buy', 'indicator': '111', 'instance_id': '22'}
+2025-03-06 21:23:10 [INFO] 127.0.0.1 - - [06/Mar/2025 21:23:10] "POST /webhook HTTP/1.1" 200 -
+2025-03-07 15:52:22 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5004
+ * Running on http://192.168.100.2:5004
+2025-03-07 15:52:22 [INFO] [33mPress CTRL+C to quit[0m
+2025-03-07 15:52:22 [INFO]  * Restarting with stat
+2025-03-07 15:52:23 [WARNING]  * Debugger is active!
+2025-03-07 15:52:23 [INFO]  * Debugger PIN: 569-043-575
+2025-03-07 16:12:41 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5004
+ * Running on http://192.168.100.2:5004
+2025-03-07 16:12:41 [INFO] [33mPress CTRL+C to quit[0m
+2025-03-07 16:12:41 [INFO]  * Restarting with stat
+2025-03-07 16:12:42 [WARNING]  * Debugger is active!
+2025-03-07 16:12:42 [INFO]  * Debugger PIN: 569-043-575
