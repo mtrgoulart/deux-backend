@@ -1,100 +1,111 @@
 import os
 import sys
-
-# Define o caminho da pasta raiz do projeto
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))  # webhookReceiver/
-ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, "../"))  # Diretório raiz do projeto
-sys.path.insert(0, os.path.abspath(os.path.join(BASE_DIR, '..')))  # Adiciona a raiz ao sys.path
-
 import re
 import logging
 from configparser import ConfigParser
 from flask import Flask, request, jsonify
-from celeryManager.tasks import process_webhook 
+from dotenv import load_dotenv
+from celeryManager.celery_app import celery as celery_app
+
+# Carrega variáveis de ambiente
+load_dotenv(".env")
+
+# Configuração do logger
+LOG_FILE = "webhook.log"
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+
+# Cria o logger
+logger = logging.getLogger()
+logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
+
+# Formato do log
+formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
+
+# Handler para arquivo
+file_handler = logging.FileHandler(LOG_FILE)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+# Handler para console
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
 
-
-# Função para carregar configurações a partir do config.ini
+# === Configuração ===
 def load_config(filename="config.ini"):
     parser = ConfigParser()
     parser.read(filename)
-    config = {section: {param[0]: param[1] for param in parser.items(section)} for section in parser.sections()}
-    return config
+    return {section: dict(parser.items(section)) for section in parser.sections()}
 
-# Configuração do logger
-def setup_logging(log_file, log_level):
-    logging.basicConfig(
-        filename=log_file,
-        level=getattr(logging, log_level, logging.INFO),
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
-    )
-
-
-# Carregar configurações e configurar logger
 config = load_config()
-db_params = config["database"]
-data_config = config["data"]
-table_config = config["table"]
-
-
-setup_logging(config["logging"]["log_file"], config["logging"]["log_level"])
-
-# Inicializa o aplicativo Flask
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024
 
-# Função para validar o formato dos dados
-def validate_data(data):
-    pattern = data_config["regex_pattern"]
-    is_valid = bool(re.fullmatch(pattern, data))
-    if not is_valid:
-        logging.warning("Dados inválidos recebidos: %s", data)
-    return is_valid
+# === Funções de utilidade ===
+def parse_data(text: str) -> dict:
+    """Valida e parseia entrada no formato 'key:valor,side:buy|sell'."""
+    try:
+        entries = [entry.strip() for entry in text.split(",") if ":" in entry]
+        data = {}
 
-# Função para modelar os dados
-def model_data(data):
-    parsed_data = dict(item.split('=') for item in data.split(','))
-    logging.info("Dados modelados com sucesso: %s", parsed_data)
+        for entry in entries:
+            key, value = entry.split(":", 1)
+            key = key.strip().lower()
+            value = value.strip()
 
-    # Ordena os dados conforme os campos especificados em data_fields
-    fields = data_config["data_fields"].split(",")
-    return {field: parsed_data.get(field) for field in fields}
+            if key not in ["key", "side"]:
+                raise ValueError(f"Chave inválida: '{key}' (somente 'key' e 'side' são permitidas)")
+            if not value:
+                raise ValueError(f"Valor vazio para a chave: '{key}'")
 
+            data[key] = value
+
+        if "key" not in data or "side" not in data:
+            raise ValueError("As chaves 'key' e 'side' são obrigatórias")
+
+        if data["side"].lower() not in ["buy", "sell"]:
+            raise ValueError("O valor de 'side' deve ser 'buy' ou 'sell'")
+
+        # Normaliza o valor de 'side' para minúsculo
+        data["side"] = data["side"].lower()
+        return data
+
+    except Exception as e:
+        raise ValueError(f"Erro ao analisar os dados: {e}")
+
+def send_to_celery(data: dict):
+    """Envia dados para o Celery processar."""
+    try:
+        celery_app.send_task("celeryManager.tasks.process_webhook", kwargs={"data": data})
+        logger.info("Tarefa enviada ao Celery: %s", data)
+    except Exception as e:
+        logger.error("Erro ao enviar task ao Celery: %s", e)
+        raise RuntimeError("Falha ao enviar para processamento assíncrono.")
+
+
+# === Rota principal ===
 @app.route('/webhook', methods=['POST'])
 def webhook_listener():
     try:
-        # Captura o corpo da requisição como texto
-        raw_body = request.get_data(as_text=True)
-        raw_data = dict(item.split("=") for item in raw_body.split(","))
-        
-        # Lógica para capturar o dado a ser validado
-        
-        if raw_data and isinstance(raw_data, dict) and 'data' in raw_data:
-            data_to_validate = raw_data['data']
-        else:
-            data_to_validate = raw_body
+        raw_body = request.get_data(as_text=True).strip()
+        if not raw_body:
+            logger.warning("Corpo da requisição vazio.")
+            return jsonify({"error": "Corpo da requisição está vazio"}), 400
 
+        try:
+            parsed_data = parse_data(raw_body)
+        except ValueError as e:
+            logger.warning("Falha na validação dos dados: %s", e)
+            return jsonify({"error": str(e)}), 400
+        print(parsed_data)
+        #send_to_celery(parsed_data)
+        return jsonify({"message": "Dados recebidos e enviados para processamento"}), 200
 
-        # Valida os dados
-        if validate_data(data_to_validate):
-            
-            modeled_data = model_data(data_to_validate)  # Modela os dados validados
-            print(modeled_data)
-            try:
-                process_webhook.apply_async(kwargs={"data": modeled_data})
-            except Exception as e:
-                print(f'Não possivel processar o webhook {e}')
-
-            print(f'Mensagem enviada para celery com sucesso')
-            return jsonify({"message": "Data processed and stored successfully"}), 200
-        else:
-            logging.warning("Requisição falhou devido a dados inválidos.")
-            return jsonify({"error": "Invalid data format"}), 400
     except Exception as e:
-        logging.error(f"Erro ao processar a requisição: {str(e)}")
-        return jsonify({"error": "Internal server error "}), 500
+        logger.exception("Erro inesperado no processamento do webhook")
+        return jsonify({"error": "Erro interno no servidor"}), 500
     
-# Inicializa o servidor Flask
 if __name__ == '__main__':
-    print('iniciando webhook')
+    logger.info('Iniciando webhook')
     app.run(host='0.0.0.0', port=5000, debug=True)

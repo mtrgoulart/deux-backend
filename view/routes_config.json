@@ -1,8 +1,0 @@
-{
-    "login": "login.html",
-    "register": "register.html",
-    "home": "home.html",
-    "strategy": "strategy.html",
-    "indicators":"indicator_popup.html",
-    "register_api_key":"register_api_key.html"
-}

@@ -89,7 +89,8 @@ class DatabaseClient:
                 rows_affected = self.cursor.rowcount  # Retorna o número de linhas afetadas
                 return rows_affected
             except Exception as e:
-                general_logger.error("Erro ao deletar dados:", e)
+                general_logger.error(f"Erro ao conectar ao banco de dados: {e}")
+
                 raise
             finally:
                 self.close()

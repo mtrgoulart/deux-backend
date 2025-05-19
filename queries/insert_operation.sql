@@ -1,3 +1,2 @@
-INSERT INTO public.operations (date, symbol, size, side, price, status, instance_id)
-VALUES (%s, %s, %s, %s, %s, %s, %s)
-RETURNING id;
+INSERT INTO operations (user_id, api_key, symbol, side, size, price, instance_id, status, executed_at)
+VALUES (%s, %s, %s, %s, %s, %s,%s,  %s, %s, NOW());

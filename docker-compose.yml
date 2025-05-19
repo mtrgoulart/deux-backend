@@ -1,83 +1,63 @@
 version: '3'
 services:
-  deuxbot:
-    image: deuxbot
-    container_name: deuxbot
-    networks:
-      - main_network
-    ports:
-      - "5001:5001"
-    restart: always
-    environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-
+  
   webhook_pipeline:
-    image: webhook_pipeline
+    build:
+      dockerfile: Dockerfile.webhook
     container_name: webhook_pipeline
     networks:
       - main_network
     ports:
       - "5000:5000"
     restart: always
-    environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-
-  db_postgres:
-    image: postgres:latest
-    container_name: db_postgres
-    networks:
-      - main_network
-    ports:
-      - "5432:5432"
-    restart: always
-    environment:
-      POSTGRES_USER: consumer_adm
-      POSTGRES_PASSWORD: criandta0
-      POSTGRES_DB: deux
-    volumes:
-      - db_data:/var/lib/postgresql/data
-
-  nginx:
-    image: nginx:latest
-    container_name: nginx
-    ports:
-      - "80:80"       # Porta para receber requisições HTTP
-      - "8082:8082"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf  # Montar o arquivo de configuração
-    networks:
-      - main_network
-    restart: always
-
-  rabbitmq:
-    image: "rabbitmq:management"
-    container_name: rabbitmq
-    networks:
-      - main_network
-    ports:
-      - "5672:5672"   # Porta do RabbitMQ
-      - "15672:15672" # Interface de gerenciamento do RabbitMQ
-    restart: always
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-
-  celery_worker:
-    image: "celery_worker:latest"
-    container_name: celery_worker
-    networks:
-      - main_network
+    env_file:
+      - .env.prd
     depends_on:
       - rabbitmq
-    environment:
-      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
-      - CELERY_RESULT_BACKEND=db+postgresql://consumer_adm:criandta0@db_postgres/deux
-      - TZ=America/Sao_Paulo
+      - db_postgres
+
+  celery_worker_ops:
+    build:
+      context: ./celery_manager
+      dockerfile: Dockerfile.worker_ops
+    container_name: celery_worker_ops
+    networks:
+      - main_network
+    env_file:
+      - .env.prd
+    depends_on:
+      - rabbitmq
+      - db_postgres
+    restart: always
+
+  celery_worker_db:
+    build:
+      context: ./celery_manager
+      dockerfile: Dockerfile.worker_db
+    container_name: celery_worker_db
+    networks:
+      - main_network
+    env_file:
+      - .env.prd
+    depends_on:
+      - rabbitmq
+      - db_postgres
+    restart: always
+
+  celery_worker_webhook:
+    build:
+      context: ./celery_manager
+      dockerfile: Dockerfile.worker_webhook
+    container_name: celery_worker_webhook
+    networks:
+      - main_network
+    env_file:
+      - .env.prd
+    depends_on:
+      - rabbitmq
+      - db_postgres
     restart: always
 
 networks:
   main_network:
     external: true
-
-volumes:
-  db_data:

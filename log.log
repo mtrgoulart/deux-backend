@@ -2281,3 +2281,265 @@ HINT:  Perhaps you meant to reference the column "es.symbol".
 2025-04-12 22:42:43,523 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
 2025-04-12 23:28:01,757 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
 2025-04-13 13:36:51,293 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-25 23:16:49,467 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-25 23:25:28,194 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-04-26 01:24:49,279 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-26 01:37:39,115 - dbmanager - general_logger - ERROR - Erro ao buscar dados: syntax error at or near "AND"
+LINE 7:   AND nb.created_at=(SELECT MAX(a.created_at) FROM neouser_b...
+          ^
+2025-04-26 01:37:40,140 - dbmanager - general_logger - ERROR - Erro ao buscar dados: syntax error at or near "AND"
+LINE 7:   AND nb.created_at=(SELECT MAX(a.created_at) FROM neouser_b...
+          ^
+2025-04-26 01:49:25,691 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-26 03:47:19,979 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-26 03:47:27,826 - dbmanager - general_logger - ERROR - Erro ao buscar dados: column nb.api_key does not exist
+LINE 11:     nb.api_key = $1
+             ^
+HINT:  Perhaps you meant to reference the column "nb.api_key_id".
+2025-04-26 03:47:27,831 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'NoneType' object is not iterable
+2025-04-26 03:47:33,876 - dbmanager - general_logger - ERROR - Erro ao buscar dados: column nb.api_key does not exist
+LINE 11:     nb.api_key = $1
+             ^
+HINT:  Perhaps you meant to reference the column "nb.api_key_id".
+2025-04-26 03:47:33,877 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'NoneType' object is not iterable
+2025-04-26 03:47:35,077 - dbmanager - general_logger - ERROR - Erro ao buscar dados: column nb.api_key does not exist
+LINE 11:     nb.api_key = $1
+             ^
+HINT:  Perhaps you meant to reference the column "nb.api_key_id".
+2025-04-26 03:47:35,078 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'NoneType' object is not iterable
+2025-04-26 03:48:14,655 - dbmanager - general_logger - ERROR - Erro ao buscar dados: column nb.api_key does not exist
+LINE 11:     nb.api_key = $1
+             ^
+HINT:  Perhaps you meant to reference the column "nb.api_key_id".
+2025-04-26 03:48:14,658 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'NoneType' object is not iterable
+2025-04-26 03:48:21,973 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-26 04:05:50,648 - dbmanager - general_logger - ERROR - Erro ao buscar dados: the query has 0 placeholders but 1 parameters were passed
+2025-04-26 04:05:50,649 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'NoneType' object is not iterable
+2025-04-26 04:06:05,417 - dbmanager - general_logger - ERROR - Erro ao buscar dados: the query has 0 placeholders but 1 parameters were passed
+2025-04-26 04:06:05,418 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'NoneType' object is not iterable
+2025-04-26 04:06:07,939 - dbmanager - general_logger - ERROR - Erro ao buscar dados: the query has 0 placeholders but 1 parameters were passed
+2025-04-26 04:06:07,940 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'NoneType' object is not iterable
+2025-04-26 04:06:17,628 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'str' object has no attribute 'isoformat'
+2025-04-26 04:06:17,990 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'str' object has no attribute 'isoformat'
+2025-04-26 04:06:34,627 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'str' object has no attribute 'isoformat'
+2025-04-26 04:06:35,583 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'str' object has no attribute 'isoformat'
+2025-04-26 04:07:02,063 - data - general_logger - ERROR - Erro ao buscar histórico de saldo: 'str' object has no attribute 'isoformat'
+2025-04-26 04:08:15,043 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-04-26 13:20:22,450 - instances - general_logger - ERROR - Error removing instance: 'DatabaseClient' object has no attribute 'execute_query'
+2025-04-26 16:51:49,587 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-04-27 12:13:31,624 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-04-28 07:52:57,653 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 21:25:44,455 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-07 21:26:25,720 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 22:12:35,296 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 22:58:55,502 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 23:07:19,936 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-07 23:07:54,134 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-07 23:08:01,213 - dbmanager - general_logger - ERROR - Erro ao buscar dados: relation "strategies" does not exist
+LINE 12: FROM strategies
+              ^
+2025-05-07 23:08:01,214 - bot - general_logger - WARNING - No strategies found for user 1 and ID e399f712-956d-4c5d-806b-bd032cbbdf99.
+2025-05-07 23:15:45,243 - dbmanager - general_logger - ERROR - Erro ao buscar dados: syntax error at or near "FROM"
+LINE 8: FROM
+        ^
+2025-05-07 23:15:48,222 - dbmanager - general_logger - ERROR - Erro ao buscar dados: syntax error at or near "FROM"
+LINE 8: FROM
+        ^
+2025-05-07 23:15:52,164 - dbmanager - general_logger - ERROR - Erro ao buscar dados: syntax error at or near "FROM"
+LINE 8: FROM
+        ^
+2025-05-07 23:16:08,330 - dbmanager - general_logger - ERROR - Erro ao buscar dados: syntax error at or near "FROM"
+LINE 8: FROM
+        ^
+2025-05-07 23:18:59,948 - dbmanager - general_logger - ERROR - Erro ao buscar dados: syntax error at or near "FROM"
+LINE 8: FROM
+        ^
+2025-05-07 23:20:45,890 - dbmanager - general_logger - ERROR - Erro ao buscar dados: syntax error at or near "FROM"
+LINE 8: FROM
+        ^
+2025-05-07 23:20:50,912 - dbmanager - general_logger - ERROR - Erro ao buscar dados: syntax error at or near "FROM"
+LINE 8: FROM
+        ^
+2025-05-07 23:23:14,727 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-07 23:25:37,695 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-07 23:37:58,511 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 23:38:05,587 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 23:38:08,350 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 23:38:10,692 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 23:38:18,622 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 23:38:24,836 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 23:38:45,230 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 23:39:11,332 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 23:39:13,858 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-07 23:41:58,933 - dbmanager - general_logger - ERROR - Erro ao buscar dados: relation "strategies" does not exist
+LINE 12: FROM strategies
+              ^
+2025-05-07 23:41:58,934 - bot - general_logger - WARNING - No strategies found for user 1 and ID 94.
+2025-05-07 23:42:47,385 - dbmanager - general_logger - ERROR - Erro ao buscar dados: column "type" does not exist
+LINE 4:     type,
+            ^
+HINT:  Perhaps you meant to reference the column "strategy.tp".
+2025-05-07 23:42:47,386 - bot - general_logger - WARNING - No strategies found for user 1 and ID 94.
+2025-05-07 23:42:58,336 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-07 23:43:08,971 - dbmanager - general_logger - ERROR - Erro ao buscar dados: column "type" does not exist
+LINE 4:     type,
+            ^
+HINT:  Perhaps you meant to reference the column "strategy.tp".
+2025-05-07 23:43:08,972 - bot - general_logger - WARNING - No strategies found for user 1 and ID 94.
+2025-05-07 23:46:10,095 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-07 23:46:19,029 - bot - general_logger - ERROR - Error retrieving strategy: 'UUID' object is not subscriptable
+2025-05-07 23:46:57,277 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-07 23:47:05,256 - bot - general_logger - ERROR - Error retrieving strategy: 'UUID' object is not subscriptable
+2025-05-07 23:47:18,374 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-08 00:14:37,091 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 08:05:08,910 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 08:05:14,135 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 08:05:15,096 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 08:05:19,573 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 08:05:26,053 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 08:35:39,543 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 08:35:47,704 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 08:35:48,529 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 08:35:50,509 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 08:36:59,688 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-08 09:10:27,272 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 09:17:46,569 - bot - general_logger - ERROR - Erro ao atualizar estratégia no banco: 'DatabaseClient' object has no attribute 'execute_query'
+2025-05-08 09:18:41,437 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-08 09:19:40,516 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-08 10:44:36,012 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 10:46:41,476 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 10:51:52,804 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 11:03:30,437 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-08 11:04:45,222 - bot - general_logger - WARNING - No strategies found for user 1 and ID None.
+2025-05-08 11:06:07,119 - bot - general_logger - WARNING - No strategies found for user 1 and ID None.
+2025-05-08 11:11:49,375 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-08 11:11:58,099 - bot - general_logger - WARNING - No strategies found for user 1 and ID None.
+2025-05-08 11:12:20,100 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-08 11:12:26,439 - bot - general_logger - WARNING - No strategies found for user 1 and ID None.
+2025-05-08 11:21:52,289 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-08 11:21:59,208 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 11:22:29,801 - bot - general_logger - WARNING - No strategies found for user 1 and ID None.
+2025-05-08 11:24:15,376 - bot - general_logger - WARNING - No strategies found for user 1 and ID None.
+2025-05-08 11:24:23,934 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-08 11:24:32,449 - bot - general_logger - WARNING - No strategies found for user 1 and ID None.
+2025-05-08 11:48:03,295 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-08 11:48:55,270 - bot - general_logger - WARNING - No strategies found for user 1 and ID None.
+2025-05-08 12:54:59,654 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 12:55:00,500 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 12:56:04,206 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 12:56:57,696 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 12:56:59,102 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-08 12:57:16,278 - bot - general_logger - WARNING - No strategies found for user 1 and ID None.
+2025-05-08 12:59:44,080 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 17:39:55,531 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 17:40:11,674 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 17:40:37,789 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 17:43:34,795 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 17:54:50,481 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 18:19:57,306 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 18:20:00,291 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 18:42:53,279 - bot - general_logger - ERROR - Missing required fields: strategy_id, symbol, buy data, sell data
+2025-05-09 18:50:19,632 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 18:51:29,828 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 18:51:40,339 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 18:52:09,483 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 18:52:30,528 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 18:52:33,078 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 18:53:57,558 - bot - general_logger - ERROR - Missing required fields: strategy_id, symbol, buy data, sell data
+2025-05-09 18:54:12,658 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 19:22:09,736 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 19:22:10,406 - bot - general_logger - ERROR - Missing required fields: strategy_id, symbol, buy data, sell data
+2025-05-09 19:22:45,627 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 19:29:35,396 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 19:29:39,045 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 19:30:55,091 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 19:31:07,929 - bot - general_logger - ERROR - Erro ao salvar estratégia: column "strategy_uuid" of relation "strategy" does not exist
+LINE 2:     user_id, strategy_uuid, name, side, percent,
+                     ^
+2025-05-09 19:31:24,381 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 19:31:46,844 - bot - general_logger - ERROR - Erro ao salvar estratégia: null value in column "symbol" of relation "strategy" violates not-null constraint
+DETAIL:  Failing row contains (141, 1, a7cbbf00-8600-45e2-8e87-7dc1b32f25c0, null, buy, 0.00, 1, 1.00, 1, stopped, 2025-05-09 22:31:45.349553, 2025-05-09 22:31:45.349553, 0.01, 0.01, teste21421).
+2025-05-09 21:53:39,008 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 21:53:41,608 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 22:02:53,442 - bot - general_logger - WARNING - Campos obrigatórios ausentes: side
+2025-05-09 22:25:20,452 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 23:10:01,539 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 23:23:24,466 - instances - general_logger - ERROR - Error saving instance: Strategy ID is required to create an instance.
+2025-05-09 23:25:03,922 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 23:25:29,970 - instances - general_logger - ERROR - Error saving instance: the query has 5 placeholders but 4 parameters were passed
+2025-05-09 23:26:41,928 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 23:29:38,322 - instances - general_logger - ERROR - Error saving instance: relate_instance_strategy() takes 1 positional argument but 2 were given
+2025-05-09 23:30:04,542 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 23:31:17,142 - instances - general_logger - ERROR - Error saving instance: Query file not found: C:\Project\github\DeuxTradingBot\source\..\queries\delete_instance_strategy.sql
+2025-05-09 23:34:58,791 - instances - general_logger - ERROR - Error saving instance: Failed to generate instance ID.
+2025-05-09 23:39:53,480 - instances - general_logger - ERROR - Error saving instance: Failed to generate instance ID.
+2025-05-09 23:40:26,538 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 23:40:49,240 - instances - general_logger - ERROR - Error saving instance: Failed to generate instance ID.
+2025-05-09 23:41:19,272 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 23:41:38,894 - instances - general_logger - ERROR - Error saving instance: Failed to generate instance ID.
+2025-05-09 23:49:25,410 - dbmanager - general_logger - ERROR - Erro ao buscar dados: cannot adapt type 'Response' using placeholder '%s' (format: AUTO)
+2025-05-09 23:57:44,367 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-09 23:59:30,586 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 00:23:52,824 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 00:31:09,727 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 00:31:37,174 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 00:35:20,434 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 00:39:50,035 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 00:40:29,672 - instances - general_logger - ERROR - Error saving instance: null value in column "status" of relation "instances" violates not-null constraint
+DETAIL:  Failing row contains (67, 1, 2, teste1, null, 2025-05-10 03:40:29.234352, 2025-05-10 03:40:29.234352, null, null).
+2025-05-10 00:43:38,449 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 00:44:04,453 - instances - general_logger - ERROR - Error saving instance: Strategy is required to create an instance.
+2025-05-10 00:47:33,939 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 00:48:04,562 - instances - general_logger - ERROR - Error saving instance: Failed to generate instance ID.
+2025-05-10 00:56:59,298 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 01:04:17,484 - instances - general_logger - ERROR - Error removing instance: 'int' object has no attribute 'get'
+2025-05-10 01:04:40,186 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 01:04:44,627 - instances - general_logger - ERROR - Error removing instance: 'int' object has no attribute 'get'
+2025-05-10 01:27:23,618 - instances - general_logger - ERROR - Error removing instance: 'int' object has no attribute 'get'
+2025-05-10 01:30:06,621 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 01:30:08,554 - instances - general_logger - ERROR - Error removing instance: 'int' object has no attribute 'get'
+2025-05-10 01:33:03,991 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 01:33:10,638 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 01:33:16,641 - dbmanager - general_logger - ERROR - Erro ao conectar ao banco de dados: the query has 1 placeholders but 2 parameters were passed
+2025-05-10 01:33:16,642 - instances - general_logger - ERROR - Error removing instance: the query has 1 placeholders but 2 parameters were passed
+2025-05-10 01:33:59,383 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 01:34:12,978 - dbmanager - general_logger - ERROR - Erro ao conectar ao banco de dados: the query has 1 placeholders but 2 parameters were passed
+2025-05-10 01:34:12,979 - instances - general_logger - ERROR - Error removing instance: the query has 1 placeholders but 2 parameters were passed
+2025-05-10 01:35:05,300 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 01:35:49,319 - dbmanager - general_logger - ERROR - Erro ao conectar ao banco de dados: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:35:49,321 - instances - general_logger - ERROR - Error saving instance: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:38:27,886 - dbmanager - general_logger - ERROR - Erro ao conectar ao banco de dados: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:38:27,887 - instances - general_logger - ERROR - Error saving instance: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:38:30,475 - dbmanager - general_logger - ERROR - Erro ao conectar ao banco de dados: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:38:30,476 - instances - general_logger - ERROR - Error saving instance: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:39:36,126 - dbmanager - general_logger - ERROR - Erro ao conectar ao banco de dados: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:39:36,127 - instances - general_logger - ERROR - Error saving instance: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:42:39,556 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 01:43:10,527 - dbmanager - general_logger - ERROR - Erro ao conectar ao banco de dados: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:43:10,527 - instances - general_logger - ERROR - Error saving instance: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:44:37,689 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 01:45:10,941 - dbmanager - general_logger - ERROR - Erro ao conectar ao banco de dados: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:45:10,941 - instances - general_logger - ERROR - Error saving instance: cannot adapt type 'dict' using placeholder '%s' (format: AUTO)
+2025-05-10 01:46:01,022 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 01:48:40,891 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 02:08:01,561 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 02:12:02,066 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 02:12:05,711 - dbmanager - general_logger - ERROR - Erro ao buscar dados: the query has 0 placeholders but 1 parameters were passed
+2025-05-10 02:12:05,712 - instances - general_logger - ERROR - Error fetching instances: 'NoneType' object is not iterable
+2025-05-10 02:12:07,957 - dbmanager - general_logger - ERROR - Erro ao buscar dados: the query has 0 placeholders but 1 parameters were passed
+2025-05-10 02:12:07,958 - instances - general_logger - ERROR - Error fetching instances: 'NoneType' object is not iterable
+2025-05-10 02:12:14,482 - dbmanager - general_logger - ERROR - Erro ao buscar dados: the query has 0 placeholders but 1 parameters were passed
+2025-05-10 02:12:14,483 - instances - general_logger - ERROR - Error fetching instances: 'NoneType' object is not iterable
+2025-05-10 02:13:51,946 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 02:29:16,764 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 02:31:34,278 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-10 02:32:01,353 - main - general_logger - INFO - Iniciando aplicação Flask a partir de main.py.
+2025-05-16 21:11:29,492 - dbmanager - general_logger - ERROR - Erro ao buscar dados: column ns.neouser_id does not exist
+LINE 1: select ns.neouser_id as user_id
+               ^
+HINT:  Perhaps you meant to reference the column "ns.user_id".
+2025-05-16 21:11:29,493 - sharing - general_logger - INFO - No api key for sharing_id:1
+2025-05-17 17:31:31,812 - sharing - general_logger - ERROR - Payload inválido: 1 validation error for OperationPayload
+user_id
+  Field required [type=missing, input_value={'api_key_id': 123, 'symb...alance_operation': 75.0}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.11/v/missing

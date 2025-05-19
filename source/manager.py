@@ -9,6 +9,7 @@ from .context import get_db_connection
 from threading import Event
 from .exchange_interface import get_exchange_interface
 from decimal import Decimal
+from .celery_client import get_client
 
 class TPSLHandler:
     def __init__(self, instance_id, user_id, api_key, symbol, exchange_id, side, trailing_check_interval=None, trailing_percentage=None):
@@ -204,7 +205,7 @@ class IntervalHandler:
             return last_operation_interval >= self.interval
 
 class OperationHandler:
-    def __init__(self, market_manager, condition_limit, interval, symbol, side, percent,exchange_id,user_id,api_key,instance_id,tp=None,sl=None):
+    def __init__(self, market_manager, condition_limit, interval, symbol, side, percent,exchange_id,user_id,api_key,instance_id,tp=None,sl=None,share_id=None):
         self.market_manager = market_manager
         self.condition_handler = conditionHandler(condition_limit)
         self.interval = interval
@@ -216,6 +217,8 @@ class OperationHandler:
         self.api_key=api_key
         self.perc_tp=tp
         self.perc_sl=sl
+        self.share_id=share_id
+        self.user_id=user_id
 
         self.exchange_interface = get_exchange_interface(exchange_id, user_id, api_key)
 
@@ -261,11 +264,26 @@ class OperationHandler:
             general_logger.info(f'**Filled Condition Performing Operation...**')
             last_market_data = data[-1]
             market_to_operation = Market(
-                symbol=last_market_data["symbol"],
+                symbol=self.symbol,
                 order_type='market',
-                side=last_market_data["side"]
+                side=self.side
             )
             execution_price, execution_size, execution_status,tp_price,sl_price = self.perform_operation(market_to_operation,self.perc_tp,self.perc_sl)
+            if self.share_id and operation_id:
+                try:
+                    get_client().send_task(
+                        "process_sharing_operations",
+                        kwargs={"data":{
+                            "share_id": self.share_id,
+                            "user_id": self.user_id,
+                            "side":self.side,
+                            "symbol":self.symbol
+                            }
+                        }
+                    )
+                    general_logger.info(f"Tarefa de compartilhamento enviada com sucesso para share_id={self.share_id}")
+                except Exception as e:
+                    general_logger.error(f"Erro ao enviar task de compartilhamento: {e}")
             market_to_operation.size = execution_size
             general_logger.info(f'Operation Executed on: symbol:{last_market_data["symbol"]} price:{execution_price}')
             operation_id,operation_log = self.operations.save_operation_to_db(

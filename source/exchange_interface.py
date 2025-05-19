@@ -108,8 +108,8 @@ class BinanceRealInterface(ExchangeInterface):
     def place_order(self, symbol, side, order_type, size, currency, price=None):
         return self.binance_client.place_order(symbol, side, order_type, size, currency, price)
 
-    def get_fill_price(self, order_id):
-        return self.binance_client.get_fill_price(order_id)
+    def get_fill_price(self, order_id, symbol):
+        return self.binance_client.wait_for_fill_price(order_id, symbol)
 
     def cancel_order(self, symbol, order):
         return self.binance_client.cancel_order(symbol, order)

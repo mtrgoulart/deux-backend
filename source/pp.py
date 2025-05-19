@@ -3,14 +3,53 @@ from datetime import datetime
 import os
 
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+
 class ConfigLoader:
     def __init__(self, config_file='config.ini'):
-        self.config_file = config_file
         self.config = configparser.ConfigParser()
         self.config.read(config_file)
-    
+
+        # Mapeamento opcional: [seção][chave] -> VARIÁVEL_ENV
+        self.env_mapping = {
+            'database': {
+                'dbname': 'DB_NAME',
+                'user': 'DB_USER',
+                'password': 'DB_PASSWORD',
+                'host': 'DB_HOST',
+                'port': 'DB_PORT'
+            },
+            'logging': {
+                'log_file': 'LOG_FILE',
+                'log_level': 'LOG_LEVEL'
+            },
+            'data': {
+                'regex_pattern': 'REGEX_PATTERN',
+                'data_fields': 'DATA_FIELDS'
+            },
+            'table': {
+                'table_name': 'TABLE_NAME'
+            },
+            'rabbitmq': {
+                'host': 'RABBITMQ_HOST',
+                'queue_name': 'RABBITMQ_QUEUE',
+                'user': 'RABBITMQ_USER',
+                'pwd': 'RABBITMQ_PWD'
+            }
+        }
+
     def get(self, section, key):
-        return self.config.get(section, key)
+        # Prioriza variável de ambiente, se mapeada e presente
+        env_key = self.env_mapping.get(section, {}).get(key)
+        if env_key:
+            env_value = os.getenv(env_key)
+            if env_value is not None:
+                return env_value
+        raise KeyError(f"Configuração '{section}.{key}' não encontrada no .env")
 
 class Market:
     def __init__(self, id=None, key=None, symbol=None, side=None, indicator=None, created_at=None, operation=None, size=None, order_type=None, price=None):

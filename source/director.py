@@ -7,7 +7,7 @@ from log.log import general_logger
 
 
 class OperationManager:
-    def __init__(self, user_id, data,  exchange_id, api_key, instance_id):
+    def __init__(self, user_id, data,  exchange_id, api_key, instance_id,share_id):
         self.user_id = user_id
         self.data = data
         self.strategy_id = self.data['strategy_id']
@@ -15,6 +15,7 @@ class OperationManager:
         self.exchange_id = exchange_id
         self.api_key = api_key
         self.instance_id = instance_id
+        self.share_id=share_id
 
     def start_operation(self):
         self.execute_operation_handler()
@@ -66,7 +67,8 @@ class OperationManager:
                 api_key=self.api_key,
                 instance_id=self.instance_id,
                 tp=self.data['tp'],
-                sl=self.data['sl']
+                sl=self.data['sl'],
+                share_id=self.share_id
             )
             result=operation_handler.execute_condition(start_date)
             return result
