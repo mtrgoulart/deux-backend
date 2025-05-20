@@ -1,11 +1,9 @@
 import os
-import sys
-import re
-import logging
 from configparser import ConfigParser
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from celeryManager.celery_app import celery as celery_app
+from log.log import general_logger
 
 # Carrega variáveis de ambiente
 load_dotenv(".env")
@@ -14,22 +12,7 @@ load_dotenv(".env")
 LOG_FILE = "webhook.log"
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
-# Cria o logger
-logger = logging.getLogger()
-logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
 
-# Formato do log
-formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
-
-# Handler para arquivo
-file_handler = logging.FileHandler(LOG_FILE)
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
-
-# Handler para console
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(formatter)
-logger.addHandler(console_handler)
 
 
 # === Configuração ===
@@ -78,9 +61,9 @@ def send_to_celery(data: dict):
     """Envia dados para o Celery processar."""
     try:
         celery_app.send_task("celeryManager.tasks.process_webhook", kwargs={"data": data})
-        logger.info("Tarefa enviada ao Celery: %s", data)
+        general_logger.info("Tarefa enviada ao Celery: %s", data)
     except Exception as e:
-        logger.error("Erro ao enviar task ao Celery: %s", e)
+        general_logger.error("Erro ao enviar task ao Celery: %s", e)
         raise RuntimeError("Falha ao enviar para processamento assíncrono.")
 
 
@@ -90,22 +73,22 @@ def webhook_listener():
     try:
         raw_body = request.get_data(as_text=True).strip()
         if not raw_body:
-            logger.warning("Corpo da requisição vazio.")
+            general_logger.warning("Corpo da requisição vazio.")
             return jsonify({"error": "Corpo da requisição está vazio"}), 400
 
         try:
             parsed_data = parse_data(raw_body)
         except ValueError as e:
-            logger.warning("Falha na validação dos dados: %s", e)
+            general_logger.warning("Falha na validação dos dados: %s", e)
             return jsonify({"error": str(e)}), 400
         print(parsed_data)
         #send_to_celery(parsed_data)
         return jsonify({"message": "Dados recebidos e enviados para processamento"}), 200
 
     except Exception as e:
-        logger.exception("Erro inesperado no processamento do webhook")
+        general_logger.exception("Erro inesperado no processamento do webhook")
         return jsonify({"error": "Erro interno no servidor"}), 500
     
 if __name__ == '__main__':
-    logger.info('Iniciando webhook')
+    general_logger.info('Iniciando webhook')
     app.run(host='0.0.0.0', port=5000, debug=True)
