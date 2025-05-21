@@ -1,7 +1,5 @@
 from .manager import OperationHandler, IntervalHandler, TPSLHandler
 from .pp import Market
-from datetime import datetime
-import pytz
 import threading
 from log.log import general_logger 
 

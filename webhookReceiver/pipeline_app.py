@@ -12,9 +12,6 @@ load_dotenv(".env")
 LOG_FILE = "webhook.log"
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
-
-
-
 # === Configuração ===
 def load_config(filename="config.ini"):
     parser = ConfigParser()

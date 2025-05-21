@@ -1,12 +1,9 @@
-from .client import OKXClient
 from log.log import general_logger  # Importa o logger configurado
-import threading
 import time
-from .pp import ConfigLoader, Market, WebhookData, Operations
+from .pp import Market, WebhookData, Operations
 from datetime import datetime
 import re
 from .context import get_db_connection
-from threading import Event
 from .exchange_interface import get_exchange_interface
 from decimal import Decimal
 from .celery_client import get_client

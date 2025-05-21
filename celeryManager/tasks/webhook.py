@@ -1,22 +1,26 @@
 from celery import shared_task
 from tasks.base import logger
-from tasks.utils import insert_data_to_db
-from interface.webhook_auth import authenticate_signal
+from interface.webhook_auth import authenticate_signal,insert_data_to_db
 from interface.instance import get_instance_status, execute_instance_operation
 
 @shared_task(name="process_webhook")
 def process_webhook(data):
-    signal = data.get("signal")
+    key = data.get("key")
     side = data.get("side")
 
-    if not signal or not side:
-        logger.info(f"Parâmetro ausente: signal={signal}, side={side}")
+    if not key or not side:
+        logger.info(f"Parâmetro ausente: key={key}, side={side}")
         return {"status": None, "message": "Parâmetros ausentes"}
 
-    user_id, instance_id = authenticate_signal(signal)
-    if not user_id or not instance_id:
-        logger.warning(f"Chave de sinal inválida: {signal}")
+    signal_data = authenticate_signal(key)
+    if not signal_data:
+        logger.warning(f"Chave de sinal inválida: {key}")
         return {"status": "error", "message": "Invalid signal"}
+
+    user_id = signal_data['user_id']
+    instance_id = signal_data['instance_id']
+    symbol = signal_data.get('symbol')
+    indicator_id = signal_data.get('indicator_id')
 
     status = get_instance_status(instance_id, user_id)
     if status == 1:
@@ -24,9 +28,17 @@ def process_webhook(data):
     if status == 2:
         if side not in ["buy", "sell"]:
             return {"status": "error", "message": "Invalid side"}
-        data["user_id"] = user_id
-        data["instance_id"] = instance_id
-        insert_data_to_db(data)
+        
+        # Prepara os dados específicos para inserção no banco
+        db_data = {
+            "key": key,
+            "symbol": symbol,
+            "side": side,
+            "indicator_id": indicator_id,
+            "instance_id": instance_id
+        }
+        
+        insert_data_to_db(db_data)
         return execute_instance_operation(instance_id, user_id, side)
 
     return {"status": "error", "message": f"Unknown status {status}"}
