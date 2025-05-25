@@ -42,14 +42,11 @@ def execute_instance_operation(instance_id, user_id, side):
         # Mapeamento dos dados da estratégia
         (
             strategy_id, 
-            strategy_uuid, 
             symbol, 
-            strategy_side, 
             percent, 
             condition_limit, 
             interval, 
             simultaneos_operations, 
-            status,  # Adicionando a variável para armazenar o valor
             tp, 
             sl
         ) = strategy_data
@@ -101,3 +98,4 @@ def execute_shared_operations(share_id, user_id, symbol, side):
     except Exception as e:
         general_logger.error(f"Erro ao executar operação compartilhada: {e}")
         return {"status": "error", "message": str(e)}
+
