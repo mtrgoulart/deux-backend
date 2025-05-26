@@ -13,20 +13,20 @@ def authenticate_signal(key):
             result = db_client.fetch_data(query, (key,))
             if not result:
                 general_logger.warning(f"Chave de sinal inválida: {key}")
-                return None, None
+                return None
             
-            signal_data = result[0][0]
-            
+            row = result[0]  # linha completa: (user_id, instance_id, symbol, indicator_id)
+
             return {
-                'user_id': signal_data[0],
-                'instance_id': signal_data[1],
-                'symbol': signal_data[2],
-                'indicator_id': signal_data[3]
+                'user_id': row[0],
+                'instance_id': row[1],
+                'symbol': row[2],
+                'indicator_id': row[3]
             }
         
     except Exception as e:
         general_logger.error(f"Erro ao autenticar sinal {key}: {str(e)}")
-        return None, None
+        return None
 
 
 def insert_data_to_db(data):
