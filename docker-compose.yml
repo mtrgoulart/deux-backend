@@ -12,9 +12,6 @@ services:
     restart: always
     env_file:
       - .env.prd
-    depends_on:
-      - rabbitmq
-      - db_postgres
 
   celery_worker_ops:
     build:
@@ -25,9 +22,6 @@ services:
       - main_network
     env_file:
       - .env.prd
-    depends_on:
-      - rabbitmq
-      - db_postgres
     restart: always
 
   celery_worker_db:
@@ -39,9 +33,6 @@ services:
       - main_network
     env_file:
       - .env.prd
-    depends_on:
-      - rabbitmq
-      - db_postgres
     restart: always
 
   celery_worker_webhook:
@@ -53,9 +44,6 @@ services:
       - main_network
     env_file:
       - .env.prd
-    depends_on:
-      - rabbitmq
-      - db_postgres
     restart: always
 
 networks:
