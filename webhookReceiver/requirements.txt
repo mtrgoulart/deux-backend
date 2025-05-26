@@ -2,3 +2,4 @@ flask
 python-dotenv
 celery
 SQLAlchemy==2.0.41
+psycopg2-binary==2.9.10
