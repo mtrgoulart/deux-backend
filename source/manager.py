@@ -276,7 +276,8 @@ class OperationHandler:
                             "side":self.side,
                             "symbol":self.symbol
                             }
-                        }
+                        },
+                        queue="sharing"
                     )
                     general_logger.info(f"Tarefa de compartilhamento enviada com sucesso para share_id={self.share_id}")
                 except Exception as e:

@@ -2,7 +2,7 @@ from celery import shared_task
 from interface.instance import execute_operation
 from celeryManager.tasks.save import save_operation_task
 
-@shared_task(name="process_operation")
+@shared_task(name="process_operation", queue="ops")
 def process_operation(data):
     result = execute_operation(
         user_id=data.get("user_id"),

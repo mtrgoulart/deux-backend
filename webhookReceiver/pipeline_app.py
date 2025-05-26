@@ -57,7 +57,7 @@ def parse_data(text: str) -> dict:
 def send_to_celery(data: dict):
     """Envia dados para o Celery processar."""
     try:
-        celery_app.send_task("celeryManager.tasks.process_webhook", kwargs={"data": data})
+        celery_app.send_task("process_webhook", kwargs={"data": data}, queue="webhook")
         general_logger.info("Tarefa enviada ao Celery: %s", data)
     except Exception as e:
         general_logger.error("Erro ao enviar task ao Celery: %s", e)

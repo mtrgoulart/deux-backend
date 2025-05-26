@@ -3,7 +3,7 @@ from source.context import get_db_connection
 from celeryManager.tasks.base import logger
 from source.dbmanager import load_query  # ou onde estiver seu load_query
 
-@shared_task(name="save_operation_task")
+@shared_task(name="save_operation_task", queue="db")
 def save_operation_task(user_id, api_key, symbol, side, size, price, instance_id, status):
     try:
         query = load_query('insert_operation.sql')

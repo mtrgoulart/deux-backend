@@ -3,7 +3,7 @@ from tasks.base import logger
 from interface.webhook_auth import authenticate_signal,insert_data_to_db
 from interface.instance import get_instance_status, execute_instance_operation
 
-@shared_task(name="process_webhook")
+@shared_task(name="process_webhook", queue="webhook")
 def process_webhook(data):
     key = data.get("key")
     side = data.get("side")
