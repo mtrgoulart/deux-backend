@@ -12,7 +12,7 @@ def get_instance_status(instance_id,user_id):
         instance_status = db_client.fetch_data(query_instance, (instance_id, user_id))
         instance_status=instance_status[0][0]
         return instance_status
-    
+
 def execute_instance_operation(instance_id, user_id, side):
     """
     Executa a operação de compra ou venda para uma instância específica.

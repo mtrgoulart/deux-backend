@@ -1,5 +1,5 @@
 from celery import shared_task
-from interface.instance import execute_operation
+from interface.operation import execute_operation
 from celeryManager.tasks.save import save_operation_task
 
 @shared_task(name="process_operation", queue="ops")
