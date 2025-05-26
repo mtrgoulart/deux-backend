@@ -4,14 +4,16 @@ from source.context import get_db_connection
 from source.director import OperationManager
 from source.sharing import OperationBuilder
 
-def get_instance_status(instance_id,user_id):
+def get_instance_status(instance_id, user_id):
+    query_instance = load_query('select_instance_status.sql')
+
     with get_db_connection() as db_client:
-        # Busca detalhes da instância e API Key
-        
-        query_instance = load_query('select_instance_status.sql')
-        instance_status = db_client.fetch_data(query_instance, (instance_id, user_id))
-        instance_status=instance_status[0][0]
-        return instance_status
+        result = db_client.fetch_data(query_instance, (instance_id, user_id))
+
+        if not result:
+            return None
+
+        return result[0][0]
 
 def execute_instance_operation(instance_id, user_id, side):
     """

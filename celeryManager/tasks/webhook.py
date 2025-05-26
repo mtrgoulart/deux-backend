@@ -23,8 +23,12 @@ def process_webhook(data):
     indicator_id = signal_data.get('indicator_id')
 
     status = get_instance_status(instance_id, user_id)
+    if status is None:
+        return {"status": "error", "message": "Instance not found"}
+
     if status == 1:
         return {"status": None, "message": "Instance not running"}
+
     if status == 2:
         if side not in ["buy", "sell"]:
             return {"status": "error", "message": "Invalid side"}
