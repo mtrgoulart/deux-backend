@@ -1,5 +1,5 @@
 from celery import shared_task
-from tasks.base import logger
+from celeryManager.tasks.base import logger
 from interface.webhook_auth import authenticate_signal,insert_data_to_db
 from interface.instance import get_instance_status, execute_instance_operation
 
