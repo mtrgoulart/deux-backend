@@ -23,4 +23,4 @@ celery = Celery("celery_manager", broker=CELERY_BROKER_URL, backend=CELERY_RESUL
 celery.conf.broker_connection_retry_on_startup = True
 
 # === Descobre tasks automaticamente na pasta ===
-celery.autodiscover_tasks(['tasks'])
+celery.autodiscover_tasks(['celeryManager.tasks'])
