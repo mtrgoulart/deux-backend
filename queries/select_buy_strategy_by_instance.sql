@@ -1,19 +1,14 @@
 SELECT
-    s.id,
-    s.strategy_id AS strategy_uuid,
+    s.id,                     -- strategy_id
     s.symbol,
-    s.side,
     s.percent,
     s.condition_limit,
     s.interval,
     s.simultaneous_operations,
-    s.status,
     s.tp,
     s.sl
-FROM
-    instance_strategy AS ist
-JOIN
-    strategy AS s ON ist.strategy_id = s.id
-WHERE
-    ist.instance_id = %s
-    AND s.side='buy';
+FROM strategies s
+JOIN instances i ON i.id = s.instance_id
+WHERE s.side = 'buy'
+  AND s.status = 1
+  AND i.id = %s;
