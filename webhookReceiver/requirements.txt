@@ -1,4 +1,4 @@
 flask
 python-dotenv
 celery
-SQLAlchemy=2.0.41
+SQLAlchemy==2.0.41
