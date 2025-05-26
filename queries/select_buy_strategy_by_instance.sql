@@ -1,5 +1,5 @@
 SELECT
-    s.id,                     -- strategy_id
+    s.id,
     s.symbol,
     s.percent,
     s.condition_limit,
@@ -7,8 +7,10 @@ SELECT
     s.simultaneous_operations,
     s.tp,
     s.sl
-FROM strategies s
-JOIN instances i ON i.id = s.instance_id
-WHERE s.side = 'buy'
-  AND s.status = 1
-  AND i.id = %s;
+FROM
+    instance_strategy AS ist
+JOIN
+    strategy AS s ON ist.strategy_id = s.id
+WHERE
+    ist.instance_id = %s
+    AND s.side='buy';
