@@ -78,8 +78,7 @@ def webhook_listener():
         except ValueError as e:
             general_logger.warning("Falha na validação dos dados: %s", e)
             return jsonify({"error": str(e)}), 400
-        print(parsed_data)
-        #send_to_celery(parsed_data)
+        send_to_celery(parsed_data)
         return jsonify({"message": "Dados recebidos e enviados para processamento"}), 200
 
     except Exception as e:
