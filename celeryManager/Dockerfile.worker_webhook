@@ -6,4 +6,4 @@ COPY . .
 ENV PYTHONPATH="/app"
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["celery", "--app", "celery_app", "worker", "--concurrency=5", "-Q", "webhook", "-n", "worker_webhook@%h", "--loglevel=info"]
+CMD ["celery", "--app", "celeryManager.celery_app", "worker", "--concurrency=5", "-Q", "webhook", "-n", "worker_webhook@%h", "--loglevel=info"]
