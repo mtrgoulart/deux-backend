@@ -2,8 +2,16 @@
 
 FROM python:3.9-slim
 WORKDIR /app
-COPY . .
 ENV PYTHONPATH="/app"
+
+COPY celeryManager/requirements.txt ./celeryManager/requirements.txt
 RUN pip install --no-cache-dir -r celeryManager/requirements.txt
+
+COPY celeryManager/ ./celeryManager/
+COPY source/ ./source/
+COPY interface/ ./interface/ # Celery tasks might use interface functions
+COPY log/ ./log/
+COPY queries/ ./queries/ # Celery tasks likely use queries
+COPY config.ini ./config.ini # ConfigLoader in source/pp.py reads this
 
 CMD ["celery", "--app", "celeryManager.celery_app", "worker", "--concurrency=10", "-Q", "operations", "-n", "worker_ops@%h", "--loglevel=info"]

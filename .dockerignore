@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment files
+.env
+.env.*
+!env.example
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test reports
+htmlcov/
+.coverage
+pytest_cache/
+.pytest_cache/
+
+# Logs & local data
+*.log
+*.db
+*.sqlite3
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Local user files / build artifacts
+dist/
+build/
+*.egg-info/
+downloads/
+output/

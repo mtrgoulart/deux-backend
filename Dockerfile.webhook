@@ -1,19 +1,24 @@
 FROM python:3.9
 
-RUN apt-get update && apt-get install -y libpq-dev
+RUN apt-get update && apt-get install -y libpq-dev tzdata && rm -rf /var/lib/apt/lists/*
 
 # Define o diretório de trabalho
 WORKDIR /app
 
-# Instala a configuração de timezone e define o fuso horário
-RUN apt-get update && apt-get install -y tzdata
 ENV TZ=America/Sao_Paulo
 
-# Copia os arquivos necessários para o contêiner
-COPY . .
-
-# Instala as dependências
+# Copy only necessary requirements files
+COPY webhookReceiver/requirements.txt ./webhookReceiver/requirements.txt
+# Assuming webhookReceiver/requirements.txt is self-contained for this service's direct dependencies.
 RUN pip install --no-cache-dir -r webhookReceiver/requirements.txt
+
+# Copy application code and necessary modules/configs
+COPY webhookReceiver/ ./webhookReceiver/
+COPY celeryManager/ ./celeryManager/  # For importing celery_app
+COPY source/ ./source/              # If webhookReceiver code or its imports use it
+COPY interface/ ./interface/        # If webhookReceiver code or its imports use it
+COPY log/ ./log/                    # For logging setup
+COPY webhookReceiver/config.ini ./webhookReceiver/config.ini # For any non-sensitive configs read by pipeline_app
 
 # Expõe a porta do Flask
 EXPOSE 5000
