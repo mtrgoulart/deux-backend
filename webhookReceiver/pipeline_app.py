@@ -1,5 +1,4 @@
 import os
-from configparser import ConfigParser
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from celeryManager.celery_app import celery as celery_app
@@ -12,13 +11,6 @@ load_dotenv(".env")
 LOG_FILE = "webhook.log"
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 
-# === Configuração ===
-def load_config(filename="config.ini"):
-    parser = ConfigParser()
-    parser.read(filename)
-    return {section: dict(parser.items(section)) for section in parser.sections()}
-
-config = load_config()
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024
 
@@ -58,7 +50,7 @@ def send_to_celery(data: dict):
     """Envia dados para o Celery processar."""
     try:
         celery_app.send_task("process_webhook", kwargs={"data": data}, queue="webhook")
-        general_logger.info("Tarefa enviada ao Celery: %s", data)
+        general_logger.info("Task sent to Celery for key ending with: ...%s", data['key'][-4:] if len(data['key']) > 4 else data['key'])
     except Exception as e:
         general_logger.error("Erro ao enviar task ao Celery: %s", e)
         raise RuntimeError("Falha ao enviar para processamento assíncrono.")
@@ -87,4 +79,10 @@ def webhook_listener():
     
 if __name__ == '__main__':
     general_logger.info('Iniciando webhook')
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Debug mode should be controlled by environment variables like FLASK_DEBUG or FLASK_ENV.
+    # By default, Flask runs with debug=False unless FLASK_DEBUG=1.
+    # Explicitly setting debug=False if FLASK_ENV is 'production' is a good safeguard.
+    # However, relying on Flask's default behavior when not in development is often sufficient.
+    # For clarity, we can fetch an environment variable.
+    DEBUG_MODE = os.getenv('FLASK_DEBUG', '0') == '1' # FLASK_DEBUG=1 enables debug
+    app.run(host='0.0.0.0', port=5000, debug=DEBUG_MODE)

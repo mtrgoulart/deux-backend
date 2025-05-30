@@ -12,7 +12,7 @@ def authenticate_signal(key):
         with get_db_connection() as db_client:
             result = db_client.fetch_data(query, (key,))
             if not result:
-                general_logger.warning(f"Chave de sinal inválida: {key}")
+                general_logger.warning("Invalid signal key received during authentication attempt.")
                 return None
             
             row = result[0]  # linha completa: (user_id, instance_id, symbol, indicator_id)
@@ -25,7 +25,7 @@ def authenticate_signal(key):
             }
         
     except Exception as e:
-        general_logger.error(f"Erro ao autenticar sinal {key}: {str(e)}")
+        general_logger.error(f"Error during signal key authentication: {str(e)}. Key details omitted for security.")
         return None
 
 
@@ -54,7 +54,7 @@ def insert_data_to_db(data):
                 data['instance_id']
             )
             db_client.insert_data(query, params)
-            general_logger.info(f"Dados inseridos com sucesso. Key: {data['key']}")
+            general_logger.info(f"Webhook data successfully processed and inserted for key ending with: ...{data['key'][-4:] if len(data['key']) > 4 else data['key']}. Instance ID: {data.get('instance_id')}")
     except KeyError as e:
         error_msg = f"Campo faltando no dicionário de dados: {str(e)}"
         general_logger.error(error_msg)
