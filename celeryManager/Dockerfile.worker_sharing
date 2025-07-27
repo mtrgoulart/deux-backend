@@ -1,0 +1,17 @@
+# celery_manager/Dockerfile.worker_sharing
+
+FROM python:3.9-slim
+WORKDIR /app
+ENV PYTHONPATH="/app"
+
+COPY celeryManager/requirements.txt ./celeryManager/requirements.txt
+RUN pip install --no-cache-dir -r celeryManager/requirements.txt
+
+COPY celeryManager/ ./celeryManager/
+COPY source/ ./source/
+COPY interface/ ./interface/
+COPY log/ ./log/
+COPY queries/ ./queries/
+COPY config.ini ./config.ini
+
+CMD ["celery", "--app", "celeryManager.celery_app", "worker", "--concurrency=4", "-Q", "sharing", "-n", "worker_sharing@%h", "--loglevel=info"]

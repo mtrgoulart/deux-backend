@@ -14,4 +14,4 @@ COPY log/ ./log/
 COPY queries/ ./queries/ # Celery tasks likely use queries
 COPY config.ini ./config.ini # ConfigLoader in source/pp.py reads this
 
-CMD ["celery", "--app", "celeryManager.celery_app", "worker", "--concurrency=10", "-Q", "operations", "-n", "worker_ops@%h", "--loglevel=info"]
+CMD ["celery", "--app", "celeryManager.celery_app", "worker", "--concurrency=10", "-Q", "ops", "-n", "worker_ops@%h", "--loglevel=info"]

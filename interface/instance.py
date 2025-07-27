@@ -28,7 +28,7 @@ def execute_instance_operation(instance_id, user_id, side):
         if not instance_details:
             return False, "Instance not found"
 
-        api_key_id, instance_name, exchange_id, start_date, share_id = instance_details[0]
+        api_key_id, _, exchange_id, start_date, share_id = instance_details[0]
 
         # Define a query correta com base no tipo de operação
         strategy_query = 'select_buy_strategy_by_instance.sql' if side == 'buy' else 'select_sell_strategy_by_instance.sql'

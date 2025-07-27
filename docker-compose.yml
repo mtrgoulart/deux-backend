@@ -46,6 +46,17 @@ services:
       - .env.prd
     restart: always
 
+  celery_worker_sharing:
+    build:
+      context: .
+      dockerfile: celeryManager/Dockerfile.worker_sharing
+    container_name: celery_worker_sharing
+    networks:
+      - main_network
+    env_file:
+      - .env.prd
+    restart: always
+
   nginx:
     image: nginx:latest
     container_name: nginx
