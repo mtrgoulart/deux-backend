@@ -16,7 +16,7 @@ services:
   celery_worker_ops:
     build:
       context: .
-      dockerfile: celeryManager/Dockerfile.worker_ops
+      dockerfile: Dockerfile.worker_ops
     container_name: celery_worker_ops
     networks:
       - main_network
@@ -27,7 +27,7 @@ services:
   celery_worker_db:
     build:
       context: .
-      dockerfile: celeryManager/Dockerfile.worker_db
+      dockerfile: Dockerfile.worker_db
     container_name: celery_worker_db
     networks:
       - main_network
@@ -38,7 +38,7 @@ services:
   celery_worker_webhook:
     build:
       context: .
-      dockerfile: celeryManager/Dockerfile.worker_webhook
+      dockerfile: Dockerfile.worker_webhook
     container_name: celery_worker_webhook
     networks:
       - main_network
@@ -49,7 +49,7 @@ services:
   celery_worker_sharing:
     build:
       context: .
-      dockerfile: celeryManager/Dockerfile.worker_sharing
+      dockerfile: Dockerfile.worker_sharing
     container_name: celery_worker_sharing
     networks:
       - main_network

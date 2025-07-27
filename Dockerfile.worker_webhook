@@ -1,0 +1,19 @@
+# Dockerfile.worker_webhook (Corrigido e Otimizado)
+
+FROM python:3.9-slim
+WORKDIR /app
+ENV PYTHONPATH="/app"
+
+# Copia e instala as dependências primeiro
+COPY celeryManager/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia o código da aplicação
+COPY celeryManager/ ./celeryManager/
+COPY source/ ./source/
+COPY interface/ ./interface/
+COPY log/ ./log/
+COPY queries/ ./queries/
+COPY config.ini ./config.ini
+
+CMD ["celery", "--app", "celeryManager.celery_app", "worker", "--concurrency=5", "-Q", "webhook", "-n", "worker_webhook@%h", "--loglevel=info"]
