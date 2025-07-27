@@ -17,7 +17,6 @@ COPY celeryManager/ ./celeryManager/
 COPY source/ ./source/
 COPY interface/ ./interface/
 COPY log/ ./log/
-COPY config.ini .webhookReceiver/config.ini # Copia o config.ini da raiz
 
 # Expõe a porta do Flask
 EXPOSE 5000
