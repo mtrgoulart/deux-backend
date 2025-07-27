@@ -7,18 +7,17 @@ WORKDIR /app
 
 ENV TZ=America/Sao_Paulo
 
-# Copy only necessary requirements files
-COPY webhookReceiver/requirements.txt ./webhookReceiver/requirements.txt
-# Assuming webhookReceiver/requirements.txt is self-contained for this service's direct dependencies.
-RUN pip install --no-cache-dir -r webhookReceiver/requirements.txt
+# 1. Copia e instala as dependências primeiro para usar o cache
+COPY webhookReceiver/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code and necessary modules/configs
+# 2. Copia todos os diretórios e arquivos necessários da raiz do projeto
 COPY webhookReceiver/ ./webhookReceiver/
-COPY celeryManager/ ./celeryManager/  # For importing celery_app
-COPY source/ ./source/              # If webhookReceiver code or its imports use it
-COPY interface/ ./interface/        # If webhookReceiver code or its imports use it
-COPY log/ ./log/                    # For logging setup
-COPY webhookReceiver/config.ini ./webhookReceiver/config.ini # For any non-sensitive configs read by pipeline_app
+COPY celeryManager/ ./celeryManager/
+COPY source/ ./source/
+COPY interface/ ./interface/
+COPY log/ ./log/
+COPY config.ini ./config.ini # Copia o config.ini da raiz
 
 # Expõe a porta do Flask
 EXPOSE 5000
