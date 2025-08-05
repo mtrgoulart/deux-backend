@@ -167,10 +167,42 @@ class OKXClient(BaseClient):
         return self.send_request('GET', '/api/v5/trade/order', body)
     
     def get_balance(self, ccy=None):
-        params = {}
-        if ccy:
-            params['ccy'] = ccy
-        return self.send_request('GET', '/api/v5/account/balance', body=params)
+        """
+        Obtém o saldo disponível de uma moeda específica (ccy).
+        Se ccy não for fornecido, retorna 0.0 para evitar erros, pois a lógica
+        a montante espera um único valor numérico.
+        """
+        if not ccy:
+            print("[OKX] Alerta: a função get_balance foi chamada sem uma moeda específica (ccy).")
+            return 0.0
+
+        # O parâmetro 'ccy' na verdade filtra a resposta para nós.
+        params = {'ccy': ccy}
+        response = self.send_request('GET', '/api/v5/account/balance', body=params)
+
+        # 1. Verifica se a chamada à API foi bem-sucedida e se os dados existem.
+        if response and response.get('code') == '0' and response.get('data'):
+            data_list = response['data']
+            # 2. Navega pela estrutura do JSON para encontrar a lista de 'details'.
+            if data_list and 'details' in data_list[0] and data_list[0]['details']:
+                # Como filtramos por 'ccy', a lista de detalhes deve ter apenas um item.
+                asset_details = data_list[0]['details'][0]
+                
+                # 3. Extrai o saldo disponível ('availBal').
+                avail_balance_str = asset_details.get('availBal')
+                
+                if avail_balance_str:
+                    try:
+                        # 4. Converte a string para um número float e retorna.
+                        return float(avail_balance_str)
+                    except (ValueError, TypeError):
+                        print(f"[OKX] Erro ao converter o saldo '{avail_balance_str}' para float.")
+                        return 0.0
+
+        # 5. Se algo der errado (API fora do ar, moeda não encontrada, etc.), retorna 0.0.
+        print(f"[OKX] Não foi possível obter o saldo para a moeda: {ccy}. Resposta da API: {response}")
+        return 0.0
+
     
     def get_last_trade(self, symbol):
         body = {"instId": symbol, "limit": "100"}
