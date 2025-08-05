@@ -187,20 +187,33 @@ class BingXInterface(ExchangeInterface):
 
 def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):
     try:
-        query = load_query('select_exchange_by_id.sql')
+        query = load_query('select_exchange_by_id.sql') #
         with get_db_connection() as db_client:
             result = db_client.fetch_data(query, (exchange_id,))
             if not result:
                 raise ValueError(f"Exchange ID {exchange_id} não encontrada.")
-            exchange_id, name, _, _ = result[0]
+            # Captura a flag is_demo
+            db_exchange_id, name, base_url, is_demo = result[0] #
 
         with open(exchange_classes_path, 'r') as json_file:
             exchange_classes = json.load(json_file)
 
-        class_path = exchange_classes.get(str(exchange_id))
-        if not class_path:
-            raise ValueError(f"Interface para Exchange ID {exchange_id} não mapeada.")
+        # Acessa o mapeamento para a exchange específica
+        exchange_mapping = exchange_classes.get(str(exchange_id))
+        if not exchange_mapping:
+            raise ValueError(f"Mapeamento para Exchange ID {exchange_id} não encontrado em exchange_classes.json.")
 
+        # Escolhe o caminho da classe com base na flag is_demo
+        if is_demo:
+            class_path = exchange_mapping.get("demo")
+        else:
+            class_path = exchange_mapping.get("real")
+        
+        if not class_path:
+            mode = "demo" if is_demo else "real"
+            raise ValueError(f"Interface '{mode}' para Exchange ID {exchange_id} não mapeada.")
+
+        # O resto da função continua igual
         module_name, class_name = class_path.rsplit('.', 1)
         module = importlib.import_module(module_name)
         exchange_class = getattr(module, class_name)
