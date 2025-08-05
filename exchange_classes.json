@@ -1,7 +1,14 @@
 {
-    "1": "source.exchange_interface.OKXRealInterface",
-    "2": "source.exchange_interface.BinanceRealInterface",
-    "3": "source.exchange_interface.OKXDemoInterface",
-    "4": "source.exchange_interface.BinanceDemoInterface",
-    "5": "source.exchange_interface.BingXInterface"
+  "1": {
+    "real": "source.exchange_interface.OKXRealInterface",
+    "demo": "source.exchange_interface.OKXDemoInterface"
+  },
+  "2": {
+    "real": "source.exchange_interface.BinanceRealInterface",
+    "demo": "source.exchange_interface.BinanceDemoInterface"
+  },
+  "5": {
+    "real": "source.exchange_interface.BingXInterface",
+    "demo": "source.exchange_interface.BingXInterface"
+  }
 }
