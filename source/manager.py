@@ -371,7 +371,7 @@ class OperationHandler:
             new_data = {
                 "symbol": market_object["symbol"],
                 "side": market_object["side"],
-                "indicator": market_object.get("indicator"),
+                "indicator": market_object.get("indicator_id"),
                 "operation": operation_id
             }
             try:
@@ -449,8 +449,8 @@ class conditionHandler:
                 symbol_type_dict[key] = []  # Inicializa como lista
 
             # Verifica se a estratégia (indicator) já está na lista, se não estiver, adiciona
-            if market["indicator"] not in symbol_type_dict[key]:
-                symbol_type_dict[key].append(market["indicator"])
+            if market["indicator_id"] not in symbol_type_dict[key]:
+                symbol_type_dict[key].append(market["indicator_id"])
 
         # Agora verificamos se há pelo menos duas estratégias diferentes para cada combinação de symbol e side
         for key, strategies in symbol_type_dict.items():

@@ -157,7 +157,7 @@ class WebhookData:
                     key=market_data["key"],
                     symbol=market_data["symbol"],
                     side=market_data["side"],
-                    indicator=market_data["indicator"],
+                    indicator=market_data["indicator_id"],
                     created_at=market_data["created_at"],
                     operation=market_data["operation"],
                 )
