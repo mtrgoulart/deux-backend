@@ -7,6 +7,7 @@ from .context import get_db_connection
 from .exchange_interface import get_exchange_interface
 from decimal import Decimal
 from .celery_client import get_client
+import uuid
 
 class TPSLHandler:
     def __init__(self, instance_id, user_id, api_key, symbol, exchange_id, side, trailing_check_interval=None, trailing_percentage=None):
@@ -254,46 +255,113 @@ class OperationHandler:
             general_logger.error(f"Erro ao calcular TP/SL: {e}")
             return None, None
         
-    def execute_condition(self,start_date):
-        data = self.webhook_data_manager.get_market_objects_as_models(self.instance_id,self.symbol, self.side, start_date)
-        #general_logger.info(f'Entrando na execucao da condicao: {data}')
-        if self.check_conditions(data) and len(data) >= 1:
-            general_logger.info(f'**Filled Condition Performing Operation...**')
-            last_market_data = data[-1]
-            market_to_operation = Market(
-                symbol=self.symbol,
-                order_type='market',
-                side=self.side
+    def execute_condition(self, start_date):
+        # 1. Crie um ID único para esta execução. Facilita o rastreamento.
+        execution_id = uuid.uuid4().hex[:8]
+        
+        # Crie um prefixo para os logs desta execução
+        log_prefix = f"[ExecID: {execution_id}] [Instance: {self.instance_id}] [Symbol: {self.symbol}]"
+
+        general_logger.info(f"{log_prefix} Iniciando execução da condição.")
+        
+        try:
+            data = self.webhook_data_manager.get_market_objects_as_models(
+                self.instance_id, self.symbol, self.side, start_date
             )
-            execution_price, execution_size, execution_status,tp_price,sl_price = self.perform_operation(market_to_operation,self.perc_tp,self.perc_sl)
-            if self.share_id and operation_id:
-                try:
-                    get_client().send_task(
-                        "process_sharing_operations",
-                        kwargs={"data":{
-                            "share_id": self.share_id,
-                            "user_id": self.user_id,
-                            "side":self.side,
-                            "symbol":self.symbol
-                            }
-                        },
-                        queue="sharing"
+            # Use DEBUG para logs com muitos dados, que você só precisa ver quando está depurando.
+            general_logger.debug(f"{log_prefix} Dados de mercado recebidos: {data}")
+
+            conditions_met = self.check_conditions(data)
+            data_is_sufficient = len(data) >= 1
+
+            # 2. Verificação explícita das condições para logs mais claros.
+            if conditions_met and data_is_sufficient:
+                general_logger.info(f"{log_prefix} Condições atendidas. Executando operação.")
+                
+                last_market_data = data[-1]
+                market_to_operation = Market(
+                    symbol=self.symbol,
+                    order_type='market',
+                    side=self.side
+                )
+                
+                # --- Etapa: Realizar Operação ---
+                general_logger.info(f"{log_prefix} Realizando operação de mercado...")
+                execution_price, execution_size, execution_status, tp_price, sl_price = self.perform_operation(
+                    market_to_operation, self.perc_tp, self.perc_sl
+                )
+                general_logger.info(f"{log_prefix} Operação realizada. Preço: {execution_price}, Tamanho: {execution_size}, Status: {execution_status}")
+                
+                market_to_operation.size = execution_size
+
+                # --- Etapa: Salvar no Banco de Dados ---
+                general_logger.info(f"{log_prefix} Salvando operação no banco de dados...")
+                operation_id, operation_log = self.operations.save_operation_to_db(
+                    market_to_operation.to_dict(), 
+                    price=execution_price, 
+                    status=execution_status, 
+                    instance_id=self.instance_id
+                )
+                # 3. Use WARNING ou ERROR dependendo da gravidade do "operation_log"
+                if operation_log:
+                    general_logger.warning(f"{log_prefix} Log da operação ao salvar: {operation_log}")
+                else:
+                    general_logger.info(f"{log_prefix} Operação salva com sucesso. OperationID: {operation_id}")
+
+                # --- Etapa: Salvar TP/SL ---
+                if tp_price and sl_price:
+                    general_logger.info(f"{log_prefix} Salvando TP/SL no banco de dados. TP: {tp_price}, SL: {sl_price}")
+                    self.operations.save_tp_sl_to_db(
+                        instance_id=self.instance_id,
+                        api_key=self.api_key,
+                        tp_price=tp_price,
+                        sl_price=sl_price,
+                        operation_id=operation_id
                     )
-                    general_logger.info(f"Tarefa de compartilhamento enviada com sucesso para share_id={self.share_id}")
-                except Exception as e:
-                    general_logger.error(f"Erro ao enviar task de compartilhamento: {e}")
-            market_to_operation.size = execution_size
-            general_logger.info(f'Operation Executed on: symbol:{last_market_data["symbol"]} price:{execution_price}')
-            operation_id,operation_log = self.operations.save_operation_to_db(
-                market_to_operation.to_dict(), price=execution_price, status=execution_status, instance_id=self.instance_id
-            )
-            if tp_price and sl_price:
-                self.operations.save_tp_sl_to_db(instance_id=self.instance_id,api_key=self.api_key,tp_price=tp_price,sl_price=sl_price,operation_id=operation_id)
-                general_logger.info(f'TP on {tp_price} and SL on {sl_price}')
-            
-            if operation_log:
-                general_logger.error(operation_log)
-            self.update_webhook_operation(data, operation_id)
+                else:
+                    # 4. Use WARNING para eventos que não são erros, mas são notáveis.
+                    general_logger.warning(f"{log_prefix} Take Profit ou Stop Loss não definidos. Pulando salvamento de TP/SL.")
+
+                # --- Etapa: Enviar Tarefa de Compartilhamento ---
+                # A variável operation_id é definida dentro do `if` principal, então o aninhamento está correto.
+                if self.share_id and operation_id:
+                    try:
+                        general_logger.info(f"{log_prefix} Enviando tarefa de compartilhamento para share_id={self.share_id}...")
+                        get_client().send_task(
+                            "process_sharing_operations",
+                            kwargs={"data": {
+                                "share_id": self.share_id,
+                                "user_id": self.user_id,
+                                "side": self.side,
+                                "symbol": self.symbol,
+                                "operation_id": operation_id # Adicionar o ID da operação pode ser útil
+                            }},
+                            queue="sharing"
+                        )
+                        general_logger.info(f"{log_prefix} Tarefa de compartilhamento enviada com sucesso.")
+                    except Exception as e:
+                        # 5. Logue o erro de forma mais estruturada.
+                        general_logger.error(f"{log_prefix} Falha ao enviar tarefa de compartilhamento. Erro: {e}", exc_info=True)
+
+                # --- Etapa: Atualizar Webhook ---
+                general_logger.info(f"{log_prefix} Atualizando webhook com o operation_id: {operation_id}")
+                self.update_webhook_operation(data, operation_id)
+
+            else: 
+                # 6. Log muito mais específico sobre o motivo da falha.
+                reason = ""
+                if not conditions_met:
+                    reason += "check_conditions() retornou False. "
+                if not data_is_sufficient:
+                    reason += f"Não há dados suficientes (len(data) = {len(data)}, esperado >= 1). "
+                general_logger.info(f'{log_prefix} Condições não atendidas. Motivo: {reason.strip()}')
+
+        except Exception as e:
+            # Captura qualquer erro inesperado no processo
+            general_logger.error(f"{log_prefix} Ocorreu um erro inesperado na execução da condição. Erro: {e}", exc_info=True)
+        finally:
+            # 7. Garante que o fim da execução seja sempre logado.
+            general_logger.info(f"{log_prefix} Finalizando execução da condição.")
 
     def update_webhook_operation(self, filtered_data, operation_id):
         if operation_id is None:
