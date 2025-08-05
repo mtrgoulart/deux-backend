@@ -119,7 +119,8 @@ class DatabaseClient:
             self.conn.commit()
             return result[0] if result else None
         except Exception as e:
-            general_logger.error("Erro ao inserir dados com retorno:", e)
+            # CORREÇÃO: Use um placeholder ou exc_info=True
+            general_logger.error("Erro ao inserir dados com retorno: %s", e, exc_info=True)
             raise
         finally:
             self.close()

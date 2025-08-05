@@ -169,26 +169,33 @@ class Operations:
     def __init__(self, db_manager):
         self.db_manager = db_manager
 
-    def save_operation_to_db(self, operation_data, price, instance_id, status="realizada"):
+    def save_operation_to_db(self, operation_data, price, instance_id, user_id, api_key, status="realizada"):
         try:
             query = self._load_query("insert_operation.sql")
+            
+            # CORREÇÃO: Monte a tupla `params` com os 9 valores na ordem exata do SQL
             params = (
-                datetime.now(),
-                operation_data["symbol"],
-                operation_data["size"],
-                operation_data["side"],
-                price,
-                status,
-                instance_id
+                user_id,                           # 1. user_id
+                api_key,                           # 2. api_key
+                operation_data["symbol"],          # 3. symbol
+                operation_data["side"],            # 4. side
+                operation_data["size"],            # 5. size
+                price,                             # 6. price
+                instance_id,                       # 7. instance_id
+                status,                            # 8. status
+                datetime.now()                     # 9. executed_at
             )
-            opeartion_id=self.db_manager.insert_data_returning(query, params)
+
+            opeartion_id = self.db_manager.insert_data_returning(query, params)
+            
             if opeartion_id:
-                return opeartion_id,None
+                return opeartion_id, None
             else:
-                None,'No operation ID returned'
+                return None, 'No operation ID returned'
             
         except Exception as e:
-            error=f'Erro ao salvar operação no banco: {e}'
+            # A correção para o log (exc_info=True) continua importante aqui
+            error = f'Erro ao salvar operação no banco: {e}'
             return None, error
 
     def get_last_operations_from_db(self, instance_id, symbol, limit):
