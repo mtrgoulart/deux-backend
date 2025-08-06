@@ -173,7 +173,7 @@ class Operations:
         try:
             query = self._load_query("insert_operation.sql")
             
-            # CORREÇÃO: Monte a tupla `params` com os 9 valores na ordem exata do SQL
+            # CORREÇÃO: Reordenamos os parâmetros para corresponder à query corrigida.
             params = (
                 user_id,                           # 1. user_id
                 api_key,                           # 2. api_key
@@ -183,7 +183,7 @@ class Operations:
                 price,                             # 6. price
                 instance_id,                       # 7. instance_id
                 status,                            # 8. status
-                datetime.now()                     # 9. executed_at
+                datetime.now()                     # 9. "date" (timestamp da operação)
             )
 
             opeartion_id = self.db_manager.insert_data_returning(query, params)
@@ -194,7 +194,6 @@ class Operations:
                 return None, 'No operation ID returned'
             
         except Exception as e:
-            # A correção para o log (exc_info=True) continua importante aqui
             error = f'Erro ao salvar operação no banco: {e}'
             return None, error
 
