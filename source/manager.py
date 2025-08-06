@@ -297,10 +297,12 @@ class OperationHandler:
                 # --- Etapa: Salvar no Banco de Dados ---
                 general_logger.info(f"{log_prefix} Salvando operação no banco de dados...")
                 operation_id, operation_log = self.operations.save_operation_to_db(
-                    market_to_operation.to_dict(), 
-                    price=execution_price, 
-                    status=execution_status, 
-                    instance_id=self.instance_id
+                    market_to_operation.to_dict(),
+                    price=execution_price,
+                    status=execution_status,
+                    instance_id=self.instance_id,
+                    user_id=self.user_id,
+                    api_key=self.api_key   
                 )
                 # 3. Use WARNING ou ERROR dependendo da gravidade do "operation_log"
                 if operation_log:
