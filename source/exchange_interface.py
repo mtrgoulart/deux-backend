@@ -147,8 +147,8 @@ class BingXInterface(ExchangeInterface):
     def place_order(self, symbol, side, order_type, size, currency, price=None):
         return self.bingx_client.place_order(symbol, side, order_type, size, currency, price)
 
-    def get_fill_price(self, order_id):
-        raise NotImplementedError("Método requer símbolo também.")
+    def get_fill_price(self, order_id, symbol):
+        return self.bingx_client.wait_for_fill_price(order_id, symbol) #
 
     def cancel_order(self, symbol, order):
         return self.bingx_client.cancel_order(symbol, order)
@@ -169,20 +169,47 @@ class BingXInterface(ExchangeInterface):
         return None
 
     def get_balance(self, ccy=None):
-        response = self.bingx_client.get_balance()
-        if response and 'data' in response and isinstance(response['data'], list):
-            if ccy:
-                for item in response['data']:
-                    if item.get('asset') == ccy:
-                        return float(item.get('free', 0))
-            else:
-                return response['data']
-        return 0.0
+        response = self.bingx_client.get_balance() #
 
+        # A resposta correta é: {'code': 0, 'data': {'balances': [...]}}
+        if response and response.get('code') == 0 and 'data' in response:
+            balances_list = response['data'].get('balances', []) #
+            
+            if not ccy:
+                # Se nenhuma moeda for especificada, retorna a lista completa de saldos
+                return balances_list
+            
+            for item in balances_list:
+                if item.get('asset') == ccy:
+                    try:
+                        return float(item.get('free', '0')) # Retorna o saldo 'free' (disponível)
+                    except (ValueError, TypeError):
+                        return 0.0
+        
+        # Se a moeda não for encontrada ou houver erro na API, retorna 0.0
+        return 0.0 if ccy else []
+    
     def get_order_execution_price(self, symbol, order_id):
-        status = self.get_order_status(symbol, order_id)
-        if status and 'data' in status and isinstance(status['data'], dict):
-            return float(status['data'].get('price', 0.0))
+        status = self.bingx_client.get_order_status(symbol, order_id) #
+        
+        if status and status.get('code') == 0 and 'data' in status:
+            order_data = status['data']
+            # Lógica de cálculo do preço médio de execução, igual à do client
+            executed_qty_str = order_data.get('executedQty', '0') #
+            cummulative_quote_qty_str = order_data.get('cummulativeQuoteQty', '0') #
+
+            try:
+                executed_qty = float(executed_qty_str)
+                cummulative_quote_qty = float(cummulative_quote_qty_str)
+                
+                if executed_qty > 0:
+                    return cummulative_quote_qty / executed_qty #
+                else:
+                    return float(order_data.get('price', 0.0)) #
+
+            except (ValueError, TypeError):
+                return 0.0
+                
         return 0.0
 
 def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):

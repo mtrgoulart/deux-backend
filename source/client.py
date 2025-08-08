@@ -409,23 +409,38 @@ class BingXClient:
     def send_request(self, method, path, params=None):
         if params is None:
             params = {}
-        params['timestamp'] = int(time.time() * 1000)
-        params['signature'] = self.sign(params)
-        headers = {
-            'X-BX-APIKEY': self.api_key,
-            'Content-Type': 'application/json'
-        }
+        
+        # Parâmetros para assinatura não incluem a assinatura em si
+        params_to_sign = params.copy()
+        params_to_sign['timestamp'] = int(time.time() * 1000)
+        
+        # A assinatura é criada com base nos parâmetros
+        signature = self.sign(params_to_sign)
+        
+        # Adiciona a assinatura aos parâmetros que serão enviados
+        params_to_sign['signature'] = signature
 
+        headers = {
+            'X-BX-APIKEY': self.api_key
+        }
         url = f"{self.base_url}{path}"
-        if method.upper() == 'GET':
-            response = self.session.get(url, headers=headers, params=params)
-        else:
-            response = self.session.post(url, headers=headers, json=params)
+
         try:
+            if method.upper() == 'GET':
+                # Para GET, os parâmetros (incluindo a assinatura) vão na URL
+                response = self.session.get(url, headers=headers, params=params_to_sign)
+            else: # POST
+                # Para POST, os parâmetros vão no corpo (body) como form-data
+                # A biblioteca 'requests' ajusta o Content-Type para 'application/x-www-form-urlencoded' automaticamente ao usar 'data'
+                response = self.session.post(url, headers=headers, data=params_to_sign)
+                
             response.raise_for_status()
             return response.json()
-        except Exception as e:
+        except requests.exceptions.RequestException as e:
+            # É muito útil imprimir o corpo da resposta em caso de erro para depuração
             print(f"[BingX] Error: {e}")
+            if e.response:
+                print(f"[BingX] Response Body: {e.response.text}")
             return None
 
     def get_current_price(self, symbol):
@@ -449,11 +464,35 @@ class BingXClient:
     def wait_for_fill_price(self, order_id, symbol, check_interval=1, timeout=90):
         path = '/openApi/spot/v1/trade/query'
         start_time = time.time()
+        
         while time.time() - start_time <= timeout:
-            response = self.send_request('GET', path, {'symbol': symbol, 'orderId': order_id})
+            params = {'symbol': symbol, 'orderId': order_id}
+            response = self.send_request('GET', path, params)
+            
             if response and response.get('data', {}).get('status') == 'FILLED':
-                return float(response['data'].get('price', 0.0))
+                order_data = response['data']
+                executed_qty_str = order_data.get('executedQty', '0')
+                cummulative_quote_qty_str = order_data.get('cummulativeQuoteQty', '0')
+
+                try:
+                    executed_qty = float(executed_qty_str)
+                    cummulative_quote_qty = float(cummulative_quote_qty_str)
+                    
+                    # Evita divisão por zero se a ordem foi preenchida com quantidade 0
+                    if executed_qty > 0:
+                        # Retorna o preço médio de execução
+                        return cummulative_quote_qty / executed_qty
+                    else:
+                        # Se a quantidade executada for 0, retorna o preço original da ordem
+                        return float(order_data.get('price', 0.0))
+
+                except (ValueError, TypeError):
+                    print(f"[BingX] Erro ao converter valores para cálculo do preço de execução.")
+                    return 0.0
+
             time.sleep(check_interval)
+            
+        print(f"[BingX] Timeout ao aguardar execução da ordem {order_id}.")
         return 0.0
 
     def cancel_order(self, symbol, order_id):
