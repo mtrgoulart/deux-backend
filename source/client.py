@@ -487,7 +487,7 @@ class BingXClient:
             "symbol": symbol,
             "side": side.upper(),
             "type": order_type.upper(),
-            "quantity": quantity,
+            "quoteOrderQty": quantity,
         }
 
         if order_type.upper() == 'LIMIT':

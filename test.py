@@ -6,8 +6,8 @@ from hashlib import sha256
 APIURL = "https://open-api.bingx.com"
 # Lembre-se de nunca expor suas chaves publicamente.
 # Considere usar variáveis de ambiente.
-API_KEY = "DoZdFxq0sugoKQ6iVSbXuqCkD6PgKN64BXZCvMzDgy9cAqF3QU9H8Yv6e4omh1FCxMHpf7R9Upu2eDgGQ"
-SECRET_KEY = "7lzEexURFvp3BGYUPjKevyeikt8CLD4xdl1cQ2Ek19nNZdNCPi50Vnip65LKEM62M5cWuc7Oemw4qaKTVBYpw"
+API_KEY = "e6y2hfmpzmGRscXsIXI23dnrcRMMrOzLHNvTCfg8m9417bQ0cvUJOx1zhnpAGkNQMTsOZd9p3r2pBgcdaww"
+SECRET_KEY = "I9rXxCSl2DiDWar693c32Ygg8eHUuMowHo3Mfx9Bu0UHKjaUEgZM5CCCRFIUD2x80OTsGkOI24i8gsxezNk6Q"
 
 def demo():
     path = '/openApi/spot/v1/trade/order'
@@ -18,7 +18,7 @@ def demo():
         "type": "MARKET",
         "symbol": "BTC-USDT",
         "side": "BUY",
-        "quantity": 0.002,
+        "quoteOrderQty": 10,
         # "newClientOrderId": "", # Opcional, pode ser removido se não usado
         # "recvWindow": 1000,     # Opcional
         # "timeInForce": "GTC",   # Opcional para ordens a mercado
