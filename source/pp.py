@@ -112,30 +112,19 @@ class WebhookData:
 
     def get_data_at_index(self, index):
         query = self._load_query("select_webhook_data_by_id.sql")
-        return self.db_manager.fetch_data(query, (index,))
+        return self.db_manager.fetch_data(query, (index,))    
     
-    
-
     def get_market_objects(self, instance_id,symbol, side, start_date):
         query = self._load_query("select_market_objects.sql")
         params=(instance_id,symbol,side,start_date)
         
         return self.db_manager.fetch_data(query, tuple(params))
 
-    def update_data_at_index(self, index, new_data_str):
-        new_data = self._parse_data(new_data_str)
-        query = self._load_query("update_webhook_data.sql")
-        params = (new_data["key"], new_data["symbol"], new_data["side"], int(new_data["indicator"]), index)
-        self.db_manager.insert_data(query, params)
-
-    def update_market_object_at_index(self, id, new_data):
+    def update_market_object_at_index(self, webhook_id, data):
         query = self._load_query("update_market_object.sql")
         params = (
-            new_data["symbol"],
-            new_data["side"],
-            new_data["indicator"],
-            new_data["operation"],
-            id,
+            data["operation_task_id"],
+            webhook_id,
         )
         self.db_manager.insert_data(query, params)
 
@@ -167,35 +156,7 @@ class WebhookData:
 
 class Operations:
     def __init__(self, db_manager):
-        self.db_manager = db_manager
-
-    def save_operation_to_db(self, operation_data, price, instance_id, user_id, api_key, status="realizada"):
-        try:
-            query = self._load_query("insert_operation.sql")
-            
-            # CORREÇÃO: Reordenamos os parâmetros para corresponder à query corrigida.
-            params = (
-                user_id,                           # 1. user_id
-                api_key,                           # 2. api_key
-                operation_data["symbol"],          # 3. symbol
-                operation_data["side"],            # 4. side
-                operation_data["size"],            # 5. size
-                price,                             # 6. price
-                instance_id,                       # 7. instance_id
-                status,                            # 8. status
-                datetime.now()                     # 9. "date" (timestamp da operação)
-            )
-
-            opeartion_id = self.db_manager.insert_data_returning(query, params)
-            
-            if opeartion_id:
-                return opeartion_id, None
-            else:
-                return None, 'No operation ID returned'
-            
-        except Exception as e:
-            error = f'Erro ao salvar operação no banco: {e}'
-            return None, error
+        self.db_manager = db_manager    
 
     def get_last_operations_from_db(self, instance_id, symbol, limit):
         query = self._load_query("select_last_operations.sql")
@@ -218,84 +179,4 @@ class Operations:
             return file.read()
 
 
-    def save_tp_sl_to_db(self, instance_id, api_key, tp_price, sl_price,operation_id):
-        """
-        Salva os valores de Take Profit (TP) e Stop Loss (SL) na tabela `positions`.
-        """
-        try:
-            query = self._load_query("insert_tp_sl.sql")  # Carregar a query correta
-            
-            if tp_price is not None:
-                self.db_manager.insert_data(query, (instance_id, api_key, 'TP', float(tp_price), 'active',operation_id))
-
-            if sl_price is not None:
-                self.db_manager.insert_data(query, (instance_id, api_key, 'SL', float(sl_price), 'active',operation_id))
-
-            return True, None
-
-        except Exception as e:
-            error = f'Erro ao salvar TP/SL no banco: {e}'
-            return False, error
-
-
-    def get_tp_sl_prices(self, instance_id, api_key):
-        """
-        Obtém os preços de Take Profit (TP) e Stop Loss (SL) para uma instância e símbolo.
-        """
-        try:
-            query = self._load_query("select_tp_sl_prices.sql")
-            results = self.db_manager.fetch_data(query, (instance_id, api_key))
-
-            tp_price, sl_price = None, None
-            tp_status, sl_status= None, None
-            for record in results:
-                if record[0] == "TP":
-                    tp_price = float(record[1])
-                    tp_status=record[2]
-                elif record[0] == "SL":
-                    sl_price = float(record[1])
-                    sl_status=record[2]
-
-            return tp_price, sl_price, tp_status, sl_status
-        except Exception as e:
-            print(f"Erro ao obter TP/SL do banco: {e}")
-            return None, None, None, None
-
-    def delete_tp_sl(self, instance_id, symbol):
-        """
-        Remove os registros de TP e SL da tabela `positions`.
-        """
-        try:
-            query = self._load_query("delete_tp_sl.sql")
-            rows_affected = self.db_manager.delete_data(query, (instance_id, symbol))
-            return rows_affected
-        except Exception as e:
-            print(f"Erro ao deletar TP/SL do banco: {e}")
-            return 0
-
-    def update_tp_sl_status(self, instance_id, api_key, new_tp_status, new_sl_status):
-        """
-        Atualiza os status de TP e SL na tabela `positions` quando um dos dois é executado.
-        """
-        try:
-            query = self._load_query("update_tp_sl_status.sql")
-
-            self.db_manager.update_data(query, (new_tp_status, instance_id, api_key, 'TP'))
-            self.db_manager.update_data(query, (new_sl_status, instance_id, api_key, 'SL'))
-
-            return True
-        except Exception as e:
-            print(f"Erro ao atualizar status de TP/SL no banco: {e}")
-            return False
-        
-    def update_sl_price(self, instance_id, api_key, new_sl_price):
-        """
-        Atualiza o preço do Stop Loss (SL) na tabela `positions`.
-        """
-        try:
-            query = self._load_query("update_sl_price.sql")
-            self.db_manager.update_data(query, (float(new_sl_price), instance_id, api_key))
-            return True
-        except Exception as e:
-            print(f"Erro ao atualizar SL no banco: {e}")
-            return False
+    

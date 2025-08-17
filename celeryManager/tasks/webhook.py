@@ -11,7 +11,7 @@ def process_webhook(self, data):
     task_id = self.request.id
     log_prefix = f"[TaskID: {task_id}]"
 
-    logger.info(f"{log_prefix} Iniciando processamento do webhook.")
+    #logger.info(f"{log_prefix} Iniciando processamento do webhook.")
     # Use DEBUG para dados brutos/verbosos.
     logger.debug(f"{log_prefix} Dados recebidos: {data}")
 
@@ -25,8 +25,6 @@ def process_webhook(self, data):
             logger.warning(f"{log_prefix} Parâmetros obrigatórios ausentes. Key: '{key}', Side: '{side}'.")
             return {"status": "error", "message": "Parâmetros ausentes"}
 
-        # --- Etapa: Autenticação ---
-        logger.info(f"{log_prefix} Autenticando sinal com a chave: ...{key[-4:]}") # Evite logar a chave inteira por segurança
         signal_data = authenticate_signal(key)
         
         if not signal_data:
@@ -39,11 +37,8 @@ def process_webhook(self, data):
         symbol = signal_data.get('symbol')
         
         log_prefix = f"[TaskID: {task_id}] [Instance: {instance_id}] [User: {user_id}]"
-        logger.info(f"{log_prefix} Sinal autenticado com sucesso para o símbolo '{symbol}'.")
-
         # --- Etapa: Verificação de Status da Instância ---
         status = get_instance_status(instance_id, user_id)
-        logger.info(f"{log_prefix} Status da instância obtido: {status}")
 
         if status is None:
             logger.error(f"{log_prefix} Instância não encontrada no banco de dados.")

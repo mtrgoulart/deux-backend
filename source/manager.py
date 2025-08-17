@@ -9,143 +9,6 @@ from decimal import Decimal
 from .celery_client import get_client
 import uuid
 
-class TPSLHandler:
-    def __init__(self, instance_id, user_id, api_key, symbol, exchange_id, side, trailing_check_interval=None, trailing_percentage=None):
-        self.instance_id = instance_id
-        self.api_key = api_key
-        self.symbol = symbol
-        self.user_id = user_id
-        self.side = side
-        self.exchange_interface = get_exchange_interface(exchange_id, self.user_id, api_key)
-
-        with get_db_connection() as db_client:
-            self.operations = Operations(db_client)
-
-        # Definir um valor mínimo único para todas as ordens
-        self.min_order_size = 0.00001  # Pode ser ajustado conforme necessário
-
-        # Parâmetros do trailing stop
-        self.trailing_check_interval = trailing_check_interval  # tempo (em segundos) entre verificações
-        self.trailing_percentage = trailing_percentage          # percentual para atualização do stop loss
-        self.last_trailing_check = 0
-        self.trailing_high = None
-
-    def get_last_operations(self, limit):
-        # Retorna as últimas operações do ativo
-        return self.operations.get_last_operations_from_db(self.symbol, limit)
-
-    def check_tp_sl_conditions(self):
-        """
-        Verifica se o preço atual atingiu o TP, SL ou se é necessário atualizar o trailing stop.
-        """
-        try:
-            # Obtém os valores de TP e SL salvos no banco
-            tp_price, sl_price, _, _ = self.operations.get_tp_sl_prices(self.instance_id, self.api_key)
-            if tp_price is None and sl_price is None:
-                return
-            
-            last_operations = self.get_last_operations(1)
-            last_operation = last_operations[0]
-            if last_operation["side"] != self.side:
-                self.operations.update_tp_sl_status(self.instance_id, self.api_key, "cancelled", "cancelled")
-                return
-
-            # Obtém o preço atual do símbolo
-            current_price = self.get_current_price()
-            if current_price is None:
-                general_logger.error(f"Erro ao obter preço atual para {self.symbol}")
-                return
-
-            # Lógica de trailing stop somente se o stop loss estiver definido
-            if sl_price is not None and self.trailing_percentage is not None and self.trailing_check_interval is not None:
-                # Inicializa o maior preço se ainda não foi definido
-                if self.trailing_high is None:
-                    self.trailing_high = current_price
-
-                current_time = time.time()
-                if current_time - self.last_trailing_check >= self.trailing_check_interval:
-                    self.last_trailing_check = current_time
-                    # Se o preço atual ultrapassar o máximo registrado, atualiza o trailing high
-                    if current_price > self.trailing_high:
-                        self.trailing_high = current_price
-                        # Calcula o novo stop loss com base no percentual definido
-                        new_sl = self.trailing_high * (1 - self.trailing_percentage)
-                        # Atualiza o stop loss se o novo valor for maior que o atual
-                        if new_sl > sl_price:
-                            sl_price = new_sl
-                            self.operations.update_sl_price(self.instance_id, self.api_key, new_sl)
-                            general_logger.info(f"Trailing stop atualizado para {new_sl} para {self.symbol}")
-
-            # Verifica condição de Take Profit
-            if tp_price is not None and current_price >= tp_price:
-                general_logger.info(f"Take Profit atingido para {self.symbol} a {current_price}. Executando venda...")
-                tp_execution = self.execute_sell_order()
-                if tp_execution:
-                    general_logger.info(f"Take Profit executado com sucesso para {self.symbol}. Atualizando banco...")
-                    self.operations.update_tp_sl_status(self.instance_id, self.api_key, "filled", "tp_executed")
-
-            # Verifica condição de Stop Loss
-            elif sl_price is not None and current_price <= sl_price:
-                general_logger.info(f"Stop Loss atingido para {self.symbol} a {current_price}. Executando venda...")
-                sl_execution = self.execute_sell_order()
-                if sl_execution:
-                    general_logger.info(f"Stop Loss executado com sucesso para {self.symbol}. Atualizando banco...")
-                    self.operations.update_tp_sl_status(self.instance_id, self.api_key, "sl_executed", "filled")
-
-        except Exception as e:
-            general_logger.error(f"Erro ao verificar condições de TP/SL: {e}")
-
-
-    def get_current_price(self):
-        """
-        Obtém o preço atual do ativo na exchange.
-        """
-        try:
-            return self.exchange_interface.get_current_price(self.symbol)
-        except Exception as e:
-            general_logger.error(f"Erro ao obter preço atual da exchange: {e}")
-            return None
-
-    def execute_sell_order(self):
-        """
-        Executa uma ordem de venda para fechar a posição, garantindo que o tamanho da ordem não seja muito baixo.
-        """
-        try:
-            match = re.match(r"^([^-]+)-([^-]+)$", self.symbol)
-            if not match:
-                raise ValueError(f"O símbolo '{self.symbol}' não está no formato esperado 'parte1-parte2'.")
-
-            ccy_symbol, _ = match.groups()
-            ccy = ccy_symbol
-
-            actual_size = self.exchange_interface.get_balance(ccy)
-
-            # Validação do tamanho mínimo da ordem
-            if actual_size < self.min_order_size:
-                general_logger.warning(
-                    f"Tamanho da ordem ({actual_size}) é menor que o mínimo permitido ({self.min_order_size}). "
-                    f"Simulando execução para {self.symbol}."
-                )
-                return True  # Simula a execução e segue o fluxo normalmente
-
-            order_response = self.exchange_interface.place_order(
-                symbol=self.symbol,
-                side="sell",
-                order_type="market",
-                size=actual_size,
-                currency=ccy,
-            )
-
-            if order_response:
-                general_logger.info(f"Ordem de venda executada para {self.symbol}")
-                return True
-            else:
-                general_logger.error(f"Erro ao executar ordem de venda para {self.symbol}")
-                return False
-        except Exception as e:
-            general_logger.error(f"Erro ao executar ordem de venda: {e}")
-            return False
-
 class IntervalHandler:
     def __init__(self, interval, symbol, side,instance_id, simultaneus_operation=1):
         self.interval = float(interval)
@@ -203,7 +66,7 @@ class IntervalHandler:
             return last_operation_interval >= self.interval
 
 class OperationHandler:
-    def __init__(self, market_manager, condition_limit, interval, symbol, side, percent,exchange_id,user_id,api_key,instance_id,tp=None,sl=None,share_id=None):
+    def __init__(self, market_manager, condition_limit, interval, symbol, side, percent,exchange_id,user_id,api_key,instance_id,share_id=None):
         self.market_manager = market_manager
         self.condition_handler = conditionHandler(condition_limit)
         self.interval = interval
@@ -213,10 +76,9 @@ class OperationHandler:
         self.webhook_data_manager = None
         self.instance_id=instance_id
         self.api_key=api_key
-        self.perc_tp=tp
-        self.perc_sl=sl
         self.share_id=share_id
         self.user_id=user_id
+        self.exchange_id=exchange_id
 
         self.exchange_interface = get_exchange_interface(exchange_id, user_id, api_key)
 
@@ -227,34 +89,6 @@ class OperationHandler:
         with get_db_connection() as db_client:
             self.operations = Operations(db_client)
 
-
-    def calculate_tp_sl(self, price, perc_tp, perc_sl):
-        """
-        Calcula os valores de Take Profit (TP) e Stop Loss (SL) com base no preço de execução e nos percentuais fornecidos.
-
-        :param price: Preço de execução da ordem.
-        :param perc_tp: Percentual para calcular o Take Profit.
-        :param perc_sl: Percentual para calcular o Stop Loss.
-        :return: Tuple contendo os valores calculados de TP e SL.
-        """
-        if price is None:
-            general_logger.error("Preço de execução é None. Não foi possível calcular TP/SL.")
-            return None, None
-
-        try:
-            price = Decimal(str(price))
-            perc_tp = Decimal(str(perc_tp)) if perc_tp not in [None, "", 0] else None
-            perc_sl = Decimal(str(perc_sl)) if perc_sl not in [None, "", 0] else None
-
-            # Calcular TP e SL apenas se os percentuais forem válidos
-            tp = price * (Decimal('1') + (perc_tp / Decimal('100'))) if perc_tp is not None else None
-            sl = price * (Decimal('1') - (perc_sl / Decimal('100'))) if perc_sl is not None else None
-            return tp, sl
-
-        except Exception as e:
-            general_logger.error(f"Erro ao calcular TP/SL: {e}")
-            return None, None
-        
     def execute_condition(self, start_date):
         # 1. Crie um ID único para esta execução. Facilita o rastreamento.
         execution_id = uuid.uuid4().hex[:8]
@@ -277,56 +111,28 @@ class OperationHandler:
             # 2. Verificação explícita das condições para logs mais claros.
             if conditions_met and data_is_sufficient:
                 general_logger.info(f"{log_prefix} Condições atendidas. Executando operação.")
-                
-                last_market_data = data[-1]
-                market_to_operation = Market(
-                    symbol=self.symbol,
-                    order_type='market',
-                    side=self.side
-                )
+
+                operation_data= {
+                    'user_id':self.user_id,
+                    'api_key':self.api_key,
+                    'exchange_id':self.exchange_id,
+                    'perc_balance_operation':self.percent,
+                    'symbol':self.symbol,
+                    'side':self.side,
+                    'instance_id':self.instance_id
+                }
                 
                 # --- Etapa: Realizar Operação ---
-                general_logger.info(f"{log_prefix} Realizando operação de mercado...")
-                execution_price, execution_size, execution_status, tp_price, sl_price = self.perform_operation(
-                    market_to_operation, self.perc_tp, self.perc_sl
+                async_result = get_client().send_task(
+                    "trade.execute_operation",
+                    kwargs={"data": operation_data},
+                    queue="ops"
                 )
-                general_logger.info(f"{log_prefix} Operação realizada. Preço: {execution_price}, Tamanho: {execution_size}, Status: {execution_status}")
-                
-                market_to_operation.size = execution_size
 
-                # --- Etapa: Salvar no Banco de Dados ---
-                general_logger.info(f"{log_prefix} Salvando operação no banco de dados...")
-                operation_id, operation_log = self.operations.save_operation_to_db(
-                    market_to_operation.to_dict(),
-                    price=execution_price,
-                    status=execution_status,
-                    instance_id=self.instance_id,
-                    user_id=self.user_id,
-                    api_key=self.api_key   
-                )
-                # 3. Use WARNING ou ERROR dependendo da gravidade do "operation_log"
-                if operation_log:
-                    general_logger.warning(f"{log_prefix} Log da operação ao salvar: {operation_log}")
-                else:
-                    general_logger.info(f"{log_prefix} Operação salva com sucesso. OperationID: {operation_id}")
-
-                # --- Etapa: Salvar TP/SL ---
-                if tp_price and sl_price:
-                    general_logger.info(f"{log_prefix} Salvando TP/SL no banco de dados. TP: {tp_price}, SL: {sl_price}")
-                    self.operations.save_tp_sl_to_db(
-                        instance_id=self.instance_id,
-                        api_key=self.api_key,
-                        tp_price=tp_price,
-                        sl_price=sl_price,
-                        operation_id=operation_id
-                    )
-                else:
-                    # 4. Use WARNING para eventos que não são erros, mas são notáveis.
-                    general_logger.warning(f"{log_prefix} Take Profit ou Stop Loss não definidos. Pulando salvamento de TP/SL.")
-
+                operation_task_id = async_result.id
+                               
                 # --- Etapa: Enviar Tarefa de Compartilhamento ---
-                # A variável operation_id é definida dentro do `if` principal, então o aninhamento está correto.
-                if self.share_id and operation_id:
+                if self.share_id:
                     try:
                         general_logger.info(f"{log_prefix} Enviando tarefa de compartilhamento para share_id={self.share_id}...")
                         get_client().send_task(
@@ -335,8 +141,7 @@ class OperationHandler:
                                 "share_id": self.share_id,
                                 "user_id": self.user_id,
                                 "side": self.side,
-                                "symbol": self.symbol,
-                                "operation_id": operation_id # Adicionar o ID da operação pode ser útil
+                                "symbol": self.symbol
                             }},
                             queue="sharing"
                         )
@@ -346,8 +151,7 @@ class OperationHandler:
                         general_logger.error(f"{log_prefix} Falha ao enviar tarefa de compartilhamento. Erro: {e}", exc_info=True)
 
                 # --- Etapa: Atualizar Webhook ---
-                general_logger.info(f"{log_prefix} Atualizando webhook com o operation_id: {operation_id}")
-                self.update_webhook_operation(data, operation_id)
+                self.update_webhook_operation(data, operation_task_id)
 
             else: 
                 # 6. Log muito mais específico sobre o motivo da falha.
@@ -365,76 +169,18 @@ class OperationHandler:
             # 7. Garante que o fim da execução seja sempre logado.
             general_logger.info(f"{log_prefix} Finalizando execução da condição.")
 
-    def update_webhook_operation(self, filtered_data, operation_id):
-        if operation_id is None:
-            operation_id = 0
+    def update_webhook_operation(self, filtered_data,operation_task_id):
 
         for market_object in filtered_data:
-            new_data = {
-                "symbol": market_object["symbol"],
-                "side": market_object["side"],
-                "indicator": market_object.get("indicator"),
-                "operation": operation_id
-            }
+            webhook_id=market_object["id"]
             try:
-                self.webhook_data_manager.update_market_object_at_index(market_object["id"], new_data)
-                general_logger.info(f"Updated operation ID {operation_id} for object {market_object['id']}")
+                self.webhook_data_manager.update_market_object_at_index(webhook_id, operation_task_id)
+                general_logger.info(f"Updated task operation ID {operation_task_id} for object {market_object['id']}")
             except Exception as e:
                 general_logger.error(f"Error updating object {market_object['id']}: {e}")
 
     def check_conditions(self, data):
         return self.condition_handler.check_condition(data)
-
-    def perform_operation(self, market_data, perc_tp=None, perc_sl=None):
-        match = re.match(r"^([^-]+)-([^-]+)$", market_data.symbol)
-        if not match:
-            raise ValueError(f"O símbolo '{market_data.symbol}' não está no formato esperado 'parte1-parte2'.")
-
-        base_currency, quote_currency = match.groups()
-        ccy = quote_currency if market_data.side == 'buy' else base_currency
-        try:
-            actual_size = self.exchange_interface.get_balance(ccy)
-        except Exception as e:
-            raise ValueError(f'Erro ao obter o saldo: {e}')
-
-        if not isinstance(actual_size, (int, float, Decimal)):
-            raise ValueError(f"Erro no tipo de valor do saldo: {actual_size}")
-
-        # Converte explicitamente `actual_size` para float se for Decimal
-        percent_size = float(actual_size) * float(self.percent)
-
-        general_logger.info(f'Balance: {percent_size} {ccy}')
-
-        if percent_size != 0:
-            order_response = self.exchange_interface.place_order(
-                symbol=market_data.symbol,
-                side=market_data.side,
-                order_type=market_data.order_type,
-                size=percent_size,
-                currency=ccy,
-                price=market_data.price
-            )
-
-            general_logger.info(f'Ordem enviada, aguardando execução....')
-
-            if not order_response:
-                general_logger.error("Erro: ordem não foi executada.")
-                return None, percent_size, 'erro', None, None
-
-            execution_price = self.exchange_interface.get_fill_price(order_response)
-            tp, sl = None, None
-
-            if execution_price is not None:
-                if perc_tp is not None or perc_sl is not None:
-                    tp, sl = self.calculate_tp_sl(execution_price, perc_tp, perc_sl)
-
-                return execution_price, percent_size, 'realizada', tp, sl
-            else:
-                general_logger.error("Erro: Preço de execução não encontrado.")
-                return None, percent_size, 'erro', None, None
-        else:
-            general_logger.warning("Operação não realizada, pois o percent_size é zero.")
-            return None, percent_size, 'percent_size=0', None, None
 
 class conditionHandler:
     def __init__(self, length_condition):

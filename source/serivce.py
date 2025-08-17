@@ -22,14 +22,3 @@ def get_neouser_apikey_from_sharing(user_id, sharing_id):
                 "instance_id":row[3]
             } for row in results
         ]   
-
-def save_operation_to_db(user_id, symbol, side, size, price, currency, status,instance_id):
-    """Salva os dados da operação no banco de dados."""
-    query = load_query('insert_operation.sql')
-    params = (user_id, symbol, side, size, price, currency, status,instance_id)
-
-    try:
-        with get_db_connection() as db_client:
-            db_client.insert_data(query, params)
-    except Exception as e:
-        general_logger.error(f"Erro ao salvar operação no banco: {e}")

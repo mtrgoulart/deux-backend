@@ -49,13 +49,8 @@ def execute_instance_operation(instance_id, user_id, side):
             condition_limit, 
             interval, 
             simultaneos_operations, 
-            tp, 
-            sl
         ) = strategy_data
 
-        # Definindo None para os valores de tp e sl caso estejam vazios
-        tp = tp if tp is not None else 0
-        sl = sl if sl is not None else 0
 
         simultaneos_operations = simultaneos_operations if side == "buy" else 1
 
@@ -66,9 +61,7 @@ def execute_instance_operation(instance_id, user_id, side):
             "percent": percent,
             "condition_limit": condition_limit,
             "interval": interval,
-            "simultaneous_operations": simultaneos_operations,
-            "tp": tp,
-            "sl": sl
+            "simultaneous_operations": simultaneos_operations
         }
 
         manager = OperationManager(

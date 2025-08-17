@@ -1,3 +1,3 @@
 UPDATE webhook_data
-SET symbol = %s, side = %s, indicator_id = %s, operation = %s
+SET operation_task_id = %s
 WHERE id = %s;

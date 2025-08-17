@@ -5,6 +5,7 @@ from .dbmanager import load_query
 import json
 import importlib
 import os
+from typing import Dict, Any, Optional
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 exchange_classes_path = os.path.join(BASE_DIR, 'exchange_classes.json')
@@ -144,73 +145,74 @@ class BingXInterface(ExchangeInterface):
     def create_client(self):
         return BingXClient(self.credentials)
 
-    def place_order(self, symbol, side, order_type, size, currency, price=None):
-        return self.bingx_client.place_order(symbol, side, order_type, size, currency, price)
+    def get_balance(self, ccy: str) -> float:
+        """
+        Busca e retorna o saldo de uma moeda específica na conta spot.
 
-    def get_fill_price(self, order_id, symbol):
-        return self.bingx_client.wait_for_fill_price(order_id, symbol) #
+        Este método utiliza o bingx_client para obter a lista de todos os ativos
+        e filtra para encontrar o saldo da moeda solicitada.
 
-    def cancel_order(self, symbol, order):
-        return self.bingx_client.cancel_order(symbol, order)
+        Args:
+            ccy (str): O símbolo da moeda (ex: 'USDT', 'BTC', 'ETH').
 
-    def get_open_order(self, symbol):
-        return self.bingx_client.get_open_orders(symbol)
-
-    def get_order_status(self, symbol, order_id):
-        return self.bingx_client.get_order_status(symbol, order_id)
-
-    def get_last_trade(self, symbol):
-        return self.bingx_client.get_last_trade(symbol)
-
-    def get_current_price(self, symbol):
-        response = self.bingx_client.get_current_price(symbol)
-        if response and 'data' in response and isinstance(response['data'], dict):
-            return float(response['data'].get('price', 0.0))
-        return None
-
-    def get_balance(self, ccy=None):
-        response = self.bingx_client.get_balance() #
-
-        # A resposta correta é: {'code': 0, 'data': {'balances': [...]}}
-        if response and response.get('code') == 0 and 'data' in response:
-            balances_list = response['data'].get('balances', []) #
-            
-            if not ccy:
-                # Se nenhuma moeda for especificada, retorna a lista completa de saldos
-                return balances_list
-            
-            for item in balances_list:
-                if item.get('asset') == ccy:
-                    try:
-                        return float(item.get('free', '0')) # Retorna o saldo 'free' (disponível)
-                    except (ValueError, TypeError):
-                        return 0.0
+        Returns:
+            float: O saldo livre (disponível) da moeda. Retorna 0.0 se a
+                   moeda não for encontrada ou em caso de erro na comunicação
+                   com a API.
+        """
+        print(f"[BingXInterface] Buscando saldo para a moeda: {ccy}...")
         
-        # Se a moeda não for encontrada ou houver erro na API, retorna 0.0
-        return 0.0 if ccy else []
-    
-    def get_order_execution_price(self, symbol, order_id):
-        status = self.bingx_client.get_order_status(symbol, order_id) #
-        
-        if status and status.get('code') == 0 and 'data' in status:
-            order_data = status['data']
-            # Lógica de cálculo do preço médio de execução, igual à do client
-            executed_qty_str = order_data.get('executedQty', '0') #
-            cummulative_quote_qty_str = order_data.get('cummulativeQuoteQty', '0') #
+        # 1. Chama o método do cliente para obter todos os saldos da conta spot
+        balance_data = self.bingx_client.get_balance()
 
-            try:
-                executed_qty = float(executed_qty_str)
-                cummulative_quote_qty = float(cummulative_quote_qty_str)
-                
-                if executed_qty > 0:
-                    return cummulative_quote_qty / executed_qty #
-                else:
-                    return float(order_data.get('price', 0.0)) #
+        # 2. Verifica se a chamada à API foi bem-sucedida e retornou dados
+        if not balance_data:
+            print(f"[BingXInterface] Não foi possível obter os saldos da API.")
+            return 0.0
 
-            except (ValueError, TypeError):
-                return 0.0
-                
+        # 3. Navega de forma segura pela estrutura de dados da resposta
+        balances = balance_data.get("data", {}).get("balances", [])
+
+        # 4. Procura pela moeda específica (ccy) na lista de saldos
+        for asset in balances:
+            # Compara os símbolos em maiúsculas para evitar erros (ex: 'usdt' vs 'USDT')
+            if asset.get('asset', '').upper() == ccy.upper():
+                # 5. Se encontrar, retorna o saldo 'free' convertido para float
+                return float(asset.get('free', 0.0))
+
+        # 6. Se o loop terminar e não encontrar a moeda, informa e retorna 0.0
+        print(f"[BingXInterface] Moeda '{ccy}' não encontrada na carteira spot ou saldo zerado.")
         return 0.0
+    
+    def place_order(self, symbol: str, side: str, order_type: str, size: float, price: float, **kwargs) -> Optional[Dict[str, Any]]:
+        """
+        Abstrai a criação de uma ordem, chamando o método correspondente do cliente.
+
+        Args:
+            symbol (str): Símbolo do mercado (ex: "BTC-USDT").
+            side (str): Lado da ordem ("BUY" ou "SELL").
+            order_type (str): Tipo da ordem ("MARKET" ou "LIMIT").
+            size (float): Tamanho da ordem.
+            price (float): Preço da ordem (usado para ordens LIMIT).
+            kwargs: Argumentos adicionais (não usados aqui, mas bom para compatibilidade).
+
+        Returns:
+            dict or None: A resposta da API da exchange.
+        """
+
+        try:
+            order_response = self.bingx_client.place_order(
+                symbol=symbol,
+                side=side,
+                order_type=order_type,
+                quantity=size,
+                price=price
+            )
+            return order_response
+        except ValueError as e:
+            print(f"[BingXInterface] Erro ao criar ordem: {e}")
+            return None
+
 
 def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):
     try:

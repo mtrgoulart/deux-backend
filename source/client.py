@@ -13,6 +13,7 @@ import hmac
 import hashlib
 from datetime import datetime,timedelta
 from urllib.parse import urlencode
+from typing import Dict, Any, Optional
 
 class BaseClient:
     def __init__(self):
@@ -396,159 +397,141 @@ class BinanceDemoClient(BinanceClient):
         super().__init__(credentials, url='https://testnet.binance.vision')
 
 class BingXClient:
-    def __init__(self, credentials, base_url='https://open-api.bingx.com'):
+    """
+    Um cliente para interagir com a API da BingX, com a lógica de assinatura
+    e envio de requisições unificada e corrigida.
+    """
+    def __init__(self, credentials: Dict[str, str], base_url: str = 'https://open-api.bingx.com'):
+        if not all(k in credentials for k in ['api_key', 'secret_key']):
+            raise ValueError("As credenciais devem incluir 'api_key' e 'secret_key'.")
+            
         self.api_key = credentials['api_key']
         self.secret_key = credentials['secret_key']
         self.base_url = base_url
         self.session = requests.Session()
+        self.session.headers.update({'X-BX-APIKEY': self.api_key})
 
-    def sign(self, params):
-        query_string = urlencode(params)
-        return hmac.new(self.secret_key.encode('utf-8'), query_string.encode('utf-8'), hashlib.sha256).hexdigest()
+    def _sign_string(self, query_string: str) -> str:
+        """Gera a assinatura HMAC-SHA256."""
+        return hmac.new(
+            self.secret_key.encode('utf-8'),
+            query_string.encode('utf-8'),
+            hashlib.sha256
+        ).hexdigest()
 
-    def send_request(self, method, path, params=None):
+    def _send_request(self, method: str, path: str, params: Optional[Dict[str, Any]] = None, params_in_body: bool = False) -> Optional[Dict[str, Any]]:
+        """
+        Envia uma requisição assinada para a API da BingX.
+        O parâmetro 'params_in_body' foi ajustado para ter 'False' como padrão,
+        que é o caso mais comum para endpoints de trade.
+        """
         if params is None:
             params = {}
         
-        # Parâmetros para assinatura não incluem a assinatura em si
-        params_to_sign = params.copy()
-        params_to_sign['timestamp'] = int(time.time() * 1000)
+        # 1. Adiciona o timestamp aos parâmetros ANTES de qualquer outra coisa.
+        params['timestamp'] = int(time.time() * 1000)
         
-        # A assinatura é criada com base nos parâmetros
-        signature = self.sign(params_to_sign)
+        # 2. Cria a query string ORDENADA. Esta será a base para tudo.
+        sorted_keys = sorted(params.keys())
+        query_string = '&'.join([f"{key}={params[key]}" for key in sorted_keys])
         
-        # Adiciona a assinatura aos parâmetros que serão enviados
-        params_to_sign['signature'] = signature
-
-        headers = {
-            'X-BX-APIKEY': self.api_key
-        }
+        # 3. Gera a assinatura a partir da string exata.
+        signature = self._sign_string(query_string)
+        
         url = f"{self.base_url}{path}"
-
+        
         try:
+            response = None
             if method.upper() == 'GET':
-                # Para GET, os parâmetros (incluindo a assinatura) vão na URL
-                response = self.session.get(url, headers=headers, params=params_to_sign)
-            else: # POST
-                # Para POST, os parâmetros vão no corpo (body) como form-data
-                # A biblioteca 'requests' ajusta o Content-Type para 'application/x-www-form-urlencoded' automaticamente ao usar 'data'
-                response = self.session.post(url, headers=headers, data=params_to_sign)
+                final_url = f"{url}?{query_string}&signature={signature}"
+                response = self.session.get(final_url)
                 
+            elif method.upper() == 'POST':
+                if params_in_body:
+                    # Caso do get_balance: parâmetros no corpo
+                    request_body = {**params, 'signature': signature}
+                    response = self.session.post(url, data=request_body)
+                else:
+                    # Caso do place_order: parâmetros na URL (como no seu script de teste)
+                    final_url = f"{url}?{query_string}&signature={signature}"
+                    print(f"Enviando POST para: {final_url} com corpo vazio")
+                    response = self.session.post(final_url, data={}) # Corpo vazio!
+            else:
+                raise ValueError(f"Método HTTP '{method}' não suportado.")
+            
             response.raise_for_status()
-            return response.json()
+            response_data = response.json()
+            
+            # O código '0' na BingX significa sucesso.
+            if response_data.get('code') != 0:
+                return response_data # Retorna os dados do erro para debug
+                
+            return response_data
+
         except requests.exceptions.RequestException as e:
-            # É muito útil imprimir o corpo da resposta em caso de erro para depuração
-            print(f"[BingX] Error: {e}")
+            print(f"[BingX] Erro na requisição: {e}")
             if e.response:
-                print(f"[BingX] Response Body: {e.response.text}")
+                print(f"[BingX] Resposta do Servidor: {e.response.text}")
             return None
 
-    def get_current_price(self, symbol):
-        path = '/openApi/spot/v1/ticker/price'
-        return self.send_request('GET', path, {'symbol': symbol})
-
-    def place_order(self, symbol, side, order_type, size, currency, price=None):
+    def get_balance(self) -> Optional[Dict[str, Any]]:
+        """Consulta o saldo da conta spot."""
+        path = "/openApi/spot/v1/account/balance"
+        # Este endpoint específico requer os parâmetros no corpo.
+        return self._send_request('POST', path, params_in_body=True)
+    
+    def place_order(self, symbol: str, side: str, order_type: str, quantity: float, price: Optional[float] = None) -> Optional[Dict[str, Any]]:
+        """Envia uma nova ordem para a exchange."""
         path = '/openApi/spot/v1/trade/order'
-        params = {
-            'symbol': symbol,
-            'side': side.upper(),
-            'type': order_type.upper(),
-            'quantity': size
-        }
-        if price:
-            params['price'] = price
-            params['timeInForce'] = 'GTC'
-        result = self.send_request('POST', path, params)
-        return result.get('data', {}).get('orderId')
-
-    def wait_for_fill_price(self, order_id, symbol, check_interval=1, timeout=90):
-        path = '/openApi/spot/v1/trade/query'
-        start_time = time.time()
         
-        while time.time() - start_time <= timeout:
-            params = {'symbol': symbol, 'orderId': order_id}
-            response = self.send_request('GET', path, params)
-            
-            if response and response.get('data', {}).get('status') == 'FILLED':
-                order_data = response['data']
-                executed_qty_str = order_data.get('executedQty', '0')
-                cummulative_quote_qty_str = order_data.get('cummulativeQuoteQty', '0')
-
-                try:
-                    executed_qty = float(executed_qty_str)
-                    cummulative_quote_qty = float(cummulative_quote_qty_str)
-                    
-                    # Evita divisão por zero se a ordem foi preenchida com quantidade 0
-                    if executed_qty > 0:
-                        # Retorna o preço médio de execução
-                        return cummulative_quote_qty / executed_qty
-                    else:
-                        # Se a quantidade executada for 0, retorna o preço original da ordem
-                        return float(order_data.get('price', 0.0))
-
-                except (ValueError, TypeError):
-                    print(f"[BingX] Erro ao converter valores para cálculo do preço de execução.")
-                    return 0.0
-
-            time.sleep(check_interval)
-            
-        print(f"[BingX] Timeout ao aguardar execução da ordem {order_id}.")
-        return 0.0
-
-    def cancel_order(self, symbol, order_id):
-        path = '/openApi/spot/v1/trade/cancel'
-        return self.send_request('POST', path, {'symbol': symbol, 'orderId': order_id})
-
-    def get_open_orders(self, symbol):
-        path = '/openApi/spot/v1/trade/openOrders'
-        return self.send_request('GET', path, {'symbol': symbol})
-
-    def get_order_status(self, symbol, order_id):
-        path = '/openApi/spot/v1/trade/query'
-        return self.send_request('GET', path, {'symbol': symbol, 'orderId': order_id})
-
-    def get_balance(self):
-        path = '/openApi/spot/v1/account/balance'
-        return self.send_request('GET', path)
-
-    def get_last_trade(self, symbol):
-        path = '/openApi/spot/v1/trade/myTrades'
-        response = self.send_request('GET', path, {'symbol': symbol, 'limit': 1})
-        if response and response.get('data'):
-            trade = response['data'][-1]
-            return SimpleNamespace(
-                id=trade.get('id'),
-                order_id=trade.get('orderId'),
-                symbol=trade.get('symbol'),
-                price=trade.get('price'),
-                qty=trade.get('qty'),
-                time=datetime.fromtimestamp(int(trade.get('time', 0)) / 1000),
-                is_buyer=trade.get('isBuyer')
-            )
-        return None
-
-    def get_recent_trades_last_7_days(self, symbol):
-        path = '/openApi/spot/v1/trade/myTrades'
-        now = int(datetime.now(timezone.utc).timestamp() * 1000)
-        seven_days_ago = int((datetime.now(timezone.utc) - timedelta(days=7)).timestamp() * 1000)
-        all_trades = []
-
-        params = {
-            'symbol': symbol,
-            'startTime': seven_days_ago,
-            'endTime': now,
-            'limit': 100
+        order_params = {
+            "symbol": symbol,
+            "side": side.upper(),
+            "type": order_type.upper(),
+            "quantity": quantity,
         }
 
-        response = self.send_request('GET', path, params)
-        trades = response.get('data', [])
-        if trades:
-            all_trades.extend(trades)
-            with open('bingx_trades.csv', 'w', newline='') as csvfile:
-                fieldnames = list(trades[0].keys()) + ['datetime']
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writeheader()
-                for trade in trades:
-                    trade['datetime'] = datetime.fromtimestamp(int(trade['time']) / 1000).strftime('%Y-%m-%d %H:%M:%S')
-                    writer.writerow(trade)
-        return all_trades
+        if order_type.upper() == 'LIMIT':
+            if price is None or price <= 0:
+                raise ValueError("O preço é obrigatório para ordens do tipo LIMIT.")
+            order_params['price'] = price
+
+        # Este endpoint requer os parâmetros na URL, então params_in_body=False.
+        return self._send_request('POST', path, params=order_params, params_in_body=False)
+
+if __name__ == '__main__':
+    # --- CONFIGURAÇÃO ---
+    # IMPORTANTE: Mantenha suas chaves de API seguras.
+    # Considere carregá-las de variáveis de ambiente ou de um arquivo de configuração seguro.
+    API_KEY = "DoZdFxq0sugoKQ6iVSbXuqCkD6PgKN64BXZCvMzDgy9cAqF3QU9H8Yv6e4omh1FCxMHpf7R9Upu2eDgGQ"
+    SECRET_KEY = "7lzEexURFvp3BGYUPjKevyeikt8CLD4xdl1cQ2Ek19nNZdNCPi50Vnip65LKEM62M5cWuc7Oemw4qaKTVBYpw"
+
+    credentials = {
+        "api_key": API_KEY,
+        "secret_key": SECRET_KEY
+    }
+
+    # 1. Inicializar o cliente
+    client = BingXClient(credentials)
+
+    # 2. Chamar a função para obter o saldo
+    balance_data = client.get_balance()
+    print(balance_data)
+
+    try:
+        market_order_response = client.place_order(
+            symbol="BTC-USDT",      # Par a ser negociado
+            side="BUY",             # "BUY" ou "SELL"
+            order_type="MARKET",    # Tipo da ordem
+            quantity=0.000008         # Quantidade de BTC a comprar
+        )
+
+        print("\n--- Resposta da Ordem a Mercado ---")
+        if market_order_response:
+            print(market_order_response)
+        else:
+            print("Não foi possível obter uma resposta para a ordem a mercado.")
+        print("----------------------------------\n")
+
+    except Exception as e:
+        print(f"Ocorreu um erro ao criar a ordem a mercado: {e}")

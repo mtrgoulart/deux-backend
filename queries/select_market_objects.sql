@@ -4,5 +4,5 @@ WHERE instance_id=%s
 AND symbol = %s
 AND side = %s
 AND created_at >= %s 
-AND operation IS NULL
+AND operation_task_id IS NULL
 GROUP BY symbol, side

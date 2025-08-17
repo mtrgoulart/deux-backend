@@ -1,6 +1,5 @@
 from log.log import general_logger
 from source.celery_client import get_client
-from source.exchange_interface import get_exchange_interface
 from functools import lru_cache
 from pydantic import BaseModel, ValidationError
 from source.serivce import get_neouser_apikey_from_sharing
