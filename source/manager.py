@@ -153,6 +153,11 @@ class OperationHandler:
                 # --- Etapa: Atualizar Webhook ---
                 self.update_webhook_operation(data, operation_task_id)
 
+                return {
+                "status": "success",
+                "operation_task_id": operation_task_id
+                }
+
             else: 
                 # 6. Log muito mais específico sobre o motivo da falha.
                 reason = ""
@@ -160,11 +165,18 @@ class OperationHandler:
                     reason += "check_conditions() retornou False. "
                 if not data_is_sufficient:
                     reason += f"Não há dados suficientes (len(data) = {len(data)}, esperado >= 1). "
-                general_logger.info(f'{log_prefix} Condições não atendidas. Motivo: {reason.strip()}')
+                return {
+                "status": "insuficient condition",
+                "reason": reason
+                }
 
         except Exception as e:
             # Captura qualquer erro inesperado no processo
             general_logger.error(f"{log_prefix} Ocorreu um erro inesperado na execução da condição. Erro: {e}", exc_info=True)
+            return {
+                "status": "failed",
+                "reason": reason.strip()
+            }
         finally:
             # 7. Garante que o fim da execução seja sempre logado.
             general_logger.info(f"{log_prefix} Finalizando execução da condição.")
@@ -174,7 +186,7 @@ class OperationHandler:
         for market_object in filtered_data:
             webhook_id=market_object["id"]
             try:
-                self.webhook_data_manager.update_market_object_at_index(webhook_id, operation_task_id)
+                self.webhook_data_manager.update_market_object_at_index(webhook_id, str(operation_task_id))
                 general_logger.info(f"Updated task operation ID {operation_task_id} for object {market_object['id']}")
             except Exception as e:
                 general_logger.error(f"Error updating object {market_object['id']}: {e}")

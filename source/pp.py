@@ -120,10 +120,10 @@ class WebhookData:
         
         return self.db_manager.fetch_data(query, tuple(params))
 
-    def update_market_object_at_index(self, webhook_id, data):
+    def update_market_object_at_index(self, webhook_id, operation_task_id):
         query = self._load_query("update_market_object.sql")
         params = (
-            data["operation_task_id"],
+            operation_task_id,
             webhook_id,
         )
         self.db_manager.insert_data(query, params)

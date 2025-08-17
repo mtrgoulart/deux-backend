@@ -15,5 +15,6 @@ COPY interface/ ./interface/
 COPY log/ ./log/
 COPY queries/ ./queries/
 COPY config.ini ./config.ini
+COPY exchange_classes.json ./exchange_classes.json
 
 CMD ["celery", "--app", "celeryManager.celery_app", "worker", "--concurrency=10", "-Q", "ops", "-n", "worker_ops@%h", "--loglevel=info"]
