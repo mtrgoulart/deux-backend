@@ -36,7 +36,7 @@ def process_webhook(self, data):
         instance_id = signal_data['instance_id']
         symbol = signal_data.get('symbol')
         
-        log_prefix = f"[TaskID: {task_id}] [Instance: {instance_id}] [User: {user_id}]"
+        log_prefix = f"[TaskID: {task_id}] [Instance: {instance_id}] [User: {user_id}] [Side: {side}]"
         # --- Etapa: Verificação de Status da Instância ---
         status = get_instance_status(instance_id, user_id)
 

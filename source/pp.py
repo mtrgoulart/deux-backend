@@ -158,9 +158,9 @@ class Operations:
     def __init__(self, db_manager):
         self.db_manager = db_manager    
 
-    def get_last_operations_from_db(self, instance_id, symbol, limit):
+    def get_last_operations_from_db(self, instance_id, limit):
         query = self._load_query("select_last_operations.sql")
-        last_ops = self.db_manager.fetch_data(query, (instance_id,symbol, limit))
+        last_ops = self.db_manager.fetch_data(query, (instance_id, limit))
         columns = ["id", "date", "symbol", "size", "side"]
         return [dict(zip(columns, op)) for op in last_ops] if last_ops else []
 

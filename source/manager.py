@@ -24,7 +24,7 @@ class IntervalHandler:
 
     def get_last_operations(self,limit):
         #general_logger.info(f"Fetching last {self.simultaneus_operation} operations from DB for symbol: {self.symbol}")
-        return self.operations.get_last_operations_from_db(self.instance_id,self.symbol, limit)
+        return self.operations.get_last_operations_from_db(self.instance_id, limit)
 
 
     def check_interval(self):
@@ -38,7 +38,7 @@ class IntervalHandler:
             else:
                 # Obtém a última operação
                 last_operation = last_operations[0] if len(last_operations) > 0 else None
-                general_logger.info(f'{last_operation,{self.side}}')
+                #general_logger.info(f'{last_operation,{self.side}}')
                 if last_operation:
                     if last_operation["side"] != self.side: 
                         return True
