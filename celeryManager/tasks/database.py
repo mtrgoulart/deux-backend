@@ -4,7 +4,7 @@ from celeryManager.tasks.base import logger
 from source.dbmanager import load_query  # ou onde estiver seu load_query
 
 @shared_task(name="trade.save_operation", queue="db", bind=True)
-def save_operation_task(operation_data):
+def save_operation_task(self,operation_data):
     """
     Recebe os dados de uma operação e salva no banco de dados,
     armazenando o order_response completo.
