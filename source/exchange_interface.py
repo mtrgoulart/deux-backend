@@ -184,7 +184,7 @@ class BingXInterface(ExchangeInterface):
         print(f"[BingXInterface] Moeda '{ccy}' não encontrada na carteira spot ou saldo zerado.")
         return 0.0
     
-    def place_order(self, symbol: str, side: str, order_type: str, size: float, price: float, **kwargs) -> Optional[Dict[str, Any]]:
+    def place_order(self, symbol: str, side: str, order_type: str, size: float, price: float=None, **kwargs) -> Optional[Dict[str, Any]]:
         """
         Abstrai a criação de uma ordem, chamando o método correspondente do cliente.
 
