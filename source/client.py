@@ -452,9 +452,8 @@ class BingXClient:
                     request_body = {**params, 'signature': signature}
                     response = self.session.post(url, data=request_body)
                 else:
-                    # Caso do place_order: parâmetros na URL (como no seu script de teste)
                     final_url = f"{url}?{query_string}&signature={signature}"
-                    print(f"Enviando POST para: {final_url} com corpo vazio")
+                    #print(f"Enviando POST para: {final_url} com corpo vazio")
                     response = self.session.post(final_url, data={}) # Corpo vazio!
             else:
                 raise ValueError(f"Método HTTP '{method}' não suportado.")

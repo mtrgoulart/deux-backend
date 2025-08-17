@@ -160,10 +160,11 @@ class BingXInterface(ExchangeInterface):
                    moeda não for encontrada ou em caso de erro na comunicação
                    com a API.
         """
-        print(f"[BingXInterface] Buscando saldo para a moeda: {ccy}...")
+        #general_logger.info(f"[BingXInterface] Buscando saldo para a moeda: {ccy}...")
         
         # 1. Chama o método do cliente para obter todos os saldos da conta spot
         balance_data = self.bingx_client.get_balance()
+        general_logger.info(f"[BingXInterface] Balance atual para moeda {ccy}: {balance_data}...")
 
         # 2. Verifica se a chamada à API foi bem-sucedida e retornou dados
         if not balance_data:
