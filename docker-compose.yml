@@ -1,73 +1,97 @@
-version: '3'
+version: '3.8'
+
 services:
   
+  # API que recebe os webhooks
   webhook_pipeline:
     build:
+      context: . # O contexto é o diretório atual
       dockerfile: Dockerfile.webhook
     container_name: webhook_pipeline
     networks:
       - main_network
     ports:
-      - "5000:5000"
+      - "5000:5000" # A porta 5000 fica exposta para o Nginx se comunicar
     restart: always
     env_file:
       - .env.prd
 
-  celery_worker_ops:
-    build:
-      context: .
-      dockerfile: Dockerfile.worker_ops
-    container_name: celery_worker_ops
-    networks:
-      - main_network
-    env_file:
-      - .env.prd
-    restart: always
-
-  celery_worker_db:
-    build:
-      context: .
-      dockerfile: Dockerfile.worker_db
-    container_name: celery_worker_db
-    networks:
-      - main_network
-    env_file:
-      - .env.prd
-    restart: always
-
+  # WORKER PARA A FILA 'webhook' (rápido)
   celery_worker_webhook:
     build:
       context: .
-      dockerfile: Dockerfile.worker_webhook
+      dockerfile: Dockerfile.worker 
     container_name: celery_worker_webhook
+    command: celery --app celeryManager.celery_app worker --concurrency=4 -Q webhook -n worker_webhook@%h --loglevel=info
     networks:
       - main_network
     env_file:
       - .env.prd
     restart: always
+    depends_on:
+      - webhook_pipeline # Garante que a aplicação principal suba primeiro
 
+  # WORKER PARA A FILA 'logic' (lógica pesada)
+  celery_worker_logic:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker 
+    container_name: celery_worker_logic
+    command: celery --app celeryManager.celery_app worker --concurrency=4 -Q logic -n worker_logic@%h --loglevel=info
+    networks:
+      - main_network
+    env_file:
+      - .env.prd
+    restart: always
+    depends_on:
+      - webhook_pipeline
+
+  # WORKER PARA A FILA 'ops'
+  celery_worker_ops:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: celery_worker_ops
+    command: celery --app celeryManager.celery_app worker --concurrency=2 -Q ops -n worker_ops@%h --loglevel=info
+    networks:
+      - main_network
+    env_file:
+      - .env.prd
+    restart: always
+    depends_on:
+      - webhook_pipeline
+
+  # WORKER PARA A FILA 'db'
+  celery_worker_db:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: celery_worker_db
+    command: celery --app celeryManager.celery_app worker --concurrency=2 -Q db -n worker_db@%h --loglevel=info
+    networks:
+      - main_network
+    env_file:
+      - .env.prd
+    restart: always
+    depends_on:
+      - webhook_pipeline
+
+  # WORKER PARA A FILA 'sharing'
   celery_worker_sharing:
     build:
       context: .
-      dockerfile: Dockerfile.worker_sharing
+      dockerfile: Dockerfile.worker
     container_name: celery_worker_sharing
+    command: celery --app celeryManager.celery_app worker --concurrency=2 -Q sharing -n worker_sharing@%h --loglevel=info
     networks:
       - main_network
     env_file:
       - .env.prd
     restart: always
-
-  nginx:
-    image: nginx:latest
-    container_name: nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    networks:
-      - main_network
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - webhook_pipeline
 
 networks:
+  # A aplicação também se conecta à rede externa 'main_network'
   main_network:
     external: true

@@ -479,16 +479,31 @@ class BingXClient:
         # Este endpoint específico requer os parâmetros no corpo.
         return self._send_request('POST', path, params_in_body=True)
     
-    def place_order(self, symbol: str, side: str, order_type: str, quantity: float, price: Optional[float] = None) -> Optional[Dict[str, Any]]:
-        """Envia uma nova ordem para a exchange."""
+    def place_order(self, symbol: str, side: str, order_type: str, quantity: Optional[float] = None, quoteOrderQty: Optional[float] = None, price: Optional[float] = None) -> Optional[Dict[str, Any]]:
+        """
+        Envia uma nova ordem para a exchange.
+        Aceita 'quantity' (para moeda base) ou 'quoteOrderQty' (para moeda de cotação).
+        """
         path = '/openApi/spot/v1/trade/order'
         
+        # Validação: Um dos dois (quantity ou quoteOrderQty) deve ser fornecido.
+        if quantity is None and quoteOrderQty is None:
+            raise ValueError("É necessário fornecer 'quantity' (para a moeda base) ou 'quoteOrderQty' (para a moeda de cotação).")
+        if quantity is not None and quoteOrderQty is not None:
+            raise ValueError("Forneça apenas 'quantity' ou 'quoteOrderQty', não ambos.")
+
         order_params = {
             "symbol": symbol,
             "side": side.upper(),
             "type": order_type.upper(),
-            "quoteOrderQty": quantity,
         }
+
+        # Adiciona o parâmetro de quantidade correto com base no que foi fornecido
+        if quantity is not None:
+            order_params["quantity"] = quantity
+        
+        if quoteOrderQty is not None:
+            order_params["quoteOrderQty"] = quoteOrderQty
 
         if order_type.upper() == 'LIMIT':
             if price is None or price <= 0:

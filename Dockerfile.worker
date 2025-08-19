@@ -1,19 +1,20 @@
-# Dockerfile.worker_db (Corrigido e Otimizado)
+# Dockerfile.worker
 
 FROM python:3.9-slim
 WORKDIR /app
 ENV PYTHONPATH="/app"
 
-# Copia e instala as dependências primeiro
+# Copia e instala as dependências primeiro para aproveitar o cache do Docker
 COPY celeryManager/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copia o código da aplicação
+# Copia todo o código da aplicação
 COPY celeryManager/ ./celeryManager/
 COPY source/ ./source/
 COPY interface/ ./interface/
 COPY log/ ./log/
 COPY queries/ ./queries/
 COPY config.ini ./config.ini
+COPY exchange_classes.json ./
 
-CMD ["celery", "--app", "celeryManager.celery_app", "worker", "--concurrency=4", "-Q", "db", "-n", "worker_db@%h", "--loglevel=info"]
+CMD ["celery", "--app", "celeryManager.celery_app", "worker", "--loglevel=info"]

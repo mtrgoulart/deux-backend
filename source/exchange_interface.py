@@ -187,29 +187,47 @@ class BingXInterface(ExchangeInterface):
     
     def place_order(self, symbol: str, side: str, order_type: str, size: float, price: float=None, **kwargs) -> Optional[Dict[str, Any]]:
         """
-        Abstrai a criação de uma ordem, chamando o método correspondente do cliente.
+        Abstrai a criação de uma ordem, chamando o método correspondente do cliente
+        e utilizando o parâmetro de quantidade correto ('quantity' ou 'quoteOrderQty')
+        com base no lado da operação ('side').
 
         Args:
             symbol (str): Símbolo do mercado (ex: "BTC-USDT").
             side (str): Lado da ordem ("BUY" ou "SELL").
             order_type (str): Tipo da ordem ("MARKET" ou "LIMIT").
-            size (float): Tamanho da ordem.
+            size (float): Tamanho da ordem. Para 'BUY', é o valor em moeda de cotação (USDT).
+                          Para 'SELL', é o valor em moeda base (BTC).
             price (float): Preço da ordem (usado para ordens LIMIT).
-            kwargs: Argumentos adicionais (não usados aqui, mas bom para compatibilidade).
+            kwargs: Argumentos adicionais para compatibilidade.
 
         Returns:
             dict or None: A resposta da API da exchange.
         """
 
         try:
-            order_response = self.bingx_client.place_order(
-                symbol=symbol,
-                side=side,
-                order_type=order_type,
-                quantity=size,
-                price=price
-            )
+            # Prepara os parâmetros para o cliente, deixando a quantidade de fora por enquanto
+            params = {
+                "symbol": symbol,
+                "side": side,
+                "order_type": order_type,
+                "price": price
+            }
+
+            # Lógica principal: decide qual parâmetro de quantidade usar
+            if side.upper() == 'BUY':
+                # Para compra, 'size' representa a quantidade da moeda de cotação (ex: USDT)
+                params['quoteOrderQty'] = size
+            elif side.upper() == 'SELL':
+                # Para venda, 'size' representa a quantidade da moeda base (ex: BTC)
+                params['quantity'] = size
+            else:
+                # Segurança para evitar lados inválidos
+                raise ValueError(f"Lado da operação inválido: '{side}'. Use 'BUY' ou 'SELL'.")
+
+            # Chama o método do cliente usando desempacotamento de dicionário
+            order_response = self.bingx_client.place_order(**params)
             return order_response
+            
         except ValueError as e:
             print(f"[BingXInterface] Erro ao criar ordem: {e}")
             return None
