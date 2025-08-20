@@ -1,29 +1,37 @@
-# Em operation.py
-
 from celery import shared_task
-from source.operation import execute_operation
-# Importe a nova função que você criou
-from source.utils import normalize_exchange_response 
+from source.context import get_db_connection
+from celeryManager.tasks.base import logger
+from source.dbmanager import load_query  # ou onde estiver seu load_query
 
-@shared_task(name="trade.execute_operation", queue="ops")
-def task_execute_operation(data):
+@shared_task(name="trade.save_operation",bind=True)
+def save_operation_task(self,operation_data):
     """
-    Executa a operação de trade na exchange e normaliza o resultado.
+    Recebe os dados de uma operação e salva no banco de dados,
+    armazenando o order_response completo.
     """
-    # 1. Executa a operação como antes
-    result = execute_operation(
-        user_id=data.get("user_id"),
-        api_key=data.get("api_key"),
-        exchange_id=data.get("exchange_id"),
-        perc_balance_operation=data.get("perc_balance_operation"),
-        symbol=data.get("symbol"),
-        side=data.get("side"),
-        instance_id=data.get("instance_id")
-    )
+    try:
+        # Converte o order_response (que é um dict/objeto) para uma string JSON
+        # O driver do banco de dados (psycopg2) geralmente faz isso para colunas JSONB,
+        # mas fazer explicitamente é mais seguro e compatível.
 
-    # 2. ANTES DE RETORNAR, NORMALIZA A RESPOSTA!
-    # A chave 'order_response' agora conterá o resultado normalizado.
-    result['order_response'] = normalize_exchange_response(result.get('order_response'))
-    
-    # 3. Retorna o resultado já com a resposta padronizada
-    return result
+        query = load_query('insert_operation.sql')
+        with get_db_connection() as db_client:
+            db_client.cursor.execute(query, (
+                operation_data.get("user_id"),
+                operation_data.get("api_key"),
+                operation_data.get("symbol"),
+                operation_data.get("side"),
+                operation_data.get("size"),
+                operation_data.get("order_response"),
+                operation_data.get("instance_id"),
+                operation_data.get("status")
+            ))
+            operation_id = db_client.cursor.fetchone()[0]
+            db_client.conn.commit()
+
+            logger.info(f"Operação salva com sucesso (ID: {operation_id}): {operation_data.get('symbol')}")
+            return operation_id
+
+    except Exception as e:
+        logger.error(f"Erro ao salvar operação para o symbol {operation_data.get('symbol')}: {e}", exc_info=True)
+        raise
