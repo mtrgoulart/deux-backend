@@ -3,7 +3,7 @@ from source.operation import execute_operation
 
 
 # RENOMEAMOS a tarefa para ser mais específica e REMOVEMOS a chamada para save_operation_task
-@shared_task(name="trade.execute_operation", queue="ops")
+@shared_task(name="trade.execute_operation")
 def task_execute_operation(data):
     """
     Executa a operação de trade na exchange.

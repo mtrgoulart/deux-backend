@@ -3,7 +3,7 @@ from source.context import get_db_connection
 from celeryManager.tasks.base import logger
 from source.dbmanager import load_query  # ou onde estiver seu load_query
 
-@shared_task(name="trade.save_operation", queue="db", bind=True)
+@shared_task(name="trade.save_operation",bind=True)
 def save_operation_task(self,operation_data):
     """
     Recebe os dados de uma operação e salva no banco de dados,
