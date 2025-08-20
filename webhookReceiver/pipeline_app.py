@@ -5,16 +5,13 @@ from celeryManager.celery_app import celery as celery_app
 from log.log import general_logger
 
 # Carrega variáveis de ambiente
-load_dotenv(".env")
+load_dotenv(".env.prd")
 
-# Configuração do logger
-LOG_FILE = "webhook.log"
-LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
-
+# --- App Flask ---
 app = Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 # Limite de 16KB para o corpo da requisição
 
-# === Funções de utilidade ===
+# === Funções de Utilidade (Validação) ===
 def parse_data(text: str) -> dict:
     """Valida e parseia entrada no formato 'key:valor,side:buy|sell'."""
     try:
@@ -46,44 +43,48 @@ def parse_data(text: str) -> dict:
     except Exception as e:
         raise ValueError(f"Erro ao analisar os dados: {e}")
 
-def send_to_celery(data: dict):
-    """Envia dados para o Celery processar."""
-    try:
-        celery_app.send_task("process_webhook", kwargs={"data": data}, queue="webhook")
-        general_logger.info("Task sent to Celery for key ending with: ...%s", data['key'][-4:] if len(data['key']) > 4 else data['key'])
-    except Exception as e:
-        general_logger.error("Erro ao enviar task ao Celery: %s", e)
-        raise RuntimeError("Falha ao enviar para processamento assíncrono.")
-
-
-# === Rota principal ===
+# === Rota Principal do Webhook ===
 @app.route('/webhook', methods=['POST'])
 def webhook_listener():
+    """
+    Recebe o sinal, valida o formato e o despacha para a primeira fila do Celery.
+    """
     try:
         raw_body = request.get_data(as_text=True).strip()
         if not raw_body:
             general_logger.warning("Corpo da requisição vazio.")
             return jsonify({"error": "Corpo da requisição está vazio"}), 400
 
+        # 1. Valida os dados recebidos
         try:
             parsed_data = parse_data(raw_body)
-            send_to_celery(parsed_data)
         except ValueError as e:
             general_logger.warning("Falha na validação dos dados: %s", e)
             return jsonify({"error": str(e)}), 400
         
-        return jsonify({"message": "Dados recebidos e enviados para processamento"}), 200
+        # 2. Envia a tarefa para o Celery
+        try:
+            # CORREÇÃO: Envia para a task 'webhook.receipt'
+            celery_app.send_task(
+                "webhook.receipt", 
+                kwargs={"data": parsed_data}
+            )
+            general_logger.info(
+                "Sinal recebido e enfileirado para key: ...%s", 
+                parsed_data['key'][-4:]
+            )
+        except Exception as e:
+            general_logger.error("Erro ao enfileirar task no Celery: %s", e, exc_info=True)
+            raise RuntimeError("Falha ao enfileirar para processamento assíncrono.")
+
+        return jsonify({"message": "Sinal recebido e enfileirado para processamento"}), 202 # 202 Accepted é mais apropriado aqui
 
     except Exception as e:
-        general_logger.exception("Erro inesperado no processamento do webhook")
+        general_logger.exception("Erro inesperado no endpoint do webhook")
         return jsonify({"error": "Erro interno no servidor"}), 500
-    
+
 if __name__ == '__main__':
-    general_logger.info('Iniciando webhook')
-    # Debug mode should be controlled by environment variables like FLASK_DEBUG or FLASK_ENV.
-    # By default, Flask runs with debug=False unless FLASK_DEBUG=1.
-    # Explicitly setting debug=False if FLASK_ENV is 'production' is a good safeguard.
-    # However, relying on Flask's default behavior when not in development is often sufficient.
-    # For clarity, we can fetch an environment variable.
-    DEBUG_MODE = os.getenv('FLASK_DEBUG', '0') == '1' # FLASK_DEBUG=1 enables debug
+    general_logger.info('Iniciando listener de Webhook do Flask')
+    # O modo debug é controlado pela variável de ambiente FLASK_DEBUG
+    DEBUG_MODE = os.getenv('FLASK_DEBUG', '0') == '1'
     app.run(host='0.0.0.0', port=5000, debug=DEBUG_MODE)
