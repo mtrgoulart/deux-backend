@@ -2,6 +2,7 @@ from celery import shared_task
 from source.context import get_db_connection
 from celeryManager.tasks.base import logger
 from source.dbmanager import load_query  # ou onde estiver seu load_query
+import json
 
 @shared_task(name="trade.save_operation",bind=True)
 def save_operation_task(self,operation_data):
@@ -22,7 +23,7 @@ def save_operation_task(self,operation_data):
                 operation_data.get("symbol"),
                 operation_data.get("side"),
                 operation_data.get("size"),
-                operation_data.get("order_response"),
+                json.dumps(operation_data.get("order_response")),
                 operation_data.get("instance_id"),
                 operation_data.get("status")
             ))
