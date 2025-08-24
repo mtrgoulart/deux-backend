@@ -530,7 +530,7 @@ if __name__ == '__main__':
 
     # 2. Chamar a função para obter o saldo
     balance_data = client.get_balance()
-    print(balance_data)
+    #print(balance_data)
 
     try:
         market_order_response = client.place_order(
