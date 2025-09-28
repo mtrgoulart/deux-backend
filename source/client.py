@@ -320,6 +320,7 @@ class BinanceClient(BaseClient):
     def send_signed_request(self, method, endpoint, params=None):
         params = params or {}
         params['timestamp'] = int(time.time() * 1000)
+        params['recvWindow'] = 10000
         
         headers = {'X-MBX-APIKEY': self.api_key}
         
