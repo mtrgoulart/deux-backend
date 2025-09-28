@@ -56,6 +56,7 @@ celery.conf.task_routes = {
     'trade.execute_operation':      {'queue': 'ops',     'routing_key': 'ops.execute'},
     'trade.save_operation':         {'queue': 'db',      'routing_key': 'db.save'},
     'process_sharing_operations':   {'queue': 'sharing', 'routing_key': 'sharing.process'},
+    'account.get_balance':          {'queue': 'ops',     'routing_key': 'ops.balance'},
 }
 
 # === DESCOBERTA AUTOMÁTICA DE TAREFAS ===
