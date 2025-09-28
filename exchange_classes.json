@@ -3,7 +3,7 @@
     "real": "source.exchange_interface.OKXRealInterface",
     "demo": "source.exchange_interface.OKXDemoInterface"
   },
-  "2": {
+  "3": {
     "real": "source.exchange_interface.BinanceRealInterface",
     "demo": "source.exchange_interface.BinanceDemoInterface"
   },

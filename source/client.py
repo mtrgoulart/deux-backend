@@ -111,7 +111,7 @@ class OKXClient(BaseClient):
         }
         response = self.send_request('POST', '/api/v5/trade/order', body)
         if response and "data" in response:
-            return response["data"][0]["ordId"]  # Retorna o ID da ordem
+            return response["data"]
         return None
    
     def wait_for_fill_price(self, order_id, check_interval=1, timeout=90):
@@ -311,7 +311,8 @@ class BinanceClient(BaseClient):
         self.url = url
 
     def sign(self, params):
-        query_string = '&'.join([f"{k}={params[k]}" for k in sorted(params)])
+        # A geração da assinatura está correta, usando HMAC-SHA256.
+        query_string = urlencode(params) # Usar urlencode é mais seguro que a junção manual.
         signature = hmac.new(self.secret_key.encode(), query_string.encode(), hashlib.sha256).hexdigest()
         params['signature'] = signature
         return params
@@ -319,65 +320,113 @@ class BinanceClient(BaseClient):
     def send_signed_request(self, method, endpoint, params=None):
         params = params or {}
         params['timestamp'] = int(time.time() * 1000)
-        signed_params = self.sign(params)
+        
         headers = {'X-MBX-APIKEY': self.api_key}
+        
+        # A assinatura deve ser o último parâmetro adicionado.
+        query_string_with_signature = urlencode(self.sign(params))
+        
         try:
-            if method == 'GET':
-                res = self.session.get(self.url + endpoint, headers=headers, params=signed_params)
+            if method.upper() == 'GET':
+                res = self.session.get(f"{self.url}{endpoint}?{query_string_with_signature}", headers=headers)
+            elif method.upper() == 'POST':
+                res = self.session.post(f"{self.url}{endpoint}?{query_string_with_signature}", headers=headers)
+            elif method.upper() == 'DELETE':
+                res = self.session.delete(f"{self.url}{endpoint}?{query_string_with_signature}", headers=headers)
             else:
-                res = self.session.post(self.url + endpoint, headers=headers, params=signed_params)
-            res.raise_for_status()
+                 print(f"[Binance] Error: Método HTTP '{method}' não suportado.")
+                 return None
+
+            res.raise_for_status()  # Lança uma exceção para códigos de erro HTTP (4xx ou 5xx)
             return res.json()
-        except Exception as e:
-            print(f"[Binance] Error: {e}")
+        
+        except requests.exceptions.RequestException as e:
+            # Captura de erro aprimorada para fornecer mais detalhes.
+            print(f"[Binance] Erro na requisição para {e.request.url}: {e}")
+            if e.response:
+                print(f"[Binance] Resposta do Servidor ({e.response.status_code}): {e.response.text}")
             return None
 
     def get_current_price(self, symbol):
+        # Endpoint público, não requer assinatura.
         try:
             response = self.session.get(f"{self.url}/api/v3/ticker/price", params={"symbol": symbol})
+            response.raise_for_status()
             return float(response.json()["price"])
-        except:
+        except requests.exceptions.RequestException as e:
+            print(f"[Binance] Erro ao obter preço para {symbol}: {e}")
+            return None
+        except (KeyError, ValueError) as e:
+            print(f"[Binance] Erro ao processar resposta de preço para {symbol}: {e}")
             return None
 
     def place_order(self, symbol, side, order_type, size, currency, price=None):
+        # Validação: O endpoint está correto (POST /api/v3/order).
         params = {
             "symbol": symbol,
             "side": side.upper(),
             "type": order_type.upper(),
             "quantity": size
         }
-        if price:
+        # O parâmetro 'currency' não é usado pela API da Binance neste endpoint,
+        # mas mantê-lo na assinatura do método garante a compatibilidade com a ExchangeInterface.
+        
+        if order_type.upper() == "LIMIT":
+            if not price:
+                raise ValueError("O parâmetro 'price' é obrigatório para ordens do tipo LIMIT.")
             params["price"] = price
-            params["timeInForce"] = "GTC"
+            params["timeInForce"] = "GTC" # Good-Til-Canceled, correto para ordens LIMIT padrão.
+
         response = self.send_signed_request("POST", "/api/v3/order", params)
-        return response.get("orderId") if response else None
+        return response # Retornar a resposta completa pode ser mais útil.
 
     def wait_for_fill_price(self, order_id, symbol, check_interval=1, timeout=90):
         start_time = time.time()
         while time.time() - start_time <= timeout:
             order = self.get_order_status(symbol, order_id)
             if order and order.get("status") == "FILLED":
-                return float(order.get("price", 0.0))
+                # Para ordens a mercado, o 'price' é 0. O preço real está em 'cummulativeQuoteQty' / 'executedQty'.
+                # Para simplificar e manter consistência, usar o preço da ordem LIMIT ou o preço médio da MARKET é uma boa abordagem.
+                if float(order.get("price", 0.0)) > 0:
+                    return float(order.get("price"))
+                elif float(order.get("executedQty", 0.0)) > 0:
+                    return float(order.get("cummulativeQuoteQty")) / float(order.get("executedQty"))
+
             time.sleep(check_interval)
+        print(f"[Binance] Timeout ao aguardar execução da ordem {order_id}.")
         return 0.0
 
     def cancel_order(self, symbol, order_id):
-        return self.send_signed_request("DELETE", "/api/v3/order", {"symbol": symbol, "orderId": order_id})
+        # Validação: O endpoint está correto (DELETE /api/v3/order).
+        params = {"symbol": symbol, "orderId": order_id}
+        return self.send_signed_request("DELETE", "/api/v3/order", params)
 
     def get_open_orders(self, symbol):
-        return self.send_signed_request("GET", "/api/v3/openOrders", {"symbol": symbol})
+        # Validação: O endpoint está correto (GET /api/v3/openOrders).
+        params = {"symbol": symbol}
+        return self.send_signed_request("GET", "/api/v3/openOrders", params)
 
     def get_order_status(self, symbol, order_id):
-        return self.send_signed_request("GET", "/api/v3/order", {"symbol": symbol, "orderId": order_id})
+        # Validação: O endpoint está correto (GET /api/v3/order).
+        params = {"symbol": symbol, "orderId": order_id}
+        return self.send_signed_request("GET", "/api/v3/order", params)
 
     def get_balance(self, asset=None):
+        # Validação: O endpoint está correto (GET /api/v3/account).
         data = self.send_signed_request("GET", "/api/v3/account")
+        if not data:
+            return [] if not asset else None
+            
+        balances_data = data.get("balances", [])
         if asset:
-            balances = [x for x in data.get("balances", []) if x["asset"] == asset]
-            return balances[0] if balances else None
-        return data.get("balances", [])
+            for balance in balances_data:
+                if balance["asset"] == asset.upper():
+                    return balance # Retorna o dicionário completo do ativo.
+            return None # Retorna None se o ativo específico não for encontrado.
+        return balances_data
 
     def get_last_trade(self, symbol):
+        # Validação: O endpoint está correto (GET /api/v3/myTrades).
         trades = self.send_signed_request("GET", "/api/v3/myTrades", {"symbol": symbol, "limit": 1})
         if trades:
             trade = trades[-1]
@@ -517,8 +566,8 @@ if __name__ == '__main__':
     # --- CONFIGURAÇÃO ---
     # IMPORTANTE: Mantenha suas chaves de API seguras.
     # Considere carregá-las de variáveis de ambiente ou de um arquivo de configuração seguro.
-    API_KEY = "DoZdFxq0sugoKQ6iVSbXuqCkD6PgKN64BXZCvMzDgy9cAqF3QU9H8Yv6e4omh1FCxMHpf7R9Upu2eDgGQ"
-    SECRET_KEY = "7lzEexURFvp3BGYUPjKevyeikt8CLD4xdl1cQ2Ek19nNZdNCPi50Vnip65LKEM62M5cWuc7Oemw4qaKTVBYpw"
+    API_KEY = "2eF3VAc2LZuNbyJsb8e7y0dGnKawBOPfbVItLAqcrF7wWt4XKCds8IQ2ctWHPQ1s"
+    SECRET_KEY = "Wfk2S8u0gZcLGKIECFb55QMC5jyLeT7GQxlm1ptiJAnr0XX8gsOGJSs9RQ58yItv"
 
     credentials = {
         "api_key": API_KEY,
@@ -526,26 +575,8 @@ if __name__ == '__main__':
     }
 
     # 1. Inicializar o cliente
-    client = BingXClient(credentials)
+    client = BinanceClient(credentials)
 
     # 2. Chamar a função para obter o saldo
     balance_data = client.get_balance()
-    #print(balance_data)
-
-    try:
-        market_order_response = client.place_order(
-            symbol="BTC-USDT",      # Par a ser negociado
-            side="BUY",             # "BUY" ou "SELL"
-            order_type="MARKET",    # Tipo da ordem
-            quantity=0.000008         # Quantidade de BTC a comprar
-        )
-
-        print("\n--- Resposta da Ordem a Mercado ---")
-        if market_order_response:
-            print(market_order_response)
-        else:
-            print("Não foi possível obter uma resposta para a ordem a mercado.")
-        print("----------------------------------\n")
-
-    except Exception as e:
-        print(f"Ocorreu um erro ao criar a ordem a mercado: {e}")
+    print(balance_data)
