@@ -1,5 +1,5 @@
 from log.log import general_logger
-from .client import OKXClient, OKXDemoClient, BinanceClient, BinanceDemoClient, BingXClient
+from .client import OKXClient, OKXDemoClient, BinanceClient, BinanceDemoClient, BingXClient, AsterClient
 from .context import get_db_connection
 from .dbmanager import load_query
 import json
@@ -232,6 +232,94 @@ class BingXInterface(ExchangeInterface):
             print(f"[BingXInterface] Erro ao criar ordem: {e}")
             return None
 
+class AsterInterface(ExchangeInterface):
+    def __init__(self, exchange_id, user_id, api_key):
+        super().__init__(exchange_id, user_id, api_key)
+        self.aster_client = self.create_client()
+
+    def create_client(self):
+        """Instancia o cliente específico para a API da AsterDex."""
+        return AsterClient(self.credentials)
+
+    def get_balance(self, ccy: str) -> float:
+        """
+        Busca e retorna o saldo disponível ('free') de uma moeda específica.
+
+        Este método chama o cliente da AsterDex, processa a resposta e extrai
+        o valor do saldo para a moeda solicitada.
+
+        Args:
+            ccy (str): O símbolo da moeda (ex: 'USDT', 'BTC').
+
+        Returns:
+            float: O saldo disponível da moeda. Retorna 0.0 se a moeda não for
+                   encontrada ou em caso de erro.
+        """
+        # 1. Chama o método do cliente para obter os dados da conta
+        account_data = self.aster_client.get_balance()
+
+        # 2. Verifica se a resposta é válida e contém a lista de 'balances'
+        if not account_data or 'balances' not in account_data:
+            general_logger.warning(f"[AsterInterface] Não foi possível obter os saldos ou a resposta está malformada: {account_data}")
+            return 0.0
+
+        # 3. Procura pela moeda específica (ccy) na lista de saldos
+        for balance in account_data['balances']:
+            if balance.get('asset', '').upper() == ccy.upper():
+                # 4. Se encontrar, retorna o saldo 'free' convertido para float
+                return float(balance.get('free', 0.0))
+
+        # 5. Se não encontrar a moeda, retorna 0.0
+        general_logger.info(f"[AsterInterface] Moeda '{ccy}' não encontrada na conta.")
+        return 0.0
+    
+    def place_order(self, symbol: str, side: str, order_type: str, size: float, **kwargs) -> Optional[Dict[str, Any]]:
+        """
+        Abstrai a criação de uma ordem a mercado, chamando o cliente e formatando a resposta.
+        Como o cliente já está focado em ordens a mercado, o parâmetro 'order_type' é ignorado.
+
+        Args:
+            symbol (str): Símbolo do mercado (ex: "BTC-USDT").
+            side (str): Lado da ordem ("BUY" ou "SELL").
+            order_type (str): Tipo da ordem (ignorado, sempre será 'MARKET').
+            size (float): Tamanho da ordem. Para 'BUY', é o valor em moeda de cotação (USDT).
+                          Para 'SELL', é o valor em moeda base (BTC).
+            kwargs: Argumentos adicionais para compatibilidade com a classe base.
+
+        Returns:
+            dict or None: Um dicionário formatado com os dados essenciais da ordem ou None em caso de falha.
+        """
+        try:
+            # 1. Chama o método do cliente, que já lida com a lógica de ordens a mercado
+            raw_order_response = self.aster_client.place_market_order(
+                symbol=symbol,
+                side=side,
+                size=size
+            )
+
+            # 2. Verifica se a criação da ordem foi bem-sucedida
+            if not raw_order_response or 'orderId' not in raw_order_response:
+                general_logger.error(f"[AsterInterface] Falha ao criar a ordem na AsterDex. Resposta: {raw_order_response}")
+                return None
+
+            # 3. Formata a resposta para um padrão limpo e consistente
+            formatted_order = {
+                'order_id': raw_order_response.get('orderId'),
+                'symbol': raw_order_response.get('symbol'),
+                'side': raw_order_response.get('side'),
+                'type': raw_order_response.get('type'),
+                'status': raw_order_response.get('status'),
+                'client_order_id': raw_order_response.get('clientOrderId'),
+                'update_time': raw_order_response.get('updateTime'),
+                'raw_response': raw_order_response  # Inclui a resposta original para fins de debug
+            }
+            
+            general_logger.info(f"[AsterInterface] Ordem criada com sucesso: {formatted_order}")
+            return formatted_order
+            
+        except Exception as e:
+            general_logger.error(f"[AsterInterface] Exceção ao criar ordem: {e}")
+            return None
 
 def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):
     try:
