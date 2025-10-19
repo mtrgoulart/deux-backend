@@ -291,7 +291,7 @@ class AsterInterface(ExchangeInterface):
         """
         try:
             # 1. Chama o método do cliente, que já lida com a lógica de ordens a mercado
-            raw_order_response = self.aster_client.place_market_order(
+            raw_order_response = self.aster_client.place_order(
                 symbol=symbol,
                 side=side,
                 size=size
