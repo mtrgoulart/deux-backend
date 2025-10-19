@@ -7,3 +7,4 @@ urllib3==2.2.3
 tenacity==9.1.2
 pytz==2024.2
 psycopg2-binary==2.9.10
+eth-account==0.13.7

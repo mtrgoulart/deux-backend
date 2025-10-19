@@ -10,5 +10,9 @@
   "5": {
     "real": "source.exchange_interface.BingXInterface",
     "demo": "source.exchange_interface.BingXInterface"
+  },
+  "6": {
+    "real": "source.exchange_interface.AsterInterface",
+    "demo": "source.exchange_interface.AsterInterface"
   }
 }
