@@ -429,8 +429,8 @@ class BinanceClient(BaseClient):
         balances_data = data.get("balances", [])
         if asset:
             for balance in balances_data:
-                if balance["asset"] == asset.upper():
-                    return balance # Retorna o dicionário completo do ativo.
+                if balance.get("asset", "").upper() == asset.upper():
+                    return float(balance.get('free', 0.0))
             return None # Retorna None se o ativo específico não for encontrado.
         return balances_data
 

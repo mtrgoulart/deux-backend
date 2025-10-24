@@ -127,8 +127,24 @@ class BinanceRealInterface(ExchangeInterface):
     def get_current_price(self, symbol):
         return self.binance_client.get_current_price(symbol)
 
-    def get_balance(self, ccy=None):
-        return self.binance_client.get_balance(ccy)
+    def get_balance(self, ccy: Optional[str] = None) -> float:
+        """
+        Busca e retorna o saldo disponível ('free') de uma moeda específica.
+
+        Args:
+            ccy (str): O símbolo da moeda (ex: 'USDT', 'DOGE').
+
+        Returns:
+            float: O saldo disponível da moeda. Retorna 0.0 se a moeda não for
+                   encontrada ou em caso de erro.
+        """
+        if not ccy:
+            general_logger.error("[BinanceInterface] A moeda (ccy) deve ser especificada para obter o saldo.")
+            raise ValueError("A moeda (ccy) é obrigatória para get_balance na Binance.")
+        
+        # A chamada ao cliente agora retorna diretamente o float que precisamos.
+        balance_value = self.binance_client.get_balance(asset=ccy)
+        return balance_value
 
     def get_order_execution_price(self, symbol, order_id):
         return self.binance_client.wait_for_fill_price(order_id, symbol)
@@ -164,7 +180,7 @@ class BingXInterface(ExchangeInterface):
         
         # 1. Chama o método do cliente para obter todos os saldos da conta spot
         balance_data = self.bingx_client.get_balance()
-        general_logger.info(f"[BingXInterface] Balance atual para moeda {ccy}: {balance_data}...")
+        #general_logger.info(f"[BingXInterface] Balance atual para moeda {ccy}: {balance_data}...")
 
         # 2. Verifica se a chamada à API foi bem-sucedida e retornou dados
         if not balance_data:

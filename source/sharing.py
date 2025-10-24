@@ -76,8 +76,8 @@ class OperationBuilder:
     def send(self, countdown=1):
         try:
             payload = self.build()
-            get_client().send_task("process_operation", kwargs={"data": payload},queue="ops", countdown=countdown)
-            general_logger.info(f"Operação enviada com sucesso: {payload}")
+            get_client().send_task("trade.execute_operation", kwargs={"data": payload}, queue="ops", countdown=countdown)
+            general_logger.info(f"Operação enviada com sucesso para trade.execute_operation: {payload}")
         except Exception as e:
             general_logger.error(f"Erro ao enviar operação: {e}")
             raise
