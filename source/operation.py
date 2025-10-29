@@ -59,7 +59,7 @@ def call_place_order(exchange_interface, symbol, side, size, currency):
 def call_get_balance(exchange_interface, currency):
     return exchange_interface.get_balance(currency)
 
-def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, symbol, side,instance_id):
+def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, symbol, side,instance_id,max_amount_size=None):
     """
     Executa uma operação na exchange.
     """
@@ -67,9 +67,25 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
         base_currency, quote_currency = parse_symbol(symbol)
         exchange_interface = get_exchange_interface(exchange_id, user_id, api_key)
         ccy = quote_currency if side == 'buy' else base_currency
-
+        
         balance = call_get_balance(exchange_interface, ccy)
-        size = calculate_order_size(balance, perc_balance_operation)
+
+        base_para_calculo = balance
+        if max_amount_size is not None:
+            if balance < max_amount_size:
+                general_logger.warning(
+                    f"Saldo insuficiente para user_id {user_id}. Saldo: {balance}, "
+                    f"max_amount_size requisitado: {max_amount_size}. Operação não executada."
+                )
+                return {"status": "success", "message": "Operação não executada por saldo insuficiente para cobrir o max_amount_size."}
+            
+            base_para_calculo = max_amount_size
+
+        size = base_para_calculo * perc_balance_operation
+
+        if size <= 0:
+            general_logger.info(f"Tamanho da ordem calculado é zero ou negativo ({size}). Nenhuma ordem será enviada.")
+            return {"status": "success", "message": "Tamanho da ordem calculado é zero. Nenhuma operação realizada."}
 
         order_response = call_place_order(exchange_interface, symbol, side, size, ccy)
 

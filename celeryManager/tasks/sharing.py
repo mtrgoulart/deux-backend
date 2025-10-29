@@ -9,11 +9,12 @@ def process_sharing_operations(data):
         user_id = data.get("user_id")
         symbol = data.get("symbol")
         side = data.get("side")
+        perc_size = data.get("perc_size")
 
         if not share_id or not user_id:
             return {"status": "error", "message": "Missing share_id or user_id"}
 
-        return execute_shared_operations(share_id, user_id, symbol, side)
+        return execute_shared_operations(share_id, user_id, symbol, side, perc_size)
     except Exception as e:
         logger.error(f"Erro operação compartilhada: {e}")
         return {"status": "error", "message": str(e)}

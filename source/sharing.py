@@ -34,6 +34,10 @@ class OperationBuilder:
     def set_symbol(self, symbol):
         self._operation_data["symbol"] = symbol
         return self
+    
+    def set_perc_size(self, perc_size):
+        self._operation_data["perc_size"] = perc_size
+        return self
 
     def set_side(self, side):
         self._operation_data["side"] = side
@@ -56,10 +60,11 @@ class OperationBuilder:
                 "user_id": data["user_id"],
                 "api_key": data["api_key"],
                 "exchange_id":data["exchange_id"],
-                "perc_balance_operation": data.get("perc_balance_operation", 100),
+                "perc_balance_operation": self._operation_data["perc_size"],
                 "symbol": self._operation_data["symbol"],
                 "side": self._operation_data["side"],
-                "instance_id":data["instance_id"] 
+                "instance_id":data["instance_id"],
+                "max_amount_size":data["max_amount_size"]
             }
             builders.append(builder)
 

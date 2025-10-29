@@ -76,13 +76,14 @@ def execute_instance_operation(instance_id, user_id, side):
         result=manager.execute_operation_handler(start_date)
         return result
     
-def execute_shared_operations(share_id, user_id, symbol, side):
+def execute_shared_operations(share_id, user_id, symbol, side, perc_size):
     try:
         builder = (
             OperationBuilder()
             .set_share_context(share_id, user_id)
             .set_symbol(symbol)
             .set_side(side)
+            .set_perc_size(perc_size)
         )
 
         all_builders = builder.fetch_sharing_info_all()

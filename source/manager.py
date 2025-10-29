@@ -141,7 +141,8 @@ class OperationHandler:
                                 "share_id": self.share_id,
                                 "user_id": self.user_id,
                                 "side": self.side,
-                                "symbol": self.symbol
+                                "symbol": self.symbol,
+                                "perc_size": self.percent
                             }},
                             queue="sharing"
                         )
