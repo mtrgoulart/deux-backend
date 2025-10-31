@@ -84,8 +84,11 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
         size = base_para_calculo * perc_balance_operation
 
         if size <= 0:
-            general_logger.info(f"Tamanho da ordem calculado é zero ou negativo ({size}). Nenhuma ordem será enviada.")
+            #general_logger.info(f"Tamanho da ordem calculado é zero ou negativo ({size}). Nenhuma ordem será enviada.")
             return {"status": "success", "message": "Tamanho da ordem calculado é zero. Nenhuma operação realizada."}
+        
+        
+        general_logger.info(f'Sending order for user_id: {user_id}, instance_id: {instance_id}, side: {side}, size: {size}, ccy: {ccy}')
 
         order_response = call_place_order(exchange_interface, symbol, side, size, ccy)
 
@@ -101,9 +104,10 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
         }
         get_client().send_task(
             "trade.save_operation",
-            kwargs={"operation_data": operation_data}, # Envia o dicionário inteiro
+            kwargs={"operation_data": operation_data},
             queue='db'
         )
+        
         return {"status": "success", "message": "Operação executada e tarefa de salvamento enfileirada."}
 
 
