@@ -69,9 +69,10 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
         exchange_interface = get_exchange_interface(exchange_id, user_id, api_key)
         ccy = quote_currency if side == 'buy' else base_currency
         
-        balance = call_get_balance(exchange_interface, ccy)
-        general_logger.info(balance)
-
+        balance_raw = call_get_balance(exchange_interface, ccy)
+        general_logger.info(f"Raw balance para {ccy}: {balance_raw} (tipo: {type(balance_raw)})")
+        balance = Decimal(str(balance_raw))
+        
         base_para_calculo = balance
         if max_amount_size is not None:
             if balance < max_amount_size:
