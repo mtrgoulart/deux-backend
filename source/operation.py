@@ -70,6 +70,7 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
         ccy = quote_currency if side == 'buy' else base_currency
         
         balance = call_get_balance(exchange_interface, ccy)
+        general_logger.info(balance)
 
         base_para_calculo = balance
         if max_amount_size is not None:
