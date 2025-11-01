@@ -4,6 +4,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_excep
 from source.exchange_interface import get_exchange_interface
 from log.log import general_logger
 from source.celery_client import get_client
+from decimal import Decimal, ROUND_DOWN
 
 def parse_symbol(symbol: str):
     quote_currencies = [
@@ -81,7 +82,11 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             
             base_para_calculo = max_amount_size
 
-        size = base_para_calculo * perc_balance_operation
+        # Converte o float para Decimal de forma segura
+        perc_decimal = Decimal(str(perc_balance_operation))
+
+        # Agora a multiplicação funciona
+        size = base_para_calculo * perc_decimal
 
         if size <= 0:
             #general_logger.info(f"Tamanho da ordem calculado é zero ou negativo ({size}). Nenhuma ordem será enviada.")
