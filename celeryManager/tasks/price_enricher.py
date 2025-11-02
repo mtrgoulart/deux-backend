@@ -3,11 +3,12 @@ from celeryManager.tasks.base import logger
 from source.dbmanager import load_query
 from decimal import Decimal
 import os
+from typing import Union
 
 # Importa AMBAS as conexões de banco de dados
 from source.context import get_db_connection, get_timescale_db_connection
 
-def get_price_from_timescale(symbol: str, executed_at_str: str) -> Decimal | None:
+def get_price_from_timescale(symbol: str, executed_at_str: str) -> Union[Decimal, None]:
     """
     Busca o preço mais próximo no tempo (antes ou no momento) 
     da execução da ordem, consultando nossa tabela interna market_trades.
