@@ -35,7 +35,7 @@ def get_timescale_db_connection():
             user=os.getenv("TIMESCALE_USER"),
             password=os.getenv("TIMESCALE_PASSWORD"),
             host=os.getenv("TIMESCALE_HOST", "db_timescale"), 
-            port=os.getenv("TIMESCALE_PORT_INTERNAL", "5433") # Porta interna do Docker
+            port="5432" # Porta interna do Docker
         )
         cursor = conn.cursor()
         yield cursor  # Fornece o cursor para o bloco 'with'
