@@ -21,6 +21,7 @@ def get_price_from_timescale(symbol: str, executed_at_str: str) -> Union[Decimal
     #  NO MÁXIMO 5 minutos antes do timestamp da execução?"
     # A janela de '5 minutes' é uma salvaguarda de segurança. Se o oráculo
     # esteve fora por 1 hora, NÃO queremos um preço de 1 hora atrás.
+    normalized_symbol = symbol.replace("-", "").upper()
     query = """
         SELECT price 
         FROM market_trades
@@ -36,7 +37,7 @@ def get_price_from_timescale(symbol: str, executed_at_str: str) -> Union[Decimal
     try:
         # Usa a NOVA função de conexão com o TimescaleDB
         with get_timescale_db_connection() as ts_cursor:
-            ts_cursor.execute(query, (symbol, executed_at_str, executed_at_str))
+            ts_cursor.execute(query, (normalized_symbol, executed_at_str, executed_at_str))
             result = ts_cursor.fetchone()
             if result:
                 price = result[0] # O banco retorna um Decimal
