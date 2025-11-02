@@ -2,7 +2,7 @@ from log.log import general_logger
 from source.celery_client import get_client
 from functools import lru_cache
 from pydantic import BaseModel, ValidationError
-from source.serivce import get_neouser_apikey_from_sharing
+from source.sharing_serivce import get_neouser_apikey_from_sharing
 
 
 # --- Validador de payload com Pydantic ---
@@ -16,7 +16,6 @@ class OperationPayload(BaseModel):
     instance_id: int
 
 
-# --- Função com cache para evitar múltiplas consultas iguais ---
 @lru_cache(maxsize=128)
 def get_cached_sharing_info(share_id: int, user_id: int):
     return get_neouser_apikey_from_sharing(user_id, share_id)

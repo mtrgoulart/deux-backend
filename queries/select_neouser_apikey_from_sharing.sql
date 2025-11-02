@@ -9,6 +9,7 @@ on ns.sharing_id =is2.id
 join neouser_apikeys na
 on na.id=ns.api_key
 where ns.active=true
+and is2.id=%s and is2.user_id =%s
 group by ns.user_id
 ,ns.api_key
 ,na.exchange_id
