@@ -4,3 +4,4 @@ from .operation import task_execute_operation
 from .database import save_operation_task
 from .sharing import process_sharing_operations
 from .account_tasks import get_account_balance
+from .price_enricher import fetch_execution_price_task

@@ -91,6 +91,20 @@ services:
     depends_on:
       - webhook_pipeline
 
+  celery_worker_pricing:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: celery_worker_pricing
+    command: celery --app celeryManager.celery_app worker --concurrency=4 -Q pricing -n worker_pricing@%h --loglevel=info
+    networks:
+      - main_network
+    env_file:
+      - .env.prd
+    restart: always
+    depends_on:
+      - webhook_pipeline
+
 networks:
   # A aplicação também se conecta à rede externa 'main_network'
   main_network:

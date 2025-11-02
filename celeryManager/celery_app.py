@@ -45,6 +45,7 @@ celery.conf.task_queues = (
     Queue('ops',     routing_key='ops.#'),       # Para operações com a exchange (API)
     Queue('db',      routing_key='db.#'),        # Para interações com o banco de dados
     Queue('sharing', routing_key='sharing.#'),   # Para operações de compartilhamento
+    Queue('pricing', routing_key='pricing.#')    # Para enriquecimento de preços (TimescaleDB)
 )
 
 # === ROTEAMENTO DAS TAREFAS (ÚNICA FONTE DA VERDADE) ===
@@ -57,6 +58,7 @@ celery.conf.task_routes = {
     'trade.save_operation':         {'queue': 'db',      'routing_key': 'db.save'},
     'process_sharing_operations':   {'queue': 'sharing', 'routing_key': 'sharing.process'},
     'account.get_balance':          {'queue': 'ops',     'routing_key': 'ops.balance'},
+    'price.fetch_execution_price':  {'queue': 'pricing', 'routing_key': 'pricing.fetch'},
 }
 
 # === DESCOBERTA AUTOMÁTICA DE TAREFAS ===

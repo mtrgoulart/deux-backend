@@ -5,6 +5,7 @@ from source.exchange_interface import get_exchange_interface
 from log.log import general_logger
 from source.celery_client import get_client
 from decimal import Decimal, ROUND_DOWN
+from datetime import datetime, timezone
 
 def parse_symbol(symbol: str):
     quote_currencies = [
@@ -98,6 +99,7 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
         general_logger.info(f'Sending order for user_id: {user_id}, instance_id: {instance_id}, side: {side}, size: {size}, ccy: {ccy}')
 
         order_response = call_place_order(exchange_interface, symbol, side, size, ccy)
+        executed_at_utc = datetime.now(timezone.utc)
 
         operation_data= {
             "status": "realizada",
@@ -107,7 +109,8 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             "side": side,
             "size": size,
             "order_response": order_response,
-            "instance_id": instance_id
+            "instance_id": instance_id,
+            "executed_at": executed_at_utc.isoformat()
         }
         get_client().send_task(
             "trade.save_operation",
