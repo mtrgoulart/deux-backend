@@ -813,7 +813,335 @@ class AsterClient(BaseClient):
             raise ValueError("O parâmetro 'side' deve ser 'BUY' ou 'SELL'.")
 
         return self._send_request('POST', '/api/v1/order', params=params)
- 
+
+class PhemexClient(BaseClient):
+    """
+    Cliente para interagir com a API Spot da Phemex.
+    Utiliza autenticação HMAC SHA256 com headers específicos.
+
+    Phemex usa valores escalados:
+    - Ep (prices): dividir por 10^priceScale (geralmente 8)
+    - Ev (values): dividir por 10^valueScale (geralmente 8)
+    """
+    def __init__(self, credentials: Dict[str, str], url: str = 'https://api.phemex.com'):
+        super().__init__()
+        if not all(k in credentials for k in ['api_key', 'secret_key']):
+            raise ValueError("As credenciais da Phemex devem incluir 'api_key' e 'secret_key'.")
+
+        self.api_key = credentials['api_key']
+        self.secret_key = credentials['secret_key']
+        self.base_url = url
+        # Phemex usa priceScale e valueScale - geralmente 8 para crypto
+        self.price_scale = 8
+        self.value_scale = 8
+
+    def _to_scaled_value(self, value: float) -> int:
+        """Converte um valor float para valor escalado (Ev)."""
+        return int(value * (10 ** self.value_scale))
+
+    def _from_scaled_value(self, scaled_value: int) -> float:
+        """Converte um valor escalado (Ev) para float."""
+        return float(scaled_value) / (10 ** self.value_scale)
+
+    def _to_scaled_price(self, price: float) -> int:
+        """Converte um preço float para preço escalado (Ep)."""
+        return int(price * (10 ** self.price_scale))
+
+    def _from_scaled_price(self, scaled_price: int) -> float:
+        """Converte um preço escalado (Ep) para float."""
+        return float(scaled_price) / (10 ** self.price_scale)
+
+    def _generate_signature(self, path: str, query_string: str, expiry: int, body: str = '') -> str:
+        """
+        Gera a assinatura HMAC SHA256 para requisições Phemex.
+        Formula: HMacSha256(URL Path + QueryString + Expiry + body)
+        """
+        message = path + query_string + str(expiry) + body
+        signature = hmac.new(
+            self.secret_key.encode('utf-8'),
+            message.encode('utf-8'),
+            hashlib.sha256
+        ).hexdigest()
+        return signature
+
+    def _send_request(self, method: str, path: str, params: Optional[Dict[str, Any]] = None,
+                     body: Optional[Dict[str, Any]] = None) -> Optional[Dict[str, Any]]:
+        """
+        Prepara e envia uma requisição assinada para a API da Phemex.
+        """
+        # Expiry: timestamp Unix em SEGUNDOS (não milissegundos) + 60 segundos
+        expiry = int(time.time()) + 60
+
+        # Prepara query string se houver parâmetros
+        query_string = ''
+        if params:
+            query_string = '?' + urlencode(params)
+
+        # Prepara body string
+        body_str = ''
+        if body:
+            body_str = json.dumps(body, separators=(',', ':'))
+
+        # Gera assinatura
+        signature = self._generate_signature(path, query_string, expiry, body_str)
+
+        # Headers obrigatórios
+        headers = {
+            'x-phemex-access-token': self.api_key,
+            'x-phemex-request-expiry': str(expiry),
+            'x-phemex-request-signature': signature,
+            'Content-Type': 'application/json'
+        }
+
+        # URL completa
+        full_url = f"{self.base_url}{path}{query_string}"
+
+        try:
+            if method.upper() == 'GET':
+                response = self.session.get(full_url, headers=headers)
+            elif method.upper() == 'POST':
+                response = self.session.post(full_url, headers=headers, data=body_str)
+            elif method.upper() == 'PUT':
+                response = self.session.put(full_url, headers=headers, data=body_str)
+            elif method.upper() == 'DELETE':
+                response = self.session.delete(full_url, headers=headers)
+            else:
+                raise ValueError(f"Método HTTP '{method}' não suportado.")
+
+            response.raise_for_status()
+            response_data = response.json()
+
+            # Phemex retorna código 0 para sucesso
+            if response_data.get('code') != 0:
+                print(f"[Phemex] Erro na API: {response_data.get('msg', 'Erro desconhecido')}")
+                return None
+
+            return response_data.get('data')
+
+        except requests.exceptions.RequestException as e:
+            print(f"[Phemex] Erro na requisição: {e}")
+            if hasattr(e, 'response') and e.response is not None:
+                print(f"[Phemex] Resposta do Servidor ({e.response.status_code}): {e.response.text}")
+            return None
+
+    def get_balance(self, currency: Optional[str] = None) -> float:
+        """
+        Consulta o saldo da carteira spot.
+
+        Args:
+            currency (str): O símbolo da moeda (ex: 'BTC', 'USDT').
+
+        Returns:
+            float: O saldo disponível da moeda.
+        """
+        path = '/spot/wallets'
+        response = self._send_request('GET', path)
+
+        if not response or 'balances' not in response:
+            print(f"[Phemex] Não foi possível obter os saldos.")
+            return 0.0
+
+        # Se currency não foi especificada, retorna 0
+        if not currency:
+            print(f"[Phemex] Moeda não especificada.")
+            return 0.0
+
+        # Procura pela moeda específica
+        for balance in response['balances']:
+            if balance.get('currency', '').upper() == currency.upper():
+                # Converte o valor escalado para float
+                available_balance_ev = balance.get('availableBalanceEv', 0)
+                return self._from_scaled_value(available_balance_ev)
+
+        print(f"[Phemex] Moeda '{currency}' não encontrada na carteira spot.")
+        return 0.0
+
+    def place_order(self, symbol: str, side: str, order_type: str, size: float,
+                   currency: str, price: Optional[float] = None) -> Optional[Dict[str, Any]]:
+        """
+        Envia uma nova ordem para a exchange.
+
+        Args:
+            symbol (str): Símbolo do mercado (ex: "sBTCUSDT" - spot symbols começam com 's').
+            side (str): Lado da ordem ("Buy" ou "Sell").
+            order_type (str): Tipo da ordem ("Market" ou "Limit").
+            size (float): Tamanho da ordem.
+            currency (str): Moeda usada (base ou quote).
+            price (float): Preço da ordem (obrigatório para LIMIT).
+
+        Returns:
+            dict or None: A resposta da API da exchange.
+        """
+        path = '/spot/orders'
+
+        # Normaliza o side (Phemex usa Buy/Sell com maiúscula inicial)
+        side_normalized = side.capitalize()
+
+        # Determina qtyType baseado na moeda
+        # Se currency é a moeda base, usa ByBase; se é quote, usa ByQuote
+        base_currency = symbol.replace('s', '', 1).replace('USDT', '').replace('USDC', '')
+        qty_type = 'ByBase' if currency.upper() == base_currency.upper() else 'ByQuote'
+
+        # Converte size para valor escalado
+        size_ev = self._to_scaled_value(size)
+
+        # Monta o body da requisição
+        order_body = {
+            'symbol': symbol,
+            'side': side_normalized,
+            'ordType': order_type.capitalize(),
+            'qtyType': qty_type,
+        }
+
+        # Define quantidade baseada no qtyType
+        if qty_type == 'ByBase':
+            order_body['baseQtyEv'] = str(size_ev)
+            order_body['quoteQtyEv'] = '0'
+        else:
+            order_body['baseQtyEv'] = '0'
+            order_body['quoteQtyEv'] = str(size_ev)
+
+        # Se for ordem LIMIT, adiciona o preço
+        if order_type.upper() == 'LIMIT':
+            if not price:
+                raise ValueError("O parâmetro 'price' é obrigatório para ordens do tipo LIMIT.")
+            price_ep = self._to_scaled_price(price)
+            order_body['priceEp'] = str(price_ep)
+        else:
+            order_body['priceEp'] = '0'
+
+        # Campos opcionais
+        order_body['stopPxEp'] = '0'
+        order_body['clOrdID'] = str(uuid.uuid4())  # Client Order ID único
+
+        response = self._send_request('POST', path, body=order_body)
+        return response
+
+    def get_order_status(self, symbol: str, order_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Consulta o status de uma ordem específica.
+
+        Args:
+            symbol (str): Símbolo da ordem.
+            order_id (str): ID da ordem.
+
+        Returns:
+            dict or None: Informações da ordem.
+        """
+        path = '/spot/orders/active'
+        params = {'symbol': symbol}
+
+        response = self._send_request('GET', path, params=params)
+
+        if not response or 'data' not in response:
+            return None
+
+        # Procura pela ordem específica
+        for order in response.get('data', []):
+            if order.get('orderID') == order_id:
+                return order
+
+        return None
+
+    def get_current_price(self, symbol: str) -> Optional[float]:
+        """
+        Obtém o preço atual de mercado para um símbolo.
+
+        Args:
+            symbol (str): Símbolo do mercado (ex: "sBTCUSDT").
+
+        Returns:
+            float: Preço atual ou None em caso de erro.
+        """
+        path = '/md/spot/ticker/24hr'
+        params = {'symbol': symbol}
+
+        response = self._send_request('GET', path, params=params)
+
+        if not response or 'data' not in response:
+            return None
+
+        # Pega o último preço (lastEp)
+        last_price_ep = response['data'][0].get('lastEp', 0)
+        return self._from_scaled_price(last_price_ep)
+
+    def wait_for_fill_price(self, order_id: str, symbol: str,
+                           check_interval: int = 1, timeout: int = 90) -> float:
+        """
+        Aguarda até que a ordem seja executada e retorna o preço de execução.
+
+        Args:
+            order_id (str): ID da ordem.
+            symbol (str): Símbolo da ordem.
+            check_interval (int): Intervalo entre verificações (segundos).
+            timeout (int): Tempo máximo de espera (segundos).
+
+        Returns:
+            float: Preço de execução ou 0.0 em caso de timeout.
+        """
+        start_time = time.time()
+
+        while time.time() - start_time <= timeout:
+            order = self.get_order_status(symbol, order_id)
+
+            if order:
+                status = order.get('ordStatus')
+                # Verifica se a ordem foi totalmente executada
+                if status == 'Filled':
+                    # Pega o preço médio de execução
+                    avg_price_ep = order.get('avgPriceEp', 0)
+                    if avg_price_ep:
+                        return self._from_scaled_price(avg_price_ep)
+
+            time.sleep(check_interval)
+
+        print(f"[Phemex] Timeout ao aguardar execução da ordem {order_id}.")
+        return 0.0
+
+    def cancel_order(self, symbol: str, order_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Cancela uma ordem ativa.
+
+        Args:
+            symbol (str): Símbolo da ordem.
+            order_id (str): ID da ordem.
+
+        Returns:
+            dict or None: Resposta da API.
+        """
+        path = '/spot/orders'
+        params = {
+            'symbol': symbol,
+            'orderID': order_id
+        }
+
+        return self._send_request('DELETE', path, params=params)
+
+    def get_open_orders(self, symbol: str) -> Optional[list]:
+        """
+        Retorna todas as ordens abertas para um símbolo.
+
+        Args:
+            symbol (str): Símbolo do mercado.
+
+        Returns:
+            list: Lista de ordens abertas.
+        """
+        path = '/spot/orders/active'
+        params = {'symbol': symbol}
+
+        response = self._send_request('GET', path, params=params)
+
+        if response and 'data' in response:
+            return response['data']
+
+        return []
+
+class PhemexTestnetClient(PhemexClient):
+    """Cliente Phemex para o ambiente de testes (testnet)."""
+    def __init__(self, credentials: Dict[str, str]):
+        super().__init__(credentials, url='https://testnet-api.phemex.com')
+
 if __name__ == '__main__':
     # --- CONFIGURAÇÃO ---
     # IMPORTANTE: Mantenha suas chaves de API seguras.

@@ -1,5 +1,5 @@
 from log.log import general_logger
-from .client import OKXClient, OKXDemoClient, BinanceClient, BinanceDemoClient, BingXClient, AsterClient
+from .client import OKXClient, OKXDemoClient, BinanceClient, BinanceDemoClient, BingXClient, AsterClient, PhemexClient, PhemexTestnetClient
 from .context import get_db_connection
 from .dbmanager import load_query
 import json
@@ -106,26 +106,41 @@ class BinanceRealInterface(ExchangeInterface):
     def create_client(self):
         return BinanceClient(self.credentials)
 
+    @staticmethod
+    def normalize_symbol(symbol: str) -> str:
+        """
+        Convert symbol from format 'BTC-USDT' to 'BTCUSDT' (removes hyphens).
+        Binance uses symbols without separators.
+        """
+        return symbol.replace('-', '')
+
     def place_order(self, symbol, side, order_type, size, currency, price=None):
-        return self.binance_client.place_order(symbol, side, order_type, size, currency, price)
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.binance_client.place_order(normalized_symbol, side, order_type, size, currency, price)
 
     def get_fill_price(self, order_id, symbol):
-        return self.binance_client.wait_for_fill_price(order_id, symbol)
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.binance_client.wait_for_fill_price(order_id, normalized_symbol)
 
     def cancel_order(self, symbol, order):
-        return self.binance_client.cancel_order(symbol, order)
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.binance_client.cancel_order(normalized_symbol, order)
 
     def get_open_order(self, symbol):
-        return self.binance_client.get_open_orders(symbol)
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.binance_client.get_open_orders(normalized_symbol)
 
     def get_order_status(self, symbol, order_id):
-        return self.binance_client.get_order_status(symbol, order_id)
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.binance_client.get_order_status(normalized_symbol, order_id)
 
     def get_last_trade(self, symbol):
-        return self.binance_client.get_last_trade(symbol)
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.binance_client.get_last_trade(normalized_symbol)
 
     def get_current_price(self, symbol):
-        return self.binance_client.get_current_price(symbol)
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.binance_client.get_current_price(normalized_symbol)
 
     def get_balance(self, ccy: Optional[str] = None) -> float:
         """
@@ -147,7 +162,8 @@ class BinanceRealInterface(ExchangeInterface):
         return balance_value
 
     def get_order_execution_price(self, symbol, order_id):
-        return self.binance_client.wait_for_fill_price(order_id, symbol)
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.binance_client.wait_for_fill_price(order_id, normalized_symbol)
 
 class BinanceDemoInterface(BinanceRealInterface):
     def create_client(self):
@@ -336,6 +352,83 @@ class AsterInterface(ExchangeInterface):
         except Exception as e:
             general_logger.error(f"[AsterInterface] Exceção ao criar ordem: {e}")
             return None
+
+class PhemexRealInterface(ExchangeInterface):
+    def __init__(self, exchange_id, user_id, api_key):
+        super().__init__(exchange_id, user_id, api_key)
+        self.phemex_client = self.create_client()
+
+    def create_client(self):
+        return PhemexClient(self.credentials)
+
+    @staticmethod
+    def normalize_symbol(symbol: str) -> str:
+        """
+        Convert symbol from format 'BTC-USDT' to 'sBTCUSDT' (Phemex spot format).
+        Phemex spot symbols start with 's' and have no separators.
+        """
+        # Remove hyphens and add 's' prefix for spot trading
+        clean_symbol = symbol.replace('-', '')
+        if not clean_symbol.startswith('s'):
+            clean_symbol = 's' + clean_symbol
+        return clean_symbol
+
+    def place_order(self, symbol, side, order_type, size, currency, price=None):
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.phemex_client.place_order(normalized_symbol, side, order_type, size, currency, price)
+
+    def get_fill_price(self, order_id, symbol):
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.phemex_client.wait_for_fill_price(order_id, normalized_symbol)
+
+    def cancel_order(self, symbol, order_id):
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.phemex_client.cancel_order(normalized_symbol, order_id)
+
+    def get_open_order(self, symbol):
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.phemex_client.get_open_orders(normalized_symbol)
+
+    def get_order_status(self, symbol, order_id):
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.phemex_client.get_order_status(normalized_symbol, order_id)
+
+    def get_last_trade(self, symbol):
+        normalized_symbol = self.normalize_symbol(symbol)
+        # Phemex doesn't have a specific "last trade" endpoint
+        # This would need to be implemented using order history
+        general_logger.warning("[PhemexInterface] get_last_trade not fully implemented")
+        return None
+
+    def get_current_price(self, symbol):
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.phemex_client.get_current_price(normalized_symbol)
+
+    def get_balance(self, ccy: Optional[str] = None) -> float:
+        """
+        Busca e retorna o saldo disponível de uma moeda específica.
+
+        Args:
+            ccy (str): O símbolo da moeda (ex: 'USDT', 'BTC').
+
+        Returns:
+            float: O saldo disponível da moeda. Retorna 0.0 se a moeda não for
+                   encontrada ou em caso de erro.
+        """
+        if not ccy:
+            general_logger.error("[PhemexInterface] A moeda (ccy) deve ser especificada para obter o saldo.")
+            raise ValueError("A moeda (ccy) é obrigatória para get_balance na Phemex.")
+
+        balance_value = self.phemex_client.get_balance(currency=ccy)
+        return balance_value
+
+    def get_order_execution_price(self, symbol, order_id):
+        normalized_symbol = self.normalize_symbol(symbol)
+        return self.phemex_client.wait_for_fill_price(order_id, normalized_symbol)
+
+class PhemexDemoInterface(PhemexRealInterface):
+    def create_client(self):
+        return PhemexTestnetClient(self.credentials)
 
 def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):
     try:

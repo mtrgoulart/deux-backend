@@ -95,10 +95,12 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             #general_logger.info(f"Tamanho da ordem calculado é zero ou negativo ({size}). Nenhuma ordem será enviada.")
             return {"status": "success", "message": "Tamanho da ordem calculado é zero. Nenhuma operação realizada."}
         
-        
+
         general_logger.info(f'Sending order for user_id: {user_id}, instance_id: {instance_id}, side: {side}, size: {size}, ccy: {ccy}')
 
-        order_response = call_place_order(exchange_interface, symbol, side, size, ccy)
+        # Convert Decimal to float for API calls and JSON serialization
+        size_float = float(size)
+        order_response = call_place_order(exchange_interface, symbol, side, size_float, ccy)
         executed_at_utc = datetime.now(timezone.utc)
 
         operation_data= {
@@ -107,7 +109,7 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             "api_key":api_key,
             "symbol": symbol,
             "side": side,
-            "size": size,
+            "size": size_float,
             "order_response": order_response,
             "instance_id": instance_id,
             "executed_at": executed_at_utc.isoformat()

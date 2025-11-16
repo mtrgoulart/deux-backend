@@ -14,5 +14,9 @@
   "6": {
     "real": "source.exchange_interface.AsterInterface",
     "demo": "source.exchange_interface.AsterInterface"
+  },
+  "7": {
+    "real": "source.exchange_interface.PhemexRealInterface",
+    "demo": "source.exchange_interface.PhemexDemoInterface"
   }
 }
