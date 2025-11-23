@@ -3,12 +3,20 @@
     "real": "source.exchange_interface.OKXRealInterface",
     "demo": "source.exchange_interface.OKXDemoInterface"
   },
-  "2": {
+  "3": {
     "real": "source.exchange_interface.BinanceRealInterface",
     "demo": "source.exchange_interface.BinanceDemoInterface"
   },
   "5": {
     "real": "source.exchange_interface.BingXInterface",
     "demo": "source.exchange_interface.BingXInterface"
+  },
+  "6": {
+    "real": "source.exchange_interface.AsterInterface",
+    "demo": "source.exchange_interface.AsterInterface"
+  },
+  "7": {
+    "real": "source.exchange_interface.PhemexRealInterface",
+    "demo": "source.exchange_interface.PhemexDemoInterface"
   }
 }

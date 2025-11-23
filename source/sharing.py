@@ -2,7 +2,7 @@ from log.log import general_logger
 from source.celery_client import get_client
 from functools import lru_cache
 from pydantic import BaseModel, ValidationError
-from source.serivce import get_neouser_apikey_from_sharing
+from source.sharing_serivce import get_neouser_apikey_from_sharing
 
 
 # --- Validador de payload com Pydantic ---
@@ -16,7 +16,6 @@ class OperationPayload(BaseModel):
     instance_id: int
 
 
-# --- Função com cache para evitar múltiplas consultas iguais ---
 @lru_cache(maxsize=128)
 def get_cached_sharing_info(share_id: int, user_id: int):
     return get_neouser_apikey_from_sharing(user_id, share_id)
@@ -33,6 +32,10 @@ class OperationBuilder:
 
     def set_symbol(self, symbol):
         self._operation_data["symbol"] = symbol
+        return self
+    
+    def set_perc_size(self, perc_size):
+        self._operation_data["perc_size"] = perc_size
         return self
 
     def set_side(self, side):
@@ -56,10 +59,11 @@ class OperationBuilder:
                 "user_id": data["user_id"],
                 "api_key": data["api_key"],
                 "exchange_id":data["exchange_id"],
-                "perc_balance_operation": data.get("perc_balance_operation", 100),
+                "perc_balance_operation": self._operation_data["perc_size"],
                 "symbol": self._operation_data["symbol"],
                 "side": self._operation_data["side"],
-                "instance_id":data["instance_id"] 
+                "instance_id":data["instance_id"],
+                "max_amount_size":data["max_amount_size"]
             }
             builders.append(builder)
 
@@ -76,8 +80,8 @@ class OperationBuilder:
     def send(self, countdown=1):
         try:
             payload = self.build()
-            get_client().send_task("process_operation", kwargs={"data": payload},queue="ops", countdown=countdown)
-            general_logger.info(f"Operação enviada com sucesso: {payload}")
+            get_client().send_task("trade.execute_operation", kwargs={"data": payload}, queue="ops", countdown=countdown)
+            general_logger.info(f"Operação enviada com sucesso para trade.execute_operation: {payload}")
         except Exception as e:
             general_logger.error(f"Erro ao enviar operação: {e}")
             raise

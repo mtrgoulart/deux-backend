@@ -96,21 +96,21 @@ class OperationHandler:
         # Crie um prefixo para os logs desta execução
         log_prefix = f"[ExecID: {execution_id}] [Instance: {self.instance_id}] [Symbol: {self.symbol}]"
 
-        general_logger.info(f"{log_prefix} Iniciando execução da condição.")
+        #general_logger.info(f"{log_prefix} Iniciando execução da condição.")
         
         try:
             data = self.webhook_data_manager.get_market_objects_as_models(
                 self.instance_id, self.symbol, self.side, start_date
             )
             # Use DEBUG para logs com muitos dados, que você só precisa ver quando está depurando.
-            general_logger.debug(f"{log_prefix} Dados de mercado recebidos: {data}")
+            #general_logger.debug(f"{log_prefix} Dados de mercado recebidos: {data}")
 
             conditions_met = self.check_conditions(data)
             data_is_sufficient = len(data) >= 1
 
             # 2. Verificação explícita das condições para logs mais claros.
             if conditions_met and data_is_sufficient:
-                general_logger.info(f"{log_prefix} Condições atendidas. Executando operação.")
+                #general_logger.info(f"{log_prefix} Condições atendidas. Executando operação.")
 
                 operation_data= {
                     'user_id':self.user_id,
@@ -141,7 +141,8 @@ class OperationHandler:
                                 "share_id": self.share_id,
                                 "user_id": self.user_id,
                                 "side": self.side,
-                                "symbol": self.symbol
+                                "symbol": self.symbol,
+                                "perc_size": self.percent
                             }},
                             queue="sharing"
                         )

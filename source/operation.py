@@ -4,6 +4,8 @@ from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_excep
 from source.exchange_interface import get_exchange_interface
 from log.log import general_logger
 from source.celery_client import get_client
+from decimal import Decimal, ROUND_DOWN
+from datetime import datetime, timezone
 
 def parse_symbol(symbol: str):
     quote_currencies = [
@@ -59,7 +61,7 @@ def call_place_order(exchange_interface, symbol, side, size, currency):
 def call_get_balance(exchange_interface, currency):
     return exchange_interface.get_balance(currency)
 
-def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, symbol, side,instance_id):
+def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, symbol, side,instance_id,max_amount_size=None):
     """
     Executa uma operação na exchange.
     """
@@ -67,11 +69,39 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
         base_currency, quote_currency = parse_symbol(symbol)
         exchange_interface = get_exchange_interface(exchange_id, user_id, api_key)
         ccy = quote_currency if side == 'buy' else base_currency
+        
+        balance_raw = call_get_balance(exchange_interface, ccy)
+        general_logger.info(f"Raw balance para {ccy}: {balance_raw} (tipo: {type(balance_raw)})")
+        balance = Decimal(str(balance_raw))
+        
+        base_para_calculo = balance
+        if max_amount_size is not None:
+            if balance < max_amount_size:
+                general_logger.warning(
+                    f"Saldo insuficiente para user_id {user_id}. Saldo: {balance}, "
+                    f"max_amount_size requisitado: {max_amount_size}. Operação não executada."
+                )
+                return {"status": "success", "message": "Operação não executada por saldo insuficiente para cobrir o max_amount_size."}
+            
+            base_para_calculo = max_amount_size
 
-        balance = call_get_balance(exchange_interface, ccy)
-        size = calculate_order_size(balance, perc_balance_operation)
+        # Converte o float para Decimal de forma segura
+        perc_decimal = Decimal(str(perc_balance_operation))
 
-        order_response = call_place_order(exchange_interface, symbol, side, size, ccy)
+        # Agora a multiplicação funciona
+        size = base_para_calculo * perc_decimal
+
+        if size <= 0:
+            #general_logger.info(f"Tamanho da ordem calculado é zero ou negativo ({size}). Nenhuma ordem será enviada.")
+            return {"status": "success", "message": "Tamanho da ordem calculado é zero. Nenhuma operação realizada."}
+        
+
+        general_logger.info(f'Sending order for user_id: {user_id}, instance_id: {instance_id}, side: {side}, size: {size}, ccy: {ccy}')
+
+        # Convert Decimal to float for API calls and JSON serialization
+        size_float = float(size)
+        order_response = call_place_order(exchange_interface, symbol, side, size_float, ccy)
+        executed_at_utc = datetime.now(timezone.utc)
 
         operation_data= {
             "status": "realizada",
@@ -79,15 +109,17 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             "api_key":api_key,
             "symbol": symbol,
             "side": side,
-            "size": size,
+            "size": size_float,
             "order_response": order_response,
-            "instance_id": instance_id
+            "instance_id": instance_id,
+            "executed_at": executed_at_utc.isoformat()
         }
         get_client().send_task(
             "trade.save_operation",
-            kwargs={"operation_data": operation_data}, # Envia o dicionário inteiro
+            kwargs={"operation_data": operation_data},
             queue='db'
         )
+        
         return {"status": "success", "message": "Operação executada e tarefa de salvamento enfileirada."}
 
 

@@ -10,7 +10,7 @@ def get_neouser_apikey_from_sharing(user_id, sharing_id):
         results = db_client.fetch_data(query, params)
 
         if not results:
-            general_logger.info(f'No api key for sharing_id:{sharing_id}')
+            general_logger.info(f'No subscription for sharing_id:{sharing_id}')
             return []
 
         # Converte lista de tuplas para lista de dicts
@@ -19,6 +19,7 @@ def get_neouser_apikey_from_sharing(user_id, sharing_id):
                 "user_id": row[0],
                 "api_key": row[1],
                 "exchange_id":row[2],
-                "instance_id":row[3]
+                "instance_id":row[3],
+                "max_amount_size": row[4]
             } for row in results
         ]   
