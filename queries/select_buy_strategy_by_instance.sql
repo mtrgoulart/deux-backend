@@ -4,7 +4,9 @@ SELECT
     s.percent,
     s.condition_limit,
     s.interval,
-    s.simultaneous_operations
+    s.simultaneous_operations,
+    s.size_mode,
+    s.flat_value
 FROM
     instance_strategy AS ist
 JOIN

@@ -61,42 +61,95 @@ def call_place_order(exchange_interface, symbol, side, size, currency):
 def call_get_balance(exchange_interface, currency):
     return exchange_interface.get_balance(currency)
 
-def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, symbol, side,instance_id,max_amount_size=None):
+def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, symbol, side, instance_id, max_amount_size=None, size_mode="percentage", flat_value=None):
     """
-    Executa uma operação na exchange.
+    Execute a trading operation on the exchange.
+
+    Supports two sizing modes:
+    1. percentage: Calculate size as percentage of balance (legacy mode)
+    2. flat_value: Use exact flat value amount
+
+    Args:
+        user_id: User ID
+        api_key: API key ID
+        exchange_id: Exchange ID
+        perc_balance_operation: Percentage of balance (used in percentage mode)
+        symbol: Trading symbol
+        side: 'buy' or 'sell'
+        instance_id: Instance ID
+        max_amount_size: Maximum size limit (optional, for copy trading)
+        size_mode: "percentage" or "flat_value"
+        flat_value: Exact amount to trade (used in flat_value mode)
+
+    Returns:
+        dict: Operation result with status and details
     """
     try:
         base_currency, quote_currency = parse_symbol(symbol)
         exchange_interface = get_exchange_interface(exchange_id, user_id, api_key)
         ccy = quote_currency if side == 'buy' else base_currency
-        
+
+        # Get current balance
         balance_raw = call_get_balance(exchange_interface, ccy)
-        general_logger.info(f"Raw balance para {ccy}: {balance_raw} (tipo: {type(balance_raw)})")
+        general_logger.info(f"Raw balance for {ccy}: {balance_raw} (type: {type(balance_raw)})")
         balance = Decimal(str(balance_raw))
-        
-        base_para_calculo = balance
-        if max_amount_size is not None:
-            if balance < max_amount_size:
+
+        # Calculate order size based on mode
+        if size_mode == "flat_value":
+            # FLAT VALUE MODE: Use exact amount specified
+            if flat_value is None or flat_value <= 0:
+                return {
+                    "status": "error",
+                    "message": "flat_value must be a positive number when size_mode is 'flat_value'"
+                }
+
+            size = Decimal(str(flat_value))
+
+            # Check if balance is sufficient for flat value
+            if balance < size:
                 general_logger.warning(
-                    f"Saldo insuficiente para user_id {user_id}. Saldo: {balance}, "
-                    f"max_amount_size requisitado: {max_amount_size}. Operação não executada."
+                    f"Insufficient balance for user_id {user_id}. "
+                    f"Balance: {balance}, flat_value requested: {size}. Operation not executed."
                 )
-                return {"status": "success", "message": "Operação não executada por saldo insuficiente para cobrir o max_amount_size."}
-            
-            base_para_calculo = max_amount_size
+                return {
+                    "status": "insufficient_balance",
+                    "message": f"Insufficient balance. Required: {size}, Available: {balance}"
+                }
 
-        # Converte o float para Decimal de forma segura
-        perc_decimal = Decimal(str(perc_balance_operation))
+            general_logger.info(f"Using FLAT VALUE mode: size = {size} {ccy}")
 
-        # Agora a multiplicação funciona
-        size = base_para_calculo * perc_decimal
+        else:
+            # PERCENTAGE MODE: Calculate based on balance percentage (legacy mode)
+            base_para_calculo = balance
 
+            # Apply max_amount_size limit if specified (for copy trading)
+            if max_amount_size is not None:
+                if balance < max_amount_size:
+                    general_logger.warning(
+                        f"Insufficient balance for user_id {user_id}. "
+                        f"Balance: {balance}, max_amount_size: {max_amount_size}. Operation not executed."
+                    )
+                    return {
+                        "status": "insufficient_balance",
+                        "message": "Insufficient balance to cover max_amount_size."
+                    }
+
+                base_para_calculo = max_amount_size
+
+            # Calculate size as percentage of balance
+            perc_decimal = Decimal(str(perc_balance_operation))
+            size = base_para_calculo * perc_decimal
+
+            general_logger.info(f"Using PERCENTAGE mode: {perc_balance_operation * 100}% of {base_para_calculo} = {size} {ccy}")
+
+        # Validate calculated size
         if size <= 0:
-            #general_logger.info(f"Tamanho da ordem calculado é zero ou negativo ({size}). Nenhuma ordem será enviada.")
-            return {"status": "success", "message": "Tamanho da ordem calculado é zero. Nenhuma operação realizada."}
-        
+            return {
+                "status": "success",
+                "message": "Calculated order size is zero. No operation performed."
+            }
 
-        general_logger.info(f'Sending order for user_id: {user_id}, instance_id: {instance_id}, side: {side}, size: {size}, ccy: {ccy}')
+        general_logger.info(f'Sending order for user_id: {user_id}, instance_id: {instance_id}, side: {side}, size: {size}, ccy: {ccy}, mode: {size_mode}')
 
         # Convert Decimal to float for API calls and JSON serialization
         size_float = float(size)
