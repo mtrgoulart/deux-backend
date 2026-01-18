@@ -438,13 +438,13 @@ def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):
             if not result:
                 raise ValueError(f"Exchange ID {exchange_id} não encontrada.")
             # Captura a flag is_demo
-            db_exchange_id, name, base_url, is_demo = result[0] #
+            db_exchange_id, _, _, is_demo = result[0] #
 
         with open(exchange_classes_path, 'r') as json_file:
             exchange_classes = json.load(json_file)
 
         # Acessa o mapeamento para a exchange específica
-        exchange_mapping = exchange_classes.get(str(exchange_id))
+        exchange_mapping = exchange_classes.get(str(db_exchange_id))
         if not exchange_mapping:
             raise ValueError(f"Mapeamento para Exchange ID {exchange_id} não encontrado em exchange_classes.json.")
 
