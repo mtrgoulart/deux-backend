@@ -938,7 +938,10 @@ class PhemexClient(BaseClient):
         response = self._send_request('GET', path)
 
         if not response or 'balances' not in response:
-            print(f"[Phemex] Não foi possível obter os saldos.")
+            if not response:
+                print(f"[Phemex] Não foi possível obter os saldos. Sem respostas.")
+                return 0.0
+            print(f"[Phemex] Não foi possível obter os saldos. Resposta: {response}")
             return 0.0
 
         # Se currency não foi especificada, retorna 0
