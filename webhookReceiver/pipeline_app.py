@@ -12,8 +12,22 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 # Limite de 16KB para o corpo da requisição
 
 # === Funções de Utilidade (Validação) ===
+
+# Valid values for each pattern
+VALID_SIDES = ["buy", "sell"]
+VALID_PROCESSES = ["panic_stop", "resume_restart", "resume_no_restart"]
+
+
 def parse_data(text: str) -> dict:
-    """Valida e parseia entrada no formato 'key:valor,side:buy|sell'."""
+    """
+    Parse and validate webhook input for dual-pattern messages.
+
+    Pattern 1 (Instance-level): 'key:value,side:buy|sell'
+    Pattern 2 (User-level): 'key:value,process:panic_stop|resume_restart|resume_no_restart'
+
+    Returns:
+        dict with keys: key, pattern ('instance' or 'user'), action (the side or process value)
+    """
     try:
         entries = [entry.strip() for entry in text.split(",") if ":" in entry]
         data = {}
@@ -23,22 +37,50 @@ def parse_data(text: str) -> dict:
             key = key.strip().lower()
             value = value.strip()
 
-            if key not in ["key", "side"]:
-                raise ValueError(f"Chave inválida: '{key}' (somente 'key' e 'side' são permitidas)")
+            if key not in ["key", "side", "process"]:
+                raise ValueError(f"Chave inválida: '{key}' (somente 'key', 'side' e 'process' são permitidas)")
             if not value:
                 raise ValueError(f"Valor vazio para a chave: '{key}'")
 
             data[key] = value
 
-        if "key" not in data or "side" not in data:
-            raise ValueError("As chaves 'key' e 'side' são obrigatórias")
+        # Validate 'key' is always present
+        if "key" not in data:
+            raise ValueError("A chave 'key' é obrigatória")
 
-        if data["side"].lower() not in ["buy", "sell"]:
-            raise ValueError("O valor de 'side' deve ser 'buy' ou 'sell'")
+        # Detect pattern and validate
+        has_side = "side" in data
+        has_process = "process" in data
 
-        # Normaliza o valor de 'side' para minúsculo
-        data["side"] = data["side"].lower()
-        return data
+        if has_side and has_process:
+            raise ValueError("Não é permitido enviar 'side' e 'process' juntos")
+
+        if not has_side and not has_process:
+            raise ValueError("É necessário enviar 'side' ou 'process'")
+
+        if has_side:
+            # Instance-level pattern
+            side_value = data["side"].lower()
+            if side_value not in VALID_SIDES:
+                raise ValueError(f"O valor de 'side' deve ser um de: {VALID_SIDES}")
+
+            return {
+                "key": data["key"],
+                "pattern": "instance",
+                "action": side_value
+            }
+
+        else:
+            # User-level pattern
+            process_value = data["process"].lower()
+            if process_value not in VALID_PROCESSES:
+                raise ValueError(f"O valor de 'process' deve ser um de: {VALID_PROCESSES}")
+
+            return {
+                "key": data["key"],
+                "pattern": "user",
+                "action": process_value
+            }
 
     except Exception as e:
         raise ValueError(f"Erro ao analisar os dados: {e}")

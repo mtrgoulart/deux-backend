@@ -4,7 +4,10 @@ from log.log import general_logger
 
 def authenticate_signal(key):
     """
-    Autentica a chave do webhook e retorna user_id e instance_id.
+    Authenticate instance-level webhook key.
+
+    Returns:
+        dict: {user_id, instance_id, symbol, indicator_id} or None if invalid
     """
     query = load_query("select_user_instance_by_key.sql")
 
@@ -14,7 +17,7 @@ def authenticate_signal(key):
             if not result:
                 general_logger.warning("Invalid signal key received during authentication attempt.")
                 return None
-            
+
             row = result[0]  # linha completa: (user_id, instance_id, symbol, indicator_id)
 
             return {
@@ -23,9 +26,32 @@ def authenticate_signal(key):
                 'symbol': row[2],
                 'indicator_id': row[3]
             }
-        
+
     except Exception as e:
         general_logger.error(f"Error during signal key authentication: {str(e)}. Key details omitted for security.")
+        return None
+
+
+def authenticate_user_key(key):
+    """
+    Authenticate user-level webhook key.
+
+    Returns:
+        dict: {user_id} or None if invalid
+    """
+    query = load_query("select_user_by_webhook_key.sql")
+
+    try:
+        with get_db_connection() as db_client:
+            result = db_client.fetch_data(query, (key,))
+            if not result:
+                general_logger.warning("Invalid user key received during authentication attempt.")
+                return None
+
+            return {'user_id': result[0][0]}
+
+    except Exception as e:
+        general_logger.error(f"Error during user key authentication: {str(e)}. Key details omitted for security.")
         return None
 
 

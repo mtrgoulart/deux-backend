@@ -54,6 +54,7 @@ celery.conf.task_queues = (
 celery.conf.task_routes = {
     'webhook.receipt':              {'queue': 'webhook', 'routing_key': 'webhook.receipt'},
     'webhook.processor':            {'queue': 'logic',   'routing_key': 'logic.process'},
+    'panic.processor':              {'queue': 'logic',   'routing_key': 'logic.panic'},
     'trade.execute_operation':      {'queue': 'ops',     'routing_key': 'ops.execute'},
     'trade.save_operation':         {'queue': 'db',      'routing_key': 'db.save'},
     'process_sharing_operations':   {'queue': 'sharing', 'routing_key': 'sharing.process'},
