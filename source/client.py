@@ -911,12 +911,19 @@ class PhemexClient(BaseClient):
             response.raise_for_status()
             response_data = response.json()
 
-            # Phemex retorna código 0 para sucesso
-            if response_data.get('code') != 0:
-                print(f"[Phemex] Erro na API: {response_data.get('msg', 'Erro desconhecido')}")
-                return None
-
-            return response_data.get('data')
+            # Endpoints /md têm formato diferente: {"error": null, "result": {...}}
+            # Outros endpoints: {"code": 0, "data": {...}}
+            if path.startswith('/md'):
+                if response_data.get('error') is not None:
+                    print(f"[Phemex] Erro na API MD: {response_data.get('error')}")
+                    return None
+                return response_data.get('result')
+            else:
+                # Phemex retorna código 0 para sucesso
+                if response_data.get('code') != 0:
+                    print(f"[Phemex] Erro na API: {response_data.get('msg', 'Erro desconhecido')}")
+                    return None
+                return response_data.get('data')
 
         except requests.exceptions.RequestException as e:
             print(f"[Phemex] Erro na requisição: {e}")
@@ -937,11 +944,12 @@ class PhemexClient(BaseClient):
         path = '/spot/wallets'
         response = self._send_request('GET', path)
 
-        if not response or 'balances' not in response:
+        # A API retorna uma lista direta de wallets, não um dict com 'balances'
+        if not response or not isinstance(response, list):
             if not response:
                 print(f"[Phemex] Não foi possível obter os saldos. Sem respostas.")
-                return 0.0
-            print(f"[Phemex] Não foi possível obter os saldos. Resposta: {response}")
+            else:
+                print(f"[Phemex] Formato inesperado de resposta: {response}")
             return 0.0
 
         # Se currency não foi especificada, retorna 0
@@ -949,11 +957,14 @@ class PhemexClient(BaseClient):
             print(f"[Phemex] Moeda não especificada.")
             return 0.0
 
-        # Procura pela moeda específica
-        for balance in response['balances']:
-            if balance.get('currency', '').upper() == currency.upper():
-                # Converte o valor escalado para float
-                available_balance_ev = balance.get('availableBalanceEv', 0)
+        # Procura pela moeda específica na lista de wallets
+        for wallet in response:
+            if wallet.get('currency', '').upper() == currency.upper():
+                # Calcula o saldo disponível: balanceEv - lockedTradingBalanceEv - lockedWithdrawEv
+                balance_ev = wallet.get('balanceEv', 0)
+                locked_trading_ev = wallet.get('lockedTradingBalanceEv', 0)
+                locked_withdraw_ev = wallet.get('lockedWithdrawEv', 0)
+                available_balance_ev = balance_ev - locked_trading_ev - locked_withdraw_ev
                 return self._from_scaled_value(available_balance_ev)
 
         print(f"[Phemex] Moeda '{currency}' não encontrada na carteira spot.")
@@ -1036,11 +1047,15 @@ class PhemexClient(BaseClient):
 
         response = self._send_request('GET', path, params=params)
 
-        if not response or 'data' not in response:
+        # response já é diretamente o 'data' (uma lista de ordens)
+        if not response:
             return None
 
+        # Se response não for uma lista, pode ser um dict com 'rows'
+        orders = response if isinstance(response, list) else response.get('rows', [])
+
         # Procura pela ordem específica
-        for order in response.get('data', []):
+        for order in orders:
             if order.get('orderID') == order_id:
                 return order
 
@@ -1061,11 +1076,12 @@ class PhemexClient(BaseClient):
 
         response = self._send_request('GET', path, params=params)
 
-        if not response or 'data' not in response:
+        if not response:
             return None
 
-        # Pega o último preço (lastEp)
-        last_price_ep = response['data'][0].get('lastEp', 0)
+        # Para /md endpoints, response já é o 'result' diretamente
+        # O formato é: {"openEp": ..., "highEp": ..., "lastEp": ..., ...}
+        last_price_ep = response.get('lastEp', 0)
         return self._from_scaled_price(last_price_ep)
 
     def wait_for_fill_price(self, order_id: str, symbol: str,
@@ -1135,8 +1151,13 @@ class PhemexClient(BaseClient):
 
         response = self._send_request('GET', path, params=params)
 
-        if response and 'data' in response:
-            return response['data']
+        # response já é diretamente o 'data'
+        if response:
+            # Se for uma lista, retorna diretamente
+            if isinstance(response, list):
+                return response
+            # Se for um dict com 'rows', retorna rows
+            return response.get('rows', [])
 
         return []
 
