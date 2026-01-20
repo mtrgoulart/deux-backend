@@ -47,7 +47,7 @@ def execute_panic_stop(user_id):
                     "user_id": user_id,
                     "api_key": instance_details["api_key"],
                     "exchange_id": instance_details["exchange_id"],
-                    "perc_balance_operation": 100,  # Sell all
+                    "perc_balance_operation": 1,
                     "symbol": instance_details["symbol"],
                     "side": "sell",
                     "instance_id": instance_id,
