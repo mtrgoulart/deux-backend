@@ -114,7 +114,8 @@ def execute_instance_operation(instance_id, user_id, side):
         result = execute_operation(operation_context)
         return result
     
-def execute_shared_operations(share_id, user_id, symbol, side, perc_size):
+def execute_shared_operations(share_id, user_id, symbol, side, perc_size,
+                              size_mode="percentage", flat_value=None):
     try:
         builder = (
             OperationBuilder()
@@ -122,6 +123,8 @@ def execute_shared_operations(share_id, user_id, symbol, side, perc_size):
             .set_symbol(symbol)
             .set_side(side)
             .set_perc_size(perc_size)
+            .set_size_mode(size_mode)
+            .set_flat_value(flat_value)
         )
 
         all_builders = builder.fetch_sharing_info_all()

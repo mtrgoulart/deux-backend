@@ -169,11 +169,14 @@ class OperationContext:
         Convert to sharing data format.
 
         This format is used when sending tasks to the 'sharing' queue.
+        Includes size_mode and flat_value for flat value sizing support.
         """
         return {
             "share_id": self.share_id,
             "user_id": self.user_id,
             "side": self.side,
             "symbol": self.symbol,
-            "perc_size": self.percent
+            "perc_size": self.percent,
+            "size_mode": self.strategy.size_mode,
+            "flat_value": self.strategy.flat_value
         }
