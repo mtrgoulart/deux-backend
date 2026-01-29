@@ -1,4 +1,5 @@
 import re
+import time
 from decimal import Decimal
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from source.exchange_interface import get_exchange_interface
@@ -84,20 +85,36 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
     Returns:
         dict: Operation result with status and details
     """
+    start_time = time.time()
+    status = "FAILED"
+    exchange_name = f"Exchange:{exchange_id}"
+    size = None
+    ccy = None
+    balance_raw = None
+
     try:
         base_currency, quote_currency = parse_symbol(symbol)
         exchange_interface = get_exchange_interface(exchange_id, user_id, api_key)
+        exchange_name = getattr(exchange_interface, 'exchange_name', exchange_name)
         ccy = quote_currency if side == 'buy' else base_currency
+
+        # Log header
+        general_logger.info("=" * 80)
+        general_logger.info(f"OPERATION START | {exchange_name} | user:{user_id} | inst:{instance_id} | {symbol} | {side.upper()}")
+        general_logger.info("-" * 80)
 
         # Get current balance
         balance_raw = call_get_balance(exchange_interface, ccy)
-        general_logger.info(f"Raw balance for {ccy}: {balance_raw} (type: {type(balance_raw)})")
         balance = Decimal(str(balance_raw))
 
         # Calculate order size based on mode
         if size_mode == "flat_value":
             # FLAT VALUE MODE: Use exact amount specified
             if flat_value is None or flat_value <= 0:
+                general_logger.info(f"  Mode: {size_mode} | flat_value invalid: {flat_value}")
+                general_logger.info(f"  Balance: {balance_raw} {ccy}")
+                general_logger.info("-" * 80)
+                general_logger.error("  Order FAILED: flat_value must be a positive number")
                 return {
                     "status": "error",
                     "message": "flat_value must be a positive number when size_mode is 'flat_value'"
@@ -105,18 +122,18 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
 
             size = Decimal(str(flat_value))
 
+            # Log mode details
+            general_logger.info(f"  Mode: {size_mode} | Size: {size:.2f} {ccy} | Percentage: {perc_balance_operation * 100}%")
+            general_logger.info(f"  Balance: {balance_raw} {ccy}")
+            general_logger.info("-" * 80)
+
             # Check if balance is sufficient for flat value
             if balance < size:
-                general_logger.warning(
-                    f"Insufficient balance for user_id {user_id}. "
-                    f"Balance: {balance}, flat_value requested: {size}. Operation not executed."
-                )
+                general_logger.error(f"  Order FAILED: Insufficient balance. Required: {size}, Available: {balance}")
                 return {
                     "status": "insufficient_balance",
                     "message": f"Insufficient balance. Required: {size}, Available: {balance}"
                 }
-
-            general_logger.info(f"Using FLAT VALUE mode: size = {size} {ccy}")
 
         else:
             # PERCENTAGE MODE: Calculate based on balance percentage (legacy mode)
@@ -125,10 +142,10 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             # Apply max_amount_size limit if specified (for copy trading)
             if max_amount_size is not None:
                 if balance < max_amount_size:
-                    general_logger.warning(
-                        f"Insufficient balance for user_id {user_id}. "
-                        f"Balance: {balance}, max_amount_size: {max_amount_size}. Operation not executed."
-                    )
+                    general_logger.info(f"  Mode: {size_mode} | Percentage: {perc_balance_operation * 100}% | max_amount_size: {max_amount_size}")
+                    general_logger.info(f"  Balance: {balance_raw} {ccy}")
+                    general_logger.info("-" * 80)
+                    general_logger.error(f"  Order FAILED: Insufficient balance for max_amount_size. Balance: {balance}, Required: {max_amount_size}")
                     return {
                         "status": "insufficient_balance",
                         "message": "Insufficient balance to cover max_amount_size."
@@ -140,26 +157,32 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             perc_decimal = Decimal(str(perc_balance_operation))
             size = base_para_calculo * perc_decimal
 
-            general_logger.info(f"Using PERCENTAGE mode: {perc_balance_operation * 100}% of {base_para_calculo} = {size} {ccy}")
+            # Log mode details
+            general_logger.info(f"  Mode: {size_mode} | Size: {size:.2f} {ccy} | Percentage: {perc_balance_operation * 100}%")
+            general_logger.info(f"  Balance: {balance_raw} {ccy}")
+            general_logger.info("-" * 80)
 
         # Validate calculated size
         if size <= 0:
+            general_logger.info("  Order skipped: Calculated size is zero")
+            status = "SKIPPED"
             return {
                 "status": "success",
                 "message": "Calculated order size is zero. No operation performed."
             }
-
-        general_logger.info(f'Sending order for user_id: {user_id}, instance_id: {instance_id}, side: {side}, size: {size}, ccy: {ccy}, mode: {size_mode}')
 
         # Convert Decimal to float for API calls and JSON serialization
         size_float = float(size)
         order_response = call_place_order(exchange_interface, symbol, side, size_float, ccy)
         executed_at_utc = datetime.now(timezone.utc)
 
-        operation_data= {
+        general_logger.info("  Order sent successfully")
+        status = "SUCCESS"
+
+        operation_data = {
             "status": "realizada",
             "user_id": user_id,
-            "api_key":api_key,
+            "api_key": api_key,
             "symbol": symbol,
             "side": side,
             "size": size_float,
@@ -172,10 +195,15 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             kwargs={"operation_data": operation_data},
             queue='db'
         )
-        
+
         return {"status": "success", "message": "Operação executada e tarefa de salvamento enfileirada."}
 
-
     except Exception as e:
-        general_logger.error(f"Erro na operação para {symbol} ({side}): {e}")
+        general_logger.error(f"  Order FAILED: {e}")
         return {"status": "error", "error": str(e)}
+
+    finally:
+        elapsed = time.time() - start_time
+        general_logger.info("=" * 80)
+        general_logger.info(f"OPERATION END | {exchange_name} | inst:{instance_id} | {symbol} | {side.upper()} | {status} | {elapsed:.2f}s")
+        general_logger.info("=" * 80)

@@ -437,8 +437,8 @@ def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):
             result = db_client.fetch_data(query, (exchange_id,))
             if not result:
                 raise ValueError(f"Exchange ID {exchange_id} não encontrada.")
-            # Captura a flag is_demo
-            db_exchange_id, _, _, is_demo = result[0] #
+            # Captura a flag is_demo e o nome da exchange
+            db_exchange_id, exchange_name, _, is_demo = result[0]
 
         with open(exchange_classes_path, 'r') as json_file:
             exchange_classes = json.load(json_file)
@@ -453,7 +453,7 @@ def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):
             class_path = exchange_mapping.get("demo")
         else:
             class_path = exchange_mapping.get("real")
-        
+
         if not class_path:
             mode = "demo" if is_demo else "real"
             raise ValueError(f"Interface '{mode}' para Exchange ID {exchange_id} não mapeada.")
@@ -463,6 +463,8 @@ def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):
         module = importlib.import_module(module_name)
         exchange_class = getattr(module, class_name)
 
-        return exchange_class(exchange_id, user_id, api_key)
+        interface = exchange_class(exchange_id, user_id, api_key)
+        interface.exchange_name = exchange_name or f"Exchange:{exchange_id}"
+        return interface
     except Exception as e:
         raise ValueError(f"Erro ao inicializar a interface para Exchange ID {exchange_id}: {e}")
