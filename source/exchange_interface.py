@@ -118,30 +118,6 @@ class BinanceRealInterface(ExchangeInterface):
         normalized_symbol = self.normalize_symbol(symbol)
         return self.binance_client.place_order(normalized_symbol, side, order_type, size, currency, price)
 
-    def get_fill_price(self, order_id, symbol):
-        normalized_symbol = self.normalize_symbol(symbol)
-        return self.binance_client.wait_for_fill_price(order_id, normalized_symbol)
-
-    def cancel_order(self, symbol, order):
-        normalized_symbol = self.normalize_symbol(symbol)
-        return self.binance_client.cancel_order(normalized_symbol, order)
-
-    def get_open_order(self, symbol):
-        normalized_symbol = self.normalize_symbol(symbol)
-        return self.binance_client.get_open_orders(normalized_symbol)
-
-    def get_order_status(self, symbol, order_id):
-        normalized_symbol = self.normalize_symbol(symbol)
-        return self.binance_client.get_order_status(normalized_symbol, order_id)
-
-    def get_last_trade(self, symbol):
-        normalized_symbol = self.normalize_symbol(symbol)
-        return self.binance_client.get_last_trade(normalized_symbol)
-
-    def get_current_price(self, symbol):
-        normalized_symbol = self.normalize_symbol(symbol)
-        return self.binance_client.get_current_price(normalized_symbol)
-
     def get_balance(self, ccy: Optional[str] = None) -> float:
         """
         Busca e retorna o saldo disponível ('free') de uma moeda específica.
@@ -160,10 +136,6 @@ class BinanceRealInterface(ExchangeInterface):
         # A chamada ao cliente agora retorna diretamente o float que precisamos.
         balance_value = self.binance_client.get_balance(asset=ccy)
         return balance_value
-
-    def get_order_execution_price(self, symbol, order_id):
-        normalized_symbol = self.normalize_symbol(symbol)
-        return self.binance_client.wait_for_fill_price(order_id, normalized_symbol)
 
 class BinanceDemoInterface(BinanceRealInterface):
     def create_client(self):

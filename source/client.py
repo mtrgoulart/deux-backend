@@ -356,69 +356,39 @@ class BinanceClient(BaseClient):
                 print(f"[Binance] Resposta do Servidor ({e.response.status_code}): {e.response.text}")
             return None
 
-    def get_current_price(self, symbol):
-        # Endpoint público, não requer assinatura.
-        try:
-            response = self.session.get(f"{self.url}/api/v3/ticker/price", params={"symbol": symbol})
-            response.raise_for_status()
-            return float(response.json()["price"])
-        except requests.exceptions.RequestException as e:
-            print(f"[Binance] Erro ao obter preço para {symbol}: {e}")
-            return None
-        except (KeyError, ValueError) as e:
-            print(f"[Binance] Erro ao processar resposta de preço para {symbol}: {e}")
-            return None
-
     def place_order(self, symbol, side, order_type, size, currency, price=None):
-        # Validação: O endpoint está correto (POST /api/v3/order).
+        """
+        Place an order on Binance.
+
+        For MARKET orders:
+        - BUY: uses quoteOrderQty (size = amount of quote currency to spend)
+        - SELL: uses quantity (size = amount of base currency to sell)
+        """
         params = {
             "symbol": symbol,
             "side": side.upper(),
             "type": order_type.upper(),
-            "quantity": size
         }
-        # O parâmetro 'currency' não é usado pela API da Binance neste endpoint,
-        # mas mantê-lo na assinatura do método garante a compatibilidade com a ExchangeInterface.
-        
+
+        if order_type.upper() == "MARKET":
+            if side.upper() == "BUY":
+                # BUY: size is quote currency amount to spend (e.g., 100 USDT)
+                params["quoteOrderQty"] = size
+            elif side.upper() == "SELL":
+                # SELL: size is base currency amount to sell (e.g., 0.001 BTC)
+                params["quantity"] = size
+        else:
+            # LIMIT orders always use quantity
+            params["quantity"] = size
+
         if order_type.upper() == "LIMIT":
             if not price:
-                raise ValueError("O parâmetro 'price' é obrigatório para ordens do tipo LIMIT.")
+                raise ValueError("The 'price' parameter is required for LIMIT orders.")
             params["price"] = price
-            params["timeInForce"] = "GTC" # Good-Til-Canceled, correto para ordens LIMIT padrão.
+            params["timeInForce"] = "GTC"
 
         response = self.send_signed_request("POST", "/api/v3/order", params)
-        return response # Retornar a resposta completa pode ser mais útil.
-
-    def wait_for_fill_price(self, order_id, symbol, check_interval=1, timeout=90):
-        start_time = time.time()
-        while time.time() - start_time <= timeout:
-            order = self.get_order_status(symbol, order_id)
-            if order and order.get("status") == "FILLED":
-                # Para ordens a mercado, o 'price' é 0. O preço real está em 'cummulativeQuoteQty' / 'executedQty'.
-                # Para simplificar e manter consistência, usar o preço da ordem LIMIT ou o preço médio da MARKET é uma boa abordagem.
-                if float(order.get("price", 0.0)) > 0:
-                    return float(order.get("price"))
-                elif float(order.get("executedQty", 0.0)) > 0:
-                    return float(order.get("cummulativeQuoteQty")) / float(order.get("executedQty"))
-
-            time.sleep(check_interval)
-        print(f"[Binance] Timeout ao aguardar execução da ordem {order_id}.")
-        return 0.0
-
-    def cancel_order(self, symbol, order_id):
-        # Validação: O endpoint está correto (DELETE /api/v3/order).
-        params = {"symbol": symbol, "orderId": order_id}
-        return self.send_signed_request("DELETE", "/api/v3/order", params)
-
-    def get_open_orders(self, symbol):
-        # Validação: O endpoint está correto (GET /api/v3/openOrders).
-        params = {"symbol": symbol}
-        return self.send_signed_request("GET", "/api/v3/openOrders", params)
-
-    def get_order_status(self, symbol, order_id):
-        # Validação: O endpoint está correto (GET /api/v3/order).
-        params = {"symbol": symbol, "orderId": order_id}
-        return self.send_signed_request("GET", "/api/v3/order", params)
+        return response
 
     def get_balance(self, asset=None):
         # Validação: O endpoint está correto (GET /api/v3/account).
@@ -433,22 +403,6 @@ class BinanceClient(BaseClient):
                     return float(balance.get('free', 0.0))
             return None # Retorna None se o ativo específico não for encontrado.
         return balances_data
-
-    def get_last_trade(self, symbol):
-        # Validação: O endpoint está correto (GET /api/v3/myTrades).
-        trades = self.send_signed_request("GET", "/api/v3/myTrades", {"symbol": symbol, "limit": 1})
-        if trades:
-            trade = trades[-1]
-            time_obj = datetime.fromtimestamp(trade["time"] / 1000)
-            return SimpleNamespace(
-                id=trade["id"],
-                order_id=trade["orderId"],
-                price=trade["price"],
-                qty=trade["qty"],
-                time=time_obj,
-                is_buyer=trade["isBuyer"]
-            )
-        return None
 
 class BinanceDemoClient(BinanceClient):
     def __init__(self, credentials):
