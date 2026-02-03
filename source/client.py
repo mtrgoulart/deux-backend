@@ -351,10 +351,6 @@ class BinanceClient(BaseClient):
                 general_logger.error(f"[Binance] Unsupported HTTP method: {method}")
                 return None
 
-            # LOG FULL RAW RESPONSE
-            general_logger.info(f"[Binance] Response Status: {res.status_code}")
-            general_logger.info(f"[Binance] Response Raw: {res.text}")
-
             res.raise_for_status()  # Lança uma exceção para códigos de erro HTTP (4xx ou 5xx)
             return res.json()
 
@@ -363,6 +359,40 @@ class BinanceClient(BaseClient):
             if e.response:
                 general_logger.error(f"[Binance] Server response ({e.response.status_code}): {e.response.text}")
             return None
+
+    def get_symbol_info(self, symbol):
+        """Fetch LOT_SIZE filter info for a symbol from Binance exchangeInfo."""
+        try:
+            response = self.session.get(f"{self.url}/api/v3/exchangeInfo?symbol={symbol}")
+            response.raise_for_status()
+            data = response.json()
+
+            for sym in data.get("symbols", []):
+                if sym.get("symbol") == symbol:
+                    for f in sym.get("filters", []):
+                        if f.get("filterType") == "LOT_SIZE":
+                            return {
+                                "stepSize": float(f.get("stepSize", "1")),
+                                "minQty": float(f.get("minQty", "0")),
+                                "maxQty": float(f.get("maxQty", "99999999"))
+                            }
+        except Exception as e:
+            general_logger.warning(f"[Binance] Failed to fetch symbol info for {symbol}: {e}")
+        return None
+
+    def truncate_to_step_size(self, quantity, step_size):
+        """Truncate quantity to valid step size (rounds down)."""
+        if step_size <= 0:
+            return quantity
+        # Calculate decimal places from step_size
+        step_str = f"{step_size:.10f}".rstrip('0')
+        if '.' in step_str:
+            decimals = len(step_str.split('.')[1])
+        else:
+            decimals = 0
+        # Truncate (floor) to step size
+        factor = 10 ** decimals
+        return math.floor(quantity * factor) / factor
 
     def place_order(self, symbol, side, order_type, size, currency, price=None):
         """
@@ -384,6 +414,11 @@ class BinanceClient(BaseClient):
                 params["quoteOrderQty"] = size
             elif side.upper() == "SELL":
                 # SELL: size is base currency amount to sell (e.g., 0.001 BTC)
+                # Truncate quantity to valid step size for LOT_SIZE filter
+                symbol_info = self.get_symbol_info(symbol)
+                if symbol_info:
+                    size = self.truncate_to_step_size(size, symbol_info["stepSize"])
+                    general_logger.info(f"[Binance] Truncated quantity to {size} (stepSize={symbol_info['stepSize']})")
                 params["quantity"] = size
         else:
             # LIMIT orders always use quantity
@@ -417,6 +452,7 @@ class BinanceClient(BaseClient):
                 if balance.get("asset", "").upper() == asset.upper():
                     free_balance = float(balance.get('free', 0.0))
                     general_logger.info(f"[Binance] Found {asset}: free={free_balance}, locked={balance.get('locked', 0)}")
+
                     return free_balance
 
             general_logger.warning(f"[Binance] Asset '{asset}' not found in account balances")
