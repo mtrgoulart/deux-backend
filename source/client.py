@@ -15,6 +15,8 @@ from datetime import datetime,timedelta
 from urllib.parse import urlencode
 from typing import Dict, Any, Optional
 
+from log.log import general_logger
+
 from eth_account import Account
 from eth_account.messages import encode_typed_data,encode_defunct
 import uuid
@@ -329,12 +331,15 @@ class BinanceClient(BaseClient):
         params = params or {}
         params['timestamp'] = int(time.time() * 1000)
         params['recvWindow'] = 10000
-        
+
         headers = {'X-MBX-APIKEY': self.api_key}
-        
+
         # A assinatura deve ser o último parâmetro adicionado.
         query_string_with_signature = urlencode(self.sign(params))
-        
+
+        # LOG REQUEST
+        general_logger.info(f"[Binance] Request: {method} {endpoint}")
+
         try:
             if method.upper() == 'GET':
                 res = self.session.get(f"{self.url}{endpoint}?{query_string_with_signature}", headers=headers)
@@ -343,17 +348,20 @@ class BinanceClient(BaseClient):
             elif method.upper() == 'DELETE':
                 res = self.session.delete(f"{self.url}{endpoint}?{query_string_with_signature}", headers=headers)
             else:
-                 print(f"[Binance] Error: Método HTTP '{method}' não suportado.")
-                 return None
+                general_logger.error(f"[Binance] Unsupported HTTP method: {method}")
+                return None
+
+            # LOG FULL RAW RESPONSE
+            general_logger.info(f"[Binance] Response Status: {res.status_code}")
+            general_logger.info(f"[Binance] Response Raw: {res.text}")
 
             res.raise_for_status()  # Lança uma exceção para códigos de erro HTTP (4xx ou 5xx)
             return res.json()
-        
+
         except requests.exceptions.RequestException as e:
-            # Captura de erro aprimorada para fornecer mais detalhes.
-            print(f"[Binance] Erro na requisição para {e.request.url}: {e}")
+            general_logger.error(f"[Binance] Request error for {endpoint}: {e}")
             if e.response:
-                print(f"[Binance] Resposta do Servidor ({e.response.status_code}): {e.response.text}")
+                general_logger.error(f"[Binance] Server response ({e.response.status_code}): {e.response.text}")
             return None
 
     def place_order(self, symbol, side, order_type, size, currency, price=None):
@@ -391,17 +399,28 @@ class BinanceClient(BaseClient):
         return response
 
     def get_balance(self, asset=None):
-        # Validação: O endpoint está correto (GET /api/v3/account).
+        general_logger.info(f"[Binance] Fetching balance for asset: {asset}")
+
         data = self.send_signed_request("GET", "/api/v3/account")
         if not data:
+            general_logger.error("[Binance] Failed to fetch account data")
             return [] if not asset else None
-            
+
         balances_data = data.get("balances", [])
+
         if asset:
+            # Log available assets with non-zero balances for debugging
+            non_zero = [b for b in balances_data if float(b.get('free', 0)) > 0 or float(b.get('locked', 0)) > 0]
+            general_logger.info(f"[Binance] Assets with balance: {[b['asset'] for b in non_zero]}")
+
             for balance in balances_data:
                 if balance.get("asset", "").upper() == asset.upper():
-                    return float(balance.get('free', 0.0))
-            return None # Retorna None se o ativo específico não for encontrado.
+                    free_balance = float(balance.get('free', 0.0))
+                    general_logger.info(f"[Binance] Found {asset}: free={free_balance}, locked={balance.get('locked', 0)}")
+                    return free_balance
+
+            general_logger.warning(f"[Binance] Asset '{asset}' not found in account balances")
+            return None
         return balances_data
 
 class BinanceDemoClient(BinanceClient):

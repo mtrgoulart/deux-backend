@@ -130,11 +130,17 @@ class BinanceRealInterface(ExchangeInterface):
                    encontrada ou em caso de erro.
         """
         if not ccy:
-            general_logger.error("[BinanceInterface] A moeda (ccy) deve ser especificada para obter o saldo.")
+            general_logger.error("[BinanceInterface] Currency (ccy) must be specified for get_balance.")
             raise ValueError("A moeda (ccy) é obrigatória para get_balance na Binance.")
-        
-        # A chamada ao cliente agora retorna diretamente o float que precisamos.
+
         balance_value = self.binance_client.get_balance(asset=ccy)
+
+        # Handle None (asset not found) - return 0.0 instead
+        if balance_value is None:
+            general_logger.warning(f"[BinanceInterface] Asset '{ccy}' not found, returning 0.0")
+            return 0.0
+
+        general_logger.info(f"[BinanceInterface] Balance for {ccy}: {balance_value}")
         return balance_value
 
 class BinanceDemoInterface(BinanceRealInterface):
