@@ -7,7 +7,7 @@ def authenticate_signal(key):
     Authenticate instance-level webhook key.
 
     Returns:
-        dict: {user_id, instance_id, symbol, indicator_id} or None if invalid
+        dict: {user_id, instance_id, symbol, indicator_id, delay_seconds} or None if invalid
     """
     query = load_query("select_user_instance_by_key.sql")
 
@@ -18,13 +18,14 @@ def authenticate_signal(key):
                 general_logger.warning("Invalid signal key received during authentication attempt.")
                 return None
 
-            row = result[0]  # linha completa: (user_id, instance_id, symbol, indicator_id)
+            row = result[0]  # linha completa: (user_id, instance_id, symbol, indicator_id, delay_seconds)
 
             return {
                 'user_id': row[0],
                 'instance_id': row[1],
                 'symbol': row[2],
-                'indicator_id': row[3]
+                'indicator_id': row[3],
+                'delay_seconds': row[4]
             }
 
     except Exception as e:

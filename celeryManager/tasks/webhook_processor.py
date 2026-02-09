@@ -4,7 +4,7 @@ from interface.instance import get_instance_status, execute_instance_operation
 from interface.webhook_auth import insert_data_to_db
 
 
-@shared_task(name="webhook.processor", bind=True)
+@shared_task(name="webhook.processor", bind=True, acks_late=True, reject_on_worker_lost=True)
 def process_webhook(self, signal_data, side, original_key):
     """
     Process webhook signal and orchestrate trading operation.
@@ -31,7 +31,8 @@ def process_webhook(self, signal_data, side, original_key):
     user_id = signal_data['user_id']
     symbol = signal_data.get('symbol')
 
-    log_prefix = f"[TaskID: {task_id}] [Instance: {instance_id}] [User: {user_id}]"
+    indicator_id = signal_data.get('indicator_id')
+    log_prefix = f"[TaskID: {task_id}] [Instance: {instance_id}] [User: {user_id}] [Indicator: {indicator_id}]"
     logger.info(f"{log_prefix} Starting webhook processing for {side} signal on {symbol}")
 
     try:

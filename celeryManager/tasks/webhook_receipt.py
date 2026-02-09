@@ -53,16 +53,32 @@ def _handle_instance_pattern(log_prefix, key, side):
     signal_data = authenticate_signal(key)
 
     if not signal_data:
-        logger.warning(f"{log_prefix} Instance key authentication failed: ...{key[-4:]}")
+        logger.warning(f"{log_prefix} [Side: {side}] Instance key authentication failed: ...{key[-4:]}")
         return {"status": "error", "message": "Invalid signal key"}
 
-    logger.info(f"{log_prefix} Instance signal authenticated. Delegating to logic queue.")
-
-    process_webhook_task.delay(
-        signal_data=signal_data,
-        side=side,
-        original_key=key
+    signal_log = (
+        f"[User: {signal_data['user_id']}] "
+        f"[Instance: {signal_data['instance_id']}] "
+        f"[Indicator: {signal_data['indicator_id']}] "
+        f"[Symbol: {signal_data['symbol']}] "
+        f"[Side: {side}]"
     )
+
+    delay_seconds = signal_data.get('delay_seconds')
+
+    if delay_seconds and delay_seconds > 0:
+        logger.info(f"{log_prefix} {signal_log} Signal authenticated. Scheduling deferred processing ({delay_seconds}s delay).")
+        process_webhook_task.apply_async(
+            kwargs={"signal_data": signal_data, "side": side, "original_key": key},
+            countdown=delay_seconds
+        )
+    else:
+        logger.info(f"{log_prefix} {signal_log} Signal authenticated. Delegating to logic queue.")
+        process_webhook_task.delay(
+            signal_data=signal_data,
+            side=side,
+            original_key=key
+        )
 
     return {"status": "queued", "message": "Signal accepted and queued for processing."}
 
