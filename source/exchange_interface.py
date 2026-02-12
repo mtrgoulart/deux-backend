@@ -2,13 +2,7 @@ from log.log import general_logger
 from .client import OKXClient, OKXDemoClient, BinanceClient, BinanceDemoClient, BingXClient, AsterClient, PhemexClient, PhemexTestnetClient
 from .context import get_db_connection
 from .dbmanager import load_query
-import json
-import importlib
-import os
 from typing import Dict, Any, Optional
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-exchange_classes_path = os.path.join(BASE_DIR, 'exchange_classes.json')
 
 class ExchangeInterface:
     def __init__(self, exchange_id: int, user_id: int, api_key: int):
@@ -408,41 +402,38 @@ class PhemexDemoInterface(PhemexRealInterface):
     def create_client(self):
         return PhemexTestnetClient(self.credentials)
 
+EXCHANGE_REGISTRY = {
+    "OKX":      {"real": OKXRealInterface,      "demo": OKXDemoInterface},
+    "Binance":  {"real": BinanceRealInterface,   "demo": BinanceDemoInterface},
+    "BingX":    {"real": BingXInterface,          "demo": BingXInterface},
+    "AsterDex": {"real": AsterInterface,          "demo": AsterInterface},
+    "Phemex":   {"real": PhemexRealInterface,     "demo": PhemexDemoInterface},
+}
+
 def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):
-    try:
-        query = load_query('select_exchange_by_id.sql') #
-        with get_db_connection() as db_client:
-            result = db_client.fetch_data(query, (exchange_id,))
-            if not result:
-                raise ValueError(f"Exchange ID {exchange_id} não encontrada.")
-            # Captura a flag is_demo e o nome da exchange
-            db_exchange_id, exchange_name, _, is_demo = result[0]
+    query = load_query('select_exchange_by_id.sql')
+    with get_db_connection() as db_client:
+        result = db_client.fetch_data(query, (exchange_id,))
+        if not result:
+            raise ValueError(f"Exchange ID {exchange_id} not found in database.")
+        official_name, exchange_name, _, is_demo = result[0]
 
-        with open(exchange_classes_path, 'r') as json_file:
-            exchange_classes = json.load(json_file)
+    exchange_entry = EXCHANGE_REGISTRY.get(official_name)
+    if not exchange_entry:
+        raise ValueError(
+            f"No interface registered for exchange '{official_name}' "
+            f"(exchange_id={exchange_id}). "
+            f"Available: {list(EXCHANGE_REGISTRY.keys())}"
+        )
 
-        # Acessa o mapeamento para a exchange específica
-        exchange_mapping = exchange_classes.get(str(db_exchange_id))
-        if not exchange_mapping:
-            raise ValueError(f"Mapeamento para Exchange ID {exchange_id} não encontrado em exchange_classes.json.")
+    mode = "demo" if is_demo else "real"
+    exchange_class = exchange_entry.get(mode)
+    if not exchange_class:
+        raise ValueError(
+            f"No '{mode}' interface for exchange '{official_name}' "
+            f"(exchange_id={exchange_id})."
+        )
 
-        # Escolhe o caminho da classe com base na flag is_demo
-        if is_demo:
-            class_path = exchange_mapping.get("demo")
-        else:
-            class_path = exchange_mapping.get("real")
-
-        if not class_path:
-            mode = "demo" if is_demo else "real"
-            raise ValueError(f"Interface '{mode}' para Exchange ID {exchange_id} não mapeada.")
-
-        # O resto da função continua igual
-        module_name, class_name = class_path.rsplit('.', 1)
-        module = importlib.import_module(module_name)
-        exchange_class = getattr(module, class_name)
-
-        interface = exchange_class(exchange_id, user_id, api_key)
-        interface.exchange_name = exchange_name or f"Exchange:{exchange_id}"
-        return interface
-    except Exception as e:
-        raise ValueError(f"Erro ao inicializar a interface para Exchange ID {exchange_id}: {e}")
+    interface = exchange_class(exchange_id, user_id, api_key)
+    interface.exchange_name = exchange_name or f"Exchange:{exchange_id}"
+    return interface

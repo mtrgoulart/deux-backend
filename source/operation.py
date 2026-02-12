@@ -125,7 +125,7 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             # Use min of position and exchange balance
             size = min(position_qty, exchange_balance)
 
-            general_logger.info(f"  Mode: POSITION_SELL | Position: {position_qty} | Exchange Balance: {exchange_balance} | Sell Size: {size}")
+            general_logger.info(f"  Mode: POSITION_SELL | Position: {position_qty.normalize()} | Exchange Balance: {exchange_balance.normalize()} | Sell Size: {size.normalize()}")
             general_logger.info("-" * 80)
 
             if size <= 0:
