@@ -81,19 +81,23 @@ def save_operation_task(self, operation_data):
 
             _update_spot_position(operation_data, operation_id)
 
-            try:
-                get_client().send_task(
-                    "price.fetch_execution_price",
-                    kwargs={
-                        "operation_id": operation_id,
-                        "symbol": operation_data.get("symbol"),
-                        "executed_at": operation_data.get("executed_at")
-                    },
-                    queue='pricing'
-                )
-                logger.info(f"Task price.fetch_execution_price disparada para operation_id: {operation_id}")
-            except Exception as e:
-                logger.error(f"Falha ao disparar task 'price.fetch_execution_price' para op_id {operation_id}: {e}")
+            op_status = operation_data.get("status", "")
+            if op_status.startswith("virtual"):
+                logger.info(f"Skipping price enrichment for virtual operation {operation_id} (status: {op_status})")
+            else:
+                try:
+                    get_client().send_task(
+                        "price.fetch_execution_price",
+                        kwargs={
+                            "operation_id": operation_id,
+                            "symbol": operation_data.get("symbol"),
+                            "executed_at": operation_data.get("executed_at")
+                        },
+                        queue='pricing'
+                    )
+                    logger.info(f"Task price.fetch_execution_price disparada para operation_id: {operation_id}")
+                except Exception as e:
+                    logger.error(f"Falha ao disparar task 'price.fetch_execution_price' para op_id {operation_id}: {e}")
 
             return operation_id
 

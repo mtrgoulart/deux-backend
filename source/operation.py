@@ -114,9 +114,28 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             if position_qty <= 0:
                 general_logger.info(f"  Mode: POSITION_SELL | Position: 0 | No open entries found")
                 general_logger.info("-" * 80)
-                general_logger.info("  Order skipped: No position to sell")
+                general_logger.info("  Order skipped: No position to sell. Saving virtual sell to unblock interval.")
                 status = "SKIPPED"
-                return {"status": "no_position", "message": "No open position entries found for this instance."}
+
+                virtual_operation_data = {
+                    "status": "virtual_no_position",
+                    "user_id": user_id,
+                    "api_key": api_key,
+                    "symbol": symbol,
+                    "side": side,
+                    "size": 0,
+                    "order_response": None,
+                    "instance_id": instance_id,
+                    "executed_at": datetime.now(timezone.utc).isoformat(),
+                    "entry_ids": [],
+                }
+                get_client().send_task(
+                    "trade.save_operation",
+                    kwargs={"operation_data": virtual_operation_data},
+                    queue='db'
+                )
+
+                return {"status": "no_position", "message": "No open position entries found. Virtual sell recorded to unblock cycle."}
 
             # Get exchange balance as safety cap
             balance_raw = call_get_balance(exchange_interface, ccy)
