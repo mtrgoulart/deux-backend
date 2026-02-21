@@ -3,7 +3,7 @@ from celeryManager.tasks.base import logger
 from interface.webhook_auth import authenticate_signal, authenticate_user_key
 from celeryManager.tasks.webhook_processor import process_webhook as process_webhook_task
 from celeryManager.tasks.panic_processor import process_panic_signal as process_panic_task
-from source.tracing import record_stage
+from source.tracing import create_trace, record_stage
 
 
 @shared_task(name="webhook.receipt", bind=True)
@@ -22,12 +22,22 @@ def process_webhook_receipt(self, data):
         log_prefix = f"[WebhookTaskID: {task_id}] [TraceID: {trace_id}]"
 
     logger.info(f"{log_prefix} Starting webhook processing.")
-    record_stage(trace_id, "webhook_receipt", status="started", celery_task_id=task_id)
 
     try:
         key = data.get("key")
         pattern = data.get("pattern")
         action = data.get("action")
+
+        # Create the initial trace row (first worker with DB access)
+        if trace_id and key:
+            create_trace(
+                trace_id=trace_id,
+                pattern=pattern or "unknown",
+                action=action or "unknown",
+                key_suffix=key[-4:]
+            )
+
+        record_stage(trace_id, "webhook_receipt", status="started", celery_task_id=task_id)
 
         if not key or not pattern or not action:
             logger.warning(f"{log_prefix} Missing parameters. Key: '{key}', Pattern: '{pattern}', Action: '{action}'.")

@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from celeryManager.celery_app import celery as celery_app
 from log.log import general_logger
-from source.tracing import generate_trace_id, create_trace
+from source.tracing import generate_trace_id
 
 # Carrega variáveis de ambiente
 load_dotenv(".env.prd")
@@ -105,15 +105,9 @@ def webhook_listener():
             general_logger.warning("Falha na validação dos dados: %s", e)
             return jsonify({"error": str(e)}), 400
         
-        # 2. Gera trace_id e cria o registro de rastreamento
+        # 2. Gera trace_id (o registro será criado pelo primeiro worker)
         trace_id = generate_trace_id()
         key_suffix = parsed_data['key'][-4:]
-        create_trace(
-            trace_id=trace_id,
-            pattern=parsed_data['pattern'],
-            action=parsed_data['action'],
-            key_suffix=key_suffix
-        )
         parsed_data['trace_id'] = trace_id
 
         # 3. Envia a tarefa para o Celery

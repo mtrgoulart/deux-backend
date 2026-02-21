@@ -10,7 +10,6 @@ import uuid
 import json
 from datetime import datetime, timezone
 from log.log import general_logger
-from source.context import get_db_connection
 
 
 def generate_trace_id():
@@ -29,6 +28,8 @@ def create_trace(trace_id, pattern, action, key_suffix):
         key_suffix: last 4 chars of the signal key (for display)
     """
     try:
+        from source.context import get_db_connection
+
         initial_stage = json.dumps([{
             "stage": "webhook_received",
             "status": "completed",
@@ -75,6 +76,8 @@ def record_stage(trace_id, stage_name, status="completed", celery_task_id=None,
         return
 
     try:
+        from source.context import get_db_connection
+
         stage_entry = {
             "stage": stage_name,
             "status": status,
