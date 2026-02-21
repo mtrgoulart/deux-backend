@@ -7,8 +7,8 @@ from typing import Union, Optional
 from datetime import datetime, timedelta
 from time import time
 
-# Importa AMBAS as conexões de banco de dados
 from source.context import get_db_connection, get_timescale_db_connection
+from source.tracing import record_stage
 
 
 # ============================================================================
@@ -164,7 +164,7 @@ def mark_operation_as_price_error(operation_id: int, error_message: str):
 
 
 @shared_task(name="price.fetch_execution_price", bind=True, max_retries=1)
-def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at: str):
+def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at: str, trace_id=None):
     """
     Enriquece a operação (do banco principal) com o preço de execução
     (consultando o oráculo de preços interno - TimescaleDB).
@@ -191,6 +191,10 @@ def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at
             f"({symbol} @ {executed_at}) - Tentativa {current_retry + 1}/2"
         )
 
+        if current_retry == 0:
+            record_stage(trace_id, "price_enrichment", status="started",
+                         celery_task_id=self.request.id)
+
         # ====================================================================
         # PASSO 1: Verificar se o símbolo está sendo rastreado pelo oracle
         # ====================================================================
@@ -204,8 +208,9 @@ def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at
             )
             logger.error(f"PRICE_ENRICHER: op_id {operation_id} - {error_msg}")
 
-            # Marca a operação como erro e NÃO retenta
             mark_operation_as_price_error(operation_id, error_msg)
+            record_stage(trace_id, "price_enrichment", status="failed",
+                         error="symbol_not_tracked", is_terminal=True)
 
             return {
                 "status": "error",
@@ -251,8 +256,9 @@ def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at
                 )
                 logger.error(f"PRICE_ENRICHER: op_id {operation_id} - {error_msg}")
 
-                # Marca a operação como erro e NÃO retenta mais
                 mark_operation_as_price_error(operation_id, error_msg)
+                record_stage(trace_id, "price_enrichment", status="failed",
+                             error="price_not_found_after_retries", is_terminal=True)
 
                 return {
                     "status": "error",
@@ -278,6 +284,10 @@ def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at
             f"PRICE_ENRICHER: ✅ SUCESSO! Preço da op_id {operation_id} "
             f"atualizado para {price} (após {current_retry} retries)"
         )
+
+        record_stage(trace_id, "price_enrichment", status="completed",
+                     metadata={"price": float(price), "operation_id": operation_id},
+                     is_terminal=True)
 
         return {
             "status": "success",
@@ -311,6 +321,8 @@ def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at
             )
 
             mark_operation_as_price_error(operation_id, error_msg)
+            record_stage(trace_id, "price_enrichment", status="failed",
+                         error="fatal_error", is_terminal=True)
 
             return {
                 "status": "error",

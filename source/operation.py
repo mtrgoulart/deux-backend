@@ -64,7 +64,7 @@ def call_place_order(exchange_interface, symbol, side, size, currency):
 def call_get_balance(exchange_interface, currency):
     return exchange_interface.get_balance(currency)
 
-def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, symbol, side, instance_id, max_amount_size=None, size_mode="percentage", flat_value=None):
+def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, symbol, side, instance_id, max_amount_size=None, size_mode="percentage", flat_value=None, trace_id=None):
     """
     Execute a trading operation on the exchange.
 
@@ -128,6 +128,7 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
                     "instance_id": instance_id,
                     "executed_at": datetime.now(timezone.utc).isoformat(),
                     "entry_ids": [],
+                    "trace_id": trace_id,
                 }
                 get_client().send_task(
                     "trade.save_operation",
@@ -174,6 +175,7 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
                 "instance_id": instance_id,
                 "executed_at": executed_at_utc.isoformat(),
                 "entry_ids": entry_ids,
+                "trace_id": trace_id,
             }
             get_client().send_task(
                 "trade.save_operation",
@@ -301,6 +303,7 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
                 "executed_at": executed_at_utc.isoformat(),
                 "filled_base_qty": str(filled_base_qty),
                 "base_currency": base_currency,
+                "trace_id": trace_id,
             }
             get_client().send_task(
                 "trade.save_operation",

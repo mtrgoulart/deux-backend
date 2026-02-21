@@ -11,7 +11,7 @@ from .celery_client import get_client
 import uuid
 
 
-def execute_operation(context: OperationContext):
+def execute_operation(context: OperationContext, trace_id=None):
     """
     Main entry point for executing a trading operation.
 
@@ -23,6 +23,7 @@ def execute_operation(context: OperationContext):
 
     Args:
         context: OperationContext containing all necessary data
+        trace_id: Optional trace ID for pipeline observability
 
     Returns:
         dict: Operation result with status and details
@@ -43,7 +44,7 @@ def execute_operation(context: OperationContext):
     market = Market(symbol=context.symbol, side=context.side)
 
     # Execute operation with condition checking
-    operation_handler = OperationHandler(context, market)
+    operation_handler = OperationHandler(context, market, trace_id=trace_id)
     result = operation_handler.execute_condition()
 
     return result
@@ -133,16 +134,18 @@ class OperationHandler:
     and copy trading distribution.
     """
 
-    def __init__(self, context: OperationContext, market_manager: Market):
+    def __init__(self, context: OperationContext, market_manager: Market, trace_id=None):
         """
         Initialize operation handler with context and market manager.
 
         Args:
             context: OperationContext containing all operation details
             market_manager: Market instance for symbol/side management
+            trace_id: Optional trace ID for pipeline observability
         """
         self.context = context
         self.market_manager = market_manager
+        self.trace_id = trace_id
         self.condition_handler = ConditionHandler(context.strategy.condition_limit)
 
         # Initialize exchange interface
@@ -193,10 +196,15 @@ class OperationHandler:
             if conditions_met and data_is_sufficient:
                 # Conditions satisfied - execute trade
 
+                # Inject trace_id into trade data
+                trade_data = self.context.to_trade_data()
+                if self.trace_id:
+                    trade_data['trace_id'] = self.trace_id
+
                 # Send trade execution task to ops queue
                 async_result = get_client().send_task(
                     "trade.execute_operation",
-                    kwargs={"data": self.context.to_trade_data()},
+                    kwargs={"data": trade_data},
                     queue="ops"
                 )
 
@@ -208,9 +216,13 @@ class OperationHandler:
                         general_logger.info(
                             f"{log_prefix} Sending sharing task for share_id={self.context.share_id}..."
                         )
+                        sharing_data = self.context.to_sharing_data()
+                        if self.trace_id:
+                            sharing_data['trace_id'] = self.trace_id
+
                         get_client().send_task(
                             "process_sharing_operations",
-                            kwargs={"data": self.context.to_sharing_data()},
+                            kwargs={"data": sharing_data},
                             queue="sharing"
                         )
                         general_logger.info(f"{log_prefix} Sharing task sent successfully.")

@@ -1,11 +1,12 @@
 from celery import shared_task
 from source.context import get_db_connection
 from celeryManager.tasks.base import logger
-from source.dbmanager import load_query  # ou onde estiver seu load_query
+from source.dbmanager import load_query
 import json
 from decimal import Decimal
 from source.celery_client import get_client
 from source.position import add_position_entry, close_position_entries
+from source.tracing import record_stage
 
 
 def _update_spot_position(operation_data, operation_id):
@@ -60,6 +61,10 @@ def save_operation_task(self, operation_data):
     """
     Salva a operação e dispara a task de enriquecimento de preço.
     """
+    trace_id = operation_data.get("trace_id")
+    task_id = self.request.id
+    record_stage(trace_id, "trade_save", status="started", celery_task_id=task_id)
+
     try:
         query = load_query('insert_operation.sql')
         with get_db_connection() as db_client:
@@ -81,9 +86,15 @@ def save_operation_task(self, operation_data):
 
             _update_spot_position(operation_data, operation_id)
 
+            record_stage(trace_id, "trade_save", status="completed",
+                         metadata={"operation_id": operation_id})
+
             op_status = operation_data.get("status", "")
             if op_status.startswith("virtual"):
                 logger.info(f"Skipping price enrichment for virtual operation {operation_id} (status: {op_status})")
+                record_stage(trace_id, "price_enrichment", status="skipped",
+                             metadata={"reason": f"virtual operation ({op_status})"},
+                             is_terminal=True)
             else:
                 try:
                     get_client().send_task(
@@ -91,7 +102,8 @@ def save_operation_task(self, operation_data):
                         kwargs={
                             "operation_id": operation_id,
                             "symbol": operation_data.get("symbol"),
-                            "executed_at": operation_data.get("executed_at")
+                            "executed_at": operation_data.get("executed_at"),
+                            "trace_id": trace_id
                         },
                         queue='pricing'
                     )
@@ -103,4 +115,5 @@ def save_operation_task(self, operation_data):
 
     except Exception as e:
         logger.error(f"Erro ao salvar operação: {e}", exc_info=True)
+        record_stage(trace_id, "trade_save", status="failed", error=str(e), is_terminal=True)
         raise

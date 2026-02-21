@@ -24,7 +24,7 @@ def get_instance_status(instance_id, user_id):
         return result[0][0]
 
 
-def execute_instance_operation(instance_id, user_id, side):
+def execute_instance_operation(instance_id, user_id, side, trace_id=None):
     """
     Execute a trading operation for a specific instance.
 
@@ -37,6 +37,7 @@ def execute_instance_operation(instance_id, user_id, side):
         instance_id: The instance ID
         user_id: The user ID
         side: 'buy' or 'sell'
+        trace_id: Optional trace ID for pipeline observability
 
     Returns:
         dict: Operation result with status and details
@@ -111,7 +112,7 @@ def execute_instance_operation(instance_id, user_id, side):
         )
 
         # Execute operation with structured context
-        result = execute_operation(operation_context)
+        result = execute_operation(operation_context, trace_id=trace_id)
         return result
     
 def execute_shared_operations(share_id, user_id, symbol, side, perc_size,

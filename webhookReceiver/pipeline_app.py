@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from celeryManager.celery_app import celery as celery_app
 from log.log import general_logger
+from source.tracing import generate_trace_id, create_trace
 
 # Carrega variáveis de ambiente
 load_dotenv(".env.prd")
@@ -104,22 +105,32 @@ def webhook_listener():
             general_logger.warning("Falha na validação dos dados: %s", e)
             return jsonify({"error": str(e)}), 400
         
-        # 2. Envia a tarefa para o Celery
+        # 2. Gera trace_id e cria o registro de rastreamento
+        trace_id = generate_trace_id()
+        key_suffix = parsed_data['key'][-4:]
+        create_trace(
+            trace_id=trace_id,
+            pattern=parsed_data['pattern'],
+            action=parsed_data['action'],
+            key_suffix=key_suffix
+        )
+        parsed_data['trace_id'] = trace_id
+
+        # 3. Envia a tarefa para o Celery
         try:
-            # CORREÇÃO: Envia para a task 'webhook.receipt'
             celery_app.send_task(
-                "webhook.receipt", 
+                "webhook.receipt",
                 kwargs={"data": parsed_data}
             )
             general_logger.info(
-                "Sinal recebido e enfileirado para key: ...%s", 
-                parsed_data['key'][-4:]
+                "[TraceID: %s] Sinal recebido e enfileirado para key: ...%s",
+                trace_id, key_suffix
             )
         except Exception as e:
             general_logger.error("Erro ao enfileirar task no Celery: %s", e, exc_info=True)
             raise RuntimeError("Falha ao enfileirar para processamento assíncrono.")
 
-        return jsonify({"message": "Sinal recebido e enfileirado para processamento"}), 202 # 202 Accepted é mais apropriado aqui
+        return jsonify({"message": "Sinal recebido e enfileirado para processamento", "trace_id": trace_id}), 202
 
     except Exception as e:
         general_logger.exception("Erro inesperado no endpoint do webhook")
