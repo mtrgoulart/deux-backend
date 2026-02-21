@@ -210,7 +210,7 @@ def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at
 
             mark_operation_as_price_error(operation_id, error_msg)
             record_stage(trace_id, "price_enrichment", status="failed",
-                         error="symbol_not_tracked", is_terminal=True)
+                         error="symbol_not_tracked")
 
             return {
                 "status": "error",
@@ -258,7 +258,7 @@ def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at
 
                 mark_operation_as_price_error(operation_id, error_msg)
                 record_stage(trace_id, "price_enrichment", status="failed",
-                             error="price_not_found_after_retries", is_terminal=True)
+                             error="price_not_found_after_retries")
 
                 return {
                     "status": "error",
@@ -286,8 +286,7 @@ def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at
         )
 
         record_stage(trace_id, "price_enrichment", status="completed",
-                     metadata={"price": float(price), "operation_id": operation_id},
-                     is_terminal=True)
+                     metadata={"price": float(price), "operation_id": operation_id})
 
         return {
             "status": "success",
@@ -322,7 +321,7 @@ def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at
 
             mark_operation_as_price_error(operation_id, error_msg)
             record_stage(trace_id, "price_enrichment", status="failed",
-                         error="fatal_error", is_terminal=True)
+                         error="fatal_error")
 
             return {
                 "status": "error",

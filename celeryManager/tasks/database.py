@@ -87,14 +87,14 @@ def save_operation_task(self, operation_data):
             _update_spot_position(operation_data, operation_id)
 
             record_stage(trace_id, "trade_save", status="completed",
-                         metadata={"operation_id": operation_id})
+                         metadata={"operation_id": operation_id},
+                         is_terminal=True)
 
             op_status = operation_data.get("status", "")
             if op_status.startswith("virtual"):
                 logger.info(f"Skipping price enrichment for virtual operation {operation_id} (status: {op_status})")
                 record_stage(trace_id, "price_enrichment", status="skipped",
-                             metadata={"reason": f"virtual operation ({op_status})"},
-                             is_terminal=True)
+                             metadata={"reason": f"virtual operation ({op_status})"})
             else:
                 try:
                     get_client().send_task(

@@ -34,7 +34,8 @@ def process_webhook_receipt(self, data):
                 trace_id=trace_id,
                 pattern=pattern or "unknown",
                 action=action or "unknown",
-                key_suffix=key[-4:]
+                key_suffix=key[-4:],
+                raw_message=data.get("raw_message")
             )
 
         record_stage(trace_id, "webhook_receipt", status="started", celery_task_id=task_id)

@@ -17,7 +17,7 @@ def generate_trace_id():
     return uuid.uuid4().hex
 
 
-def create_trace(trace_id, pattern, action, key_suffix):
+def create_trace(trace_id, pattern, action, key_suffix, raw_message=None):
     """
     Insert the initial signal_traces row with the first stage.
 
@@ -26,15 +26,20 @@ def create_trace(trace_id, pattern, action, key_suffix):
         pattern: 'instance' or 'user'
         action: the side or process value (buy, sell, panic_stop, etc.)
         key_suffix: last 4 chars of the signal key (for display)
+        raw_message: optional raw webhook body string
     """
     try:
         from source.context import get_db_connection
+
+        stage_metadata = {"pattern": pattern, "action": action}
+        if raw_message:
+            stage_metadata["raw_message"] = raw_message
 
         initial_stage = json.dumps([{
             "stage": "webhook_received",
             "status": "completed",
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "metadata": {"pattern": pattern, "action": action}
+            "metadata": stage_metadata
         }])
 
         query = """

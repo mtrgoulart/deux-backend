@@ -109,6 +109,7 @@ def webhook_listener():
         trace_id = generate_trace_id()
         key_suffix = parsed_data['key'][-4:]
         parsed_data['trace_id'] = trace_id
+        parsed_data['raw_message'] = raw_body
 
         # 3. Envia a tarefa para o Celery
         try:
