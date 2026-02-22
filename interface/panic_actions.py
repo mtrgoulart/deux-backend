@@ -26,6 +26,12 @@ def execute_panic_stop(user_id):
         dict: Result with status and details
     """
     try:
+        # 0. Skip if panic mode is already active
+        panic_state = _get_panic_state(user_id)
+        if panic_state and panic_state.get("is_panic_active"):
+            general_logger.info(f"[PanicStop] User {user_id} already in panic mode — skipping.")
+            return {"status": "skipped", "message": "Panic mode already active"}
+
         # 1. Get all active (running) instances for the user
         active_instance_ids = _get_active_instance_ids(user_id)
 

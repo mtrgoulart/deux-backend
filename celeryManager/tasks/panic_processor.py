@@ -46,9 +46,20 @@ def process_panic_signal(self, user_id, action, original_key, trace_id=None):
 
         result = handler()
 
-        logger.info(f"{log_prefix} Action {action} completed: {result}")
-        record_stage(trace_id, "panic_processor", status="completed",
-                     metadata={"action": action}, is_terminal=True)
+        result_status = result.get("status", "")
+        if result_status == "skipped":
+            logger.info(f"{log_prefix} Action {action} skipped: {result}")
+            record_stage(trace_id, "panic_processor", status="skipped",
+                         metadata={"action": action, "reason": result.get("message")},
+                         is_terminal=True)
+        elif result_status == "error":
+            logger.error(f"{log_prefix} Action {action} failed: {result}")
+            record_stage(trace_id, "panic_processor", status="failed",
+                         error=result.get("message", ""), is_terminal=True)
+        else:
+            logger.info(f"{log_prefix} Action {action} completed: {result}")
+            record_stage(trace_id, "panic_processor", status="completed",
+                         metadata={"action": action, **result}, is_terminal=True)
         return result
 
     except Exception as e:
