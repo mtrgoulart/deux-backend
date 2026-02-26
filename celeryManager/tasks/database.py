@@ -56,7 +56,7 @@ def _update_spot_position(operation_data, operation_id):
         logger.error(f"Failed to update spot position for operation {operation_id}: {e}", exc_info=True)
 
 
-@shared_task(name="trade.save_operation", bind=True)
+@shared_task(name="trade.save_operation", bind=True, max_retries=3, default_retry_delay=5)
 def save_operation_task(self, operation_data):
     """
     Salva a operação e dispara a task de enriquecimento de preço.
@@ -114,6 +114,9 @@ def save_operation_task(self, operation_data):
             return operation_id
 
     except Exception as e:
-        logger.error(f"Erro ao salvar operação: {e}", exc_info=True)
+        logger.error(f"Erro ao salvar operação (tentativa {self.request.retries + 1}/{self.max_retries + 1}): {e}", exc_info=True)
+        if self.request.retries < self.max_retries:
+            logger.info(f"Retrying save_operation in {self.default_retry_delay}s...")
+            raise self.retry(exc=e)
         record_stage(trace_id, "trade_save", status="failed", error=str(e), is_terminal=True)
         raise

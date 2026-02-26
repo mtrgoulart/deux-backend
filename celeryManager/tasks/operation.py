@@ -1,7 +1,26 @@
 from celery import shared_task
 from source.operation import execute_operation
-from source.utils import normalize_exchange_response
+from source.utils import normalize_exchange_response, sanitize_trace_response
 from source.tracing import record_stage
+
+
+def _build_exchange_request(data, result):
+    """Reconstruct the logical exchange request from task parameters."""
+    request = {
+        "symbol": data.get("symbol"),
+        "side": data.get("side"),
+        "order_type": "market",
+        "size_mode": data.get("size_mode", "percentage"),
+    }
+    if data.get("size_mode") == "flat_value":
+        request["flat_value"] = data.get("flat_value")
+    else:
+        request["percentage"] = data.get("perc_balance_operation")
+    if result.get("size"):
+        request["computed_size"] = result["size"]
+    if result.get("currency"):
+        request["currency"] = result["currency"]
+    return request
 
 
 @shared_task(name="trade.execute_operation", bind=True)
@@ -43,8 +62,15 @@ def task_execute_operation(self, data):
 
         op_status = result.get("status", "")
         if op_status == "success":
+            exchange_request = _build_exchange_request(data, result)
+            exchange_response = sanitize_trace_response(result.get('order_response'))
             record_stage(trace_id, "trade_execute", status="completed",
-                         metadata={"size": data.get("perc_balance_operation")})
+                         metadata={
+                             "size": result.get("size", data.get("perc_balance_operation")),
+                             "currency": result.get("currency"),
+                             "exchange_request": exchange_request,
+                             "exchange_response": exchange_response,
+                         })
         elif op_status in ("no_position", "insufficient_balance"):
             record_stage(trace_id, "trade_execute", status="skipped",
                          metadata={"reason": op_status})

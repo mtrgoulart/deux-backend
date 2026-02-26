@@ -161,6 +161,16 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             order_response = call_place_order(exchange_interface, symbol, side, size_float, ccy)
             executed_at_utc = datetime.now(timezone.utc)
 
+            # Check if the exchange returned a valid response
+            if order_response is None:
+                general_logger.error(f"  Order FAILED: Exchange returned no response (API error)")
+                status = "FAILED"
+                return {
+                    "status": "error",
+                    "message": "Exchange returned no response. The order was likely rejected.",
+                    "error": "Exchange API returned None (HTTP error or rejected order)"
+                }
+
             general_logger.info("  Order sent successfully")
             status = "SUCCESS"
 
@@ -183,7 +193,13 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
                 queue='db'
             )
 
-            return {"status": "success", "message": "Operação executada e tarefa de salvamento enfileirada."}
+            return {
+                "status": "success",
+                "message": "Operação executada e tarefa de salvamento enfileirada.",
+                "order_response": order_response,
+                "size": size_float,
+                "currency": ccy,
+            }
 
         else:
             # === BUY PATH: Percentage/flat_value sizing with fill extraction ===
@@ -270,6 +286,16 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             order_response = call_place_order(exchange_interface, symbol, side, size_float, ccy)
             executed_at_utc = datetime.now(timezone.utc)
 
+            # Check if the exchange returned a valid response
+            if order_response is None:
+                general_logger.error(f"  Order FAILED: Exchange returned no response (API error)")
+                status = "FAILED"
+                return {
+                    "status": "error",
+                    "message": "Exchange returned no response. The order was likely rejected.",
+                    "error": "Exchange API returned None (HTTP error or rejected order)"
+                }
+
             general_logger.info("  Order sent successfully")
             status = "SUCCESS"
 
@@ -311,7 +337,13 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
                 queue='db'
             )
 
-            return {"status": "success", "message": "Operação executada e tarefa de salvamento enfileirada."}
+            return {
+                "status": "success",
+                "message": "Operação executada e tarefa de salvamento enfileirada.",
+                "order_response": order_response,
+                "size": size_float,
+                "currency": ccy,
+            }
 
     except Exception as e:
         general_logger.error(f"  Order FAILED: {e}")
