@@ -61,7 +61,7 @@ def task_execute_operation(self, data):
         result['order_response'] = normalize_exchange_response(result.get('order_response'))
 
         op_status = result.get("status", "")
-        if op_status == "success":
+        if op_status == "success" and result.get("size"):
             exchange_request = _build_exchange_request(data, result)
             exchange_response = sanitize_trace_response(result.get('order_response'))
             record_stage(trace_id, "trade_execute", status="completed",
@@ -71,11 +71,21 @@ def task_execute_operation(self, data):
                              "exchange_request": exchange_request,
                              "exchange_response": exchange_response,
                          })
-        elif op_status in ("no_position", "insufficient_balance"):
+        elif op_status == "success":
+            # Zero-size result — trade_save won't be dispatched
             record_stage(trace_id, "trade_execute", status="skipped",
+                         is_terminal=True,
+                         metadata={"reason": "zero_size"})
+        elif op_status == "no_position":
+            record_stage(trace_id, "trade_execute", status="skipped",
+                         metadata={"reason": op_status})
+        elif op_status == "insufficient_balance":
+            record_stage(trace_id, "trade_execute", status="skipped",
+                         is_terminal=True,
                          metadata={"reason": op_status})
         else:
             record_stage(trace_id, "trade_execute", status="failed",
+                         is_terminal=True,
                          error=result.get("error", result.get("message", "")))
 
         return result

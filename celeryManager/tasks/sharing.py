@@ -32,6 +32,9 @@ def process_sharing_operations(self, data):
         if result.get("status") == "success":
             record_stage(trace_id, "sharing", status="completed",
                          metadata={"message": result.get("message", "")})
+        elif "nenhum compartilhamento" in result.get("message", "").lower():
+            record_stage(trace_id, "sharing", status="skipped",
+                         metadata={"reason": result.get("message", "")})
         else:
             record_stage(trace_id, "sharing", status="failed",
                          error=result.get("message", ""))
