@@ -1,7 +1,6 @@
 from typing import Optional
 from log.log import general_logger
 from source.celery_client import get_client
-from functools import lru_cache
 from pydantic import BaseModel, ValidationError
 from source.sharing_serivce import get_neouser_apikey_from_sharing
 
@@ -20,10 +19,6 @@ class OperationPayload(BaseModel):
     flat_value: Optional[float] = None
 
 
-@lru_cache(maxsize=128)
-def get_cached_sharing_info(share_id: int, user_id: int):
-    return get_neouser_apikey_from_sharing(user_id, share_id)
-
 # --- Builder ---
 class OperationBuilder:
     def __init__(self):
@@ -37,64 +32,62 @@ class OperationBuilder:
     def set_symbol(self, symbol):
         self._operation_data["symbol"] = symbol
         return self
-    
-    def set_perc_size(self, perc_size):
-        self._operation_data["perc_size"] = perc_size
-        return self
 
     def set_side(self, side):
         self._operation_data["side"] = side
         return self
 
-    def set_size_mode(self, size_mode):
-        """Set the sizing mode (percentage or flat_value)."""
-        self._operation_data["size_mode"] = size_mode
-        return self
-
-    def set_flat_value(self, flat_value):
-        """Set the flat value amount for flat_value mode."""
-        self._operation_data["flat_value"] = flat_value
-        return self
-
     def fetch_sharing_info_all(self):
         builders = []
 
-        sharing_data_list = get_cached_sharing_info(
-            self._operation_data["share_id"],
-            self._operation_data["user_id"]
+        sharing_data_list = get_neouser_apikey_from_sharing(
+            self._operation_data["user_id"],
+            self._operation_data["share_id"]
         )
 
         if not sharing_data_list:
             raise ValueError("Nenhum compartilhamento encontrado.")
 
-        size_mode = self._operation_data.get("size_mode", "percentage")
-        flat_value = self._operation_data.get("flat_value")
-
         for data in sharing_data_list:
-            subscriber_max = data["max_amount_size"]
+            sub_mode = data.get("size_mode", "percentage")
+            sub_value = data["subscriber_size_value"]
+            max_cap = data.get("max_usdt_cap")
 
-            # Cap flat_value to subscriber's max_amount_size if configured
-            effective_flat_value = flat_value
-            if size_mode == "flat_value" and flat_value is not None and subscriber_max is not None:
-                if flat_value > subscriber_max:
-                    effective_flat_value = subscriber_max
-                    general_logger.info(
-                        f"Subscriber {data['user_id']} flat_value capped: {flat_value} -> {subscriber_max}"
+            if sub_mode == "flat_value":
+                if max_cap is not None and sub_value is not None and sub_value > max_cap:
+                    general_logger.warning(
+                        f"Subscriber {data['user_id']} flat_value {sub_value} > max USDT cap {max_cap}. Skipping."
                     )
+                    continue  # skip this subscriber
 
-            builder = OperationBuilder()
-            builder._operation_data = {
-                "user_id": data["user_id"],
-                "api_key": data["api_key"],
-                "exchange_id": data["exchange_id"],
-                "perc_balance_operation": self._operation_data["perc_size"],
-                "symbol": self._operation_data["symbol"],
-                "side": self._operation_data["side"],
-                "instance_id": data["instance_id"],
-                "max_amount_size": subscriber_max,
-                "size_mode": size_mode,
-                "flat_value": effective_flat_value
-            }
+                builder = OperationBuilder()
+                builder._operation_data = {
+                    "user_id": data["user_id"],
+                    "api_key": data["api_key"],
+                    "exchange_id": data["exchange_id"],
+                    "symbol": self._operation_data["symbol"],
+                    "side": self._operation_data["side"],
+                    "instance_id": data["instance_id"],
+                    "size_mode": "flat_value",
+                    "flat_value": sub_value,
+                    "max_amount_size": max_cap,
+                    "perc_balance_operation": 100.0
+                }
+            else:  # percentage
+                builder = OperationBuilder()
+                builder._operation_data = {
+                    "user_id": data["user_id"],
+                    "api_key": data["api_key"],
+                    "exchange_id": data["exchange_id"],
+                    "symbol": self._operation_data["symbol"],
+                    "side": self._operation_data["side"],
+                    "instance_id": data["instance_id"],
+                    "size_mode": "percentage",
+                    "flat_value": None,
+                    "perc_balance_operation": sub_value if sub_value else 100.0,
+                    "max_amount_size": max_cap
+                }
+
             builders.append(builder)
 
         return builders

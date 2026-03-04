@@ -15,19 +15,13 @@ def process_sharing_operations(self, data):
         user_id = data.get("user_id")
         symbol = data.get("symbol")
         side = data.get("side")
-        perc_size = data.get("perc_size")
-        size_mode = data.get("size_mode", "percentage")
-        flat_value = data.get("flat_value")
 
         if not share_id or not user_id:
             record_stage(trace_id, "sharing", status="failed",
                          error="Missing share_id or user_id")
             return {"status": "error", "message": "Missing share_id or user_id"}
 
-        result = execute_shared_operations(
-            share_id, user_id, symbol, side, perc_size,
-            size_mode=size_mode, flat_value=flat_value
-        )
+        result = execute_shared_operations(share_id, user_id, symbol, side)
 
         if result.get("status") == "success":
             record_stage(trace_id, "sharing", status="completed",

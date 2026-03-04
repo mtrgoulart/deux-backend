@@ -169,14 +169,11 @@ class OperationContext:
         Convert to sharing data format.
 
         This format is used when sending tasks to the 'sharing' queue.
-        Includes size_mode and flat_value for flat value sizing support.
+        Subscriber-specific sizing is now read from the DB in the sharing pipeline.
         """
         return {
             "share_id": self.share_id,
             "user_id": self.user_id,
             "side": self.side,
             "symbol": self.symbol,
-            "perc_size": self.percent,
-            "size_mode": self.strategy.size_mode,
-            "flat_value": self.strategy.flat_value
         }

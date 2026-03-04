@@ -18,8 +18,10 @@ def get_neouser_apikey_from_sharing(user_id, sharing_id):
             {
                 "user_id": row[0],
                 "api_key": row[1],
-                "exchange_id":row[2],
-                "instance_id":row[3],
-                "max_amount_size": row[4]
+                "exchange_id": row[2],
+                "instance_id": row[3],
+                "subscriber_size_value": row[4],
+                "size_mode": row[5],
+                "max_usdt_cap": row[6]
             } for row in results
-        ]   
+        ]
