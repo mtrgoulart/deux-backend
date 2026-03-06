@@ -65,6 +65,30 @@ def execute_panic_stop(user_id):
                 sell_orders_sent += 1
                 general_logger.info(f"[PanicStop] Sell order sent for user {user_id}, instance {instance_id}, symbol {instance_details['symbol']}")
 
+                # Dispatch sharing task if this instance has sharing enabled
+                if instance_details.get("share_id"):
+                    sharing_data = {
+                        "share_id": instance_details["share_id"],
+                        "user_id": user_id,
+                        "side": "sell",
+                        "symbol": instance_details["symbol"],
+                    }
+                    try:
+                        celery_app.send_task(
+                            "process_sharing_operations",
+                            kwargs={"data": sharing_data},
+                            queue="sharing"
+                        )
+                        general_logger.info(
+                            f"[PanicStop] Sharing task sent for share_id={instance_details['share_id']}, "
+                            f"instance {instance_id}"
+                        )
+                    except Exception as e:
+                        general_logger.error(
+                            f"[PanicStop] Failed to send sharing task for share_id={instance_details['share_id']}: {e}",
+                            exc_info=True
+                        )
+
             # Stop the instance
             _update_instance_status(instance_id, user_id, STATUS_STOPPED, starting=False)
             instances_stopped.append(instance_id)
@@ -162,7 +186,8 @@ def _get_instance_details_for_operation(instance_id, user_id):
             return {
                 "api_key": row[0],
                 "exchange_id": row[1],
-                "symbol": row[2]
+                "symbol": row[2],
+                "share_id": row[3]
             }
         return None
 
