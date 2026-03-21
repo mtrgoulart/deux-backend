@@ -1,13 +1,13 @@
 import re
 import time
-from decimal import Decimal
+from decimal import Decimal, ROUND_DOWN
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 from source.exchange_interface import get_exchange_interface
 from log.log import general_logger
 from source.celery_client import get_client
 from source.position import get_open_position
 from source.fill_extractor import extract_filled_base_qty
-from decimal import Decimal, ROUND_DOWN
+from source.sizing import SizingSpec
 from datetime import datetime, timezone
 
 def parse_symbol(symbol: str):
@@ -31,14 +31,6 @@ def parse_symbol(symbol: str):
                 break
         return (base_currency,quote_currency)
 
-
-def calculate_order_size(balance, percentage):
-    if not isinstance(balance, (int, float, Decimal)):
-        raise TypeError(f"Tipo inválido de saldo: {type(balance)}")
-    size = float(balance) * float(percentage)
-    if size <= 0:
-        raise ValueError("Tamanho da ordem é zero ou negativo.")
-    return size
 
 @retry(
     stop=stop_after_attempt(3),
@@ -163,12 +155,23 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
 
             # Check if the exchange returned a valid response
             if order_response is None:
-                general_logger.error(f"  Order FAILED: Exchange returned no response (API error)")
+                general_logger.error(
+                    f"  Order FAILED: Exchange returned no response (API error) | "
+                    f"SELL size={size_float} {ccy} | position_qty={position_qty} | exchange_balance={exchange_balance}"
+                )
                 status = "FAILED"
                 return {
                     "status": "error",
                     "message": "Exchange returned no response. The order was likely rejected.",
-                    "error": "Exchange API returned None (HTTP error or rejected order)"
+                    "error": "Exchange API returned None (HTTP error or rejected order)",
+                    "sizing_context": {
+                        "side": "sell",
+                        "size": size_float,
+                        "currency": ccy,
+                        "position_qty": str(position_qty),
+                        "exchange_balance": str(exchange_balance),
+                    },
+                    "order_response": {"raw_response": None, "response_type": "NoneType"},
                 }
 
             general_logger.info("  Order sent successfully")
@@ -205,6 +208,20 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             # === BUY PATH: Percentage/flat_value sizing with fill extraction ===
             ccy = quote_currency
 
+            # Build SizingSpec from task parameters
+            sizing = SizingSpec.from_dict({
+                "size_mode": size_mode,
+                "perc_balance_operation": perc_balance_operation,
+                "flat_value": flat_value,
+                "max_amount_size": max_amount_size,
+            })
+
+            # Validate sizing parameters before any exchange interaction
+            validation_error = sizing.validate()
+            if validation_error:
+                general_logger.error(f"  Sizing validation failed: {validation_error}")
+                return {"status": "validation_error", "message": validation_error}
+
             # Get pre-buy base currency balance for fill fallback
             pre_buy_base_balance = None
             try:
@@ -217,60 +234,13 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
             balance_raw = call_get_balance(exchange_interface, ccy)
             balance = Decimal(str(balance_raw))
 
-            # Calculate order size based on mode
-            if size_mode == "flat_value":
-                # FLAT VALUE MODE: Use exact amount specified
-                if flat_value is None or flat_value <= 0:
-                    general_logger.info(f"  Mode: {size_mode} | flat_value invalid: {flat_value}")
-                    general_logger.info(f"  Balance: {balance_raw} {ccy}")
-                    general_logger.info("-" * 80)
-                    general_logger.error("  Order FAILED: flat_value must be a positive number")
-                    return {
-                        "status": "error",
-                        "message": "flat_value must be a positive number when size_mode is 'flat_value'"
-                    }
+            # Compute order size via SizingSpec
+            size, sizing_error = sizing.compute_order_size(balance, ccy)
+            sizing.log_details(size, balance_raw, ccy)
 
-                size = Decimal(str(flat_value))
-
-                # Log mode details
-                general_logger.info(f"  Mode: {size_mode} | Size: {size:.2f} {ccy} | Percentage: {perc_balance_operation * 100}%")
-                general_logger.info(f"  Balance: {balance_raw} {ccy}")
-                general_logger.info("-" * 80)
-
-                # Check if balance is sufficient for flat value
-                if balance < size:
-                    general_logger.error(f"  Order FAILED: Insufficient balance. Required: {size}, Available: {balance}")
-                    return {
-                        "status": "insufficient_balance",
-                        "message": f"Insufficient balance. Required: {size}, Available: {balance}"
-                    }
-
-            else:
-                # PERCENTAGE MODE: Calculate based on balance percentage (legacy mode)
-                base_para_calculo = balance
-
-                # Apply max_amount_size limit if specified (for copy trading)
-                if max_amount_size is not None:
-                    if balance < max_amount_size:
-                        general_logger.info(f"  Mode: {size_mode} | Percentage: {perc_balance_operation * 100}% | max_amount_size: {max_amount_size}")
-                        general_logger.info(f"  Balance: {balance_raw} {ccy}")
-                        general_logger.info("-" * 80)
-                        general_logger.error(f"  Order FAILED: Insufficient balance for max_amount_size. Balance: {balance}, Required: {max_amount_size}")
-                        return {
-                            "status": "insufficient_balance",
-                            "message": "Insufficient balance to cover max_amount_size."
-                        }
-
-                    base_para_calculo = max_amount_size
-
-                # Calculate size as percentage of balance
-                perc_decimal = Decimal(str(perc_balance_operation))
-                size = base_para_calculo * perc_decimal
-
-                # Log mode details
-                general_logger.info(f"  Mode: {size_mode} | Size: {size:.2f} {ccy} | Percentage: {perc_balance_operation * 100}%")
-                general_logger.info(f"  Balance: {balance_raw} {ccy}")
-                general_logger.info("-" * 80)
+            if sizing_error:
+                general_logger.error(f"  Order FAILED: {sizing_error['message']}")
+                return sizing_error
 
             # Validate calculated size
             if size <= 0:
@@ -288,12 +258,19 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
 
             # Check if the exchange returned a valid response
             if order_response is None:
-                general_logger.error(f"  Order FAILED: Exchange returned no response (API error)")
+                sizing_ctx = sizing.to_dict()
+                sizing_ctx.update({"side": "buy", "size": size_float, "currency": ccy, "balance": balance_raw})
+                general_logger.error(
+                    f"  Order FAILED: Exchange returned no response (API error) | "
+                    f"BUY size={size_float} {ccy} | {sizing_ctx}"
+                )
                 status = "FAILED"
                 return {
                     "status": "error",
                     "message": "Exchange returned no response. The order was likely rejected.",
-                    "error": "Exchange API returned None (HTTP error or rejected order)"
+                    "error": "Exchange API returned None (HTTP error or rejected order)",
+                    "sizing_context": sizing_ctx,
+                    "order_response": {"raw_response": None, "response_type": "NoneType"},
                 }
 
             general_logger.info("  Order sent successfully")

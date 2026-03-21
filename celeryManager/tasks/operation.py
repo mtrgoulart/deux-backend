@@ -16,6 +16,8 @@ def _build_exchange_request(data, result):
         request["flat_value"] = data.get("flat_value")
     else:
         request["percentage"] = data.get("perc_balance_operation")
+    if data.get("max_amount_size"):
+        request["max_amount_size"] = data["max_amount_size"]
     if result.get("size"):
         request["computed_size"] = result["size"]
     if result.get("currency"):
@@ -53,6 +55,7 @@ def task_execute_operation(self, data):
             symbol=data.get("symbol"),
             side=data.get("side"),
             instance_id=data.get("instance_id"),
+            max_amount_size=data.get("max_amount_size"),
             size_mode=data.get("size_mode", "percentage"),
             flat_value=data.get("flat_value"),
             trace_id=trace_id
@@ -82,11 +85,19 @@ def task_execute_operation(self, data):
         elif op_status == "insufficient_balance":
             record_stage(trace_id, "trade_execute", status="skipped",
                          is_terminal=True,
-                         metadata={"reason": op_status})
+                         metadata={"reason": op_status,
+                                   "sizing_context": result.get("sizing_context")})
+        elif op_status == "validation_error":
+            record_stage(trace_id, "trade_execute", status="failed",
+                         is_terminal=True,
+                         error=result.get("message", "Sizing validation failed"),
+                         metadata={"reason": op_status,
+                                   "sizing_context": result.get("sizing_context")})
         else:
             record_stage(trace_id, "trade_execute", status="failed",
                          is_terminal=True,
-                         error=result.get("error", result.get("message", "")))
+                         error=result.get("error", result.get("message", "")),
+                         metadata={"sizing_context": result.get("sizing_context")})
 
         return result
 

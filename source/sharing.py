@@ -1,8 +1,9 @@
 from typing import Optional
 from log.log import general_logger
 from source.celery_client import get_client
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, validator
 from source.sharing_serivce import get_neouser_apikey_from_sharing
+from source.sizing import SizingSpec
 
 
 # --- Validador de payload com Pydantic ---
@@ -12,11 +13,29 @@ class OperationPayload(BaseModel):
     exchange_id: int
     symbol: str
     side: str
-    perc_balance_operation: float = 100.0
     instance_id: int
+    # Sizing fields (managed by SizingSpec)
+    perc_balance_operation: float = 1.0
     max_amount_size: Optional[float] = None
     size_mode: str = "percentage"
     flat_value: Optional[float] = None
+
+    @validator("perc_balance_operation")
+    def validate_percentage(cls, v, values):
+        if values.get("size_mode", "percentage") == "percentage":
+            if v <= 0.0 or v > 1.0:
+                raise ValueError(
+                    f"perc_balance_operation={v} out of range (0, 1.0]. "
+                    f"Value must be decimal (e.g. 0.8 for 80%)"
+                )
+        return v
+
+    @validator("flat_value")
+    def validate_flat_value(cls, v, values):
+        if values.get("size_mode") == "flat_value":
+            if v is None or v <= 0:
+                raise ValueError(f"flat_value must be positive for flat_value mode, got {v}")
+        return v
 
 
 # --- Builder ---
@@ -58,36 +77,33 @@ class OperationBuilder:
                     general_logger.warning(
                         f"Subscriber {data['user_id']} flat_value {sub_value} > max USDT cap {max_cap}. Skipping."
                     )
-                    continue  # skip this subscriber
+                    continue
 
-                builder = OperationBuilder()
-                builder._operation_data = {
-                    "user_id": data["user_id"],
-                    "api_key": data["api_key"],
-                    "exchange_id": data["exchange_id"],
-                    "symbol": self._operation_data["symbol"],
-                    "side": self._operation_data["side"],
-                    "instance_id": data["instance_id"],
-                    "size_mode": "flat_value",
-                    "flat_value": sub_value,
-                    "max_amount_size": max_cap,
-                    "perc_balance_operation": 100.0
-                }
-            else:  # percentage
-                builder = OperationBuilder()
-                builder._operation_data = {
-                    "user_id": data["user_id"],
-                    "api_key": data["api_key"],
-                    "exchange_id": data["exchange_id"],
-                    "symbol": self._operation_data["symbol"],
-                    "side": self._operation_data["side"],
-                    "instance_id": data["instance_id"],
-                    "size_mode": "percentage",
-                    "flat_value": None,
-                    "perc_balance_operation": sub_value / 100.0 if sub_value else 1.0,
-                    "max_amount_size": max_cap
-                }
+                sizing = SizingSpec(
+                    size_mode="flat_value",
+                    flat_value=sub_value,
+                    max_amount_size=max_cap,
+                )
+            else:
+                # Normalize: DB should store decimal (0.80), but guard against
+                # old whole-number rows (80) not yet migrated
+                perc = (sub_value / 100.0 if sub_value > 1.0 else sub_value) if sub_value else 1.0
+                sizing = SizingSpec(
+                    size_mode="percentage",
+                    percent=perc,
+                    max_amount_size=max_cap,
+                )
 
+            builder = OperationBuilder()
+            builder._operation_data = {
+                "user_id": data["user_id"],
+                "api_key": data["api_key"],
+                "exchange_id": data["exchange_id"],
+                "symbol": self._operation_data["symbol"],
+                "side": self._operation_data["side"],
+                "instance_id": data["instance_id"],
+            }
+            builder._operation_data.update(sizing.to_dict())
             builders.append(builder)
 
         return builders

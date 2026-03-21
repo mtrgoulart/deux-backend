@@ -8,6 +8,7 @@ replacing scattered individual variables with cohesive structures.
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
+from source.sizing import SizingSpec
 
 
 @dataclass
@@ -145,24 +146,27 @@ class OperationContext:
             "strategy": self.strategy.to_dict()
         }
 
+    def get_sizing_spec(self) -> SizingSpec:
+        """Build SizingSpec from the strategy configuration."""
+        return SizingSpec.from_strategy(self.strategy)
+
     def to_trade_data(self) -> dict:
         """
         Convert to trade execution data format.
 
         This format is used when sending tasks to the 'ops' queue.
-        Includes both percentage and flat_value modes.
+        Includes both percentage and flat_value modes via SizingSpec.
         """
-        return {
+        data = {
             'user_id': self.user_id,
             'api_key': self.api_key_id,
             'exchange_id': self.exchange_id,
-            'perc_balance_operation': self.percent,
             'symbol': self.symbol,
             'side': self.side,
             'instance_id': self.instance_id,
-            'size_mode': self.strategy.size_mode,
-            'flat_value': self.strategy.flat_value
         }
+        data.update(self.get_sizing_spec().to_dict())
+        return data
 
     def to_sharing_data(self) -> dict:
         """
