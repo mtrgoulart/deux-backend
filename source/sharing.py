@@ -84,7 +84,7 @@ class OperationBuilder:
                     "instance_id": data["instance_id"],
                     "size_mode": "percentage",
                     "flat_value": None,
-                    "perc_balance_operation": sub_value if sub_value else 100.0,
+                    "perc_balance_operation": sub_value / 100.0 if sub_value else 1.0,
                     "max_amount_size": max_cap
                 }
 
