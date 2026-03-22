@@ -40,12 +40,13 @@ celery.conf.update(
 # === DEFINIÇÃO EXPLÍCITA DAS FILAS ===
 # Define as filas que os workers irão consumir. Cada fila representa um tipo de trabalho.
 celery.conf.task_queues = (
-    Queue('webhook', routing_key='webhook.#'),   # Para recebimento rápido de webhooks
-    Queue('logic',   routing_key='logic.#'),     # Para processamento de lógica de negócio
-    Queue('ops',     routing_key='ops.#'),       # Para operações com a exchange (API)
-    Queue('db',      routing_key='db.#'),        # Para interações com o banco de dados
-    Queue('sharing', routing_key='sharing.#'),   # Para operações de compartilhamento
-    Queue('pricing', routing_key='pricing.#')    # Para enriquecimento de preços (TimescaleDB)
+    Queue('webhook', routing_key='webhook.#'),       # Para recebimento rápido de webhooks
+    Queue('logic',   routing_key='logic.#'),         # Para processamento de lógica de negócio
+    Queue('ops',     routing_key='ops.#'),           # Para operações com a exchange (API)
+    Queue('db',      routing_key='db.#'),            # Para interações com o banco de dados
+    Queue('sharing', routing_key='sharing.#'),       # Para operações de compartilhamento
+    Queue('pricing', routing_key='pricing.#'),       # Para enriquecimento de preços (TimescaleDB)
+    Queue('commission', routing_key='commission.#'), # Para cálculo e registro de comissões
 )
 
 # === ROTEAMENTO DAS TAREFAS (ÚNICA FONTE DA VERDADE) ===
@@ -60,6 +61,7 @@ celery.conf.task_routes = {
     'process_sharing_operations':   {'queue': 'sharing', 'routing_key': 'sharing.process'},
     'account.get_balance':          {'queue': 'ops',     'routing_key': 'ops.balance'},
     'price.fetch_execution_price':  {'queue': 'pricing', 'routing_key': 'pricing.fetch'},
+    'commission.process':           {'queue': 'commission', 'routing_key': 'commission.process'},
 }
 
 # === DESCOBERTA AUTOMÁTICA DE TAREFAS ===

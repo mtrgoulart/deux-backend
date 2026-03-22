@@ -12,6 +12,7 @@ JOIN copytrading_sharing cts ON cts.sharing_id = is2.id
 JOIN copytrading_subscription cs_sub
   ON cs_sub.copytrading_id = cts.copytrading_id AND cs_sub.user_id = ns.user_id
 WHERE ns.active = true
+  AND COALESCE(ns.is_paused, false) = false
   AND is2.id = %s AND is2.user_id = %s
 GROUP BY ns.user_id
         ,ns.api_key

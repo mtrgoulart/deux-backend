@@ -5,3 +5,4 @@ from .database import save_operation_task
 from .sharing import process_sharing_operations
 from .account_tasks import get_account_balance
 from .price_enricher import fetch_execution_price_task
+from .commission import process_commission_task

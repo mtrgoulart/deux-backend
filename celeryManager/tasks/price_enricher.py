@@ -9,6 +9,7 @@ from time import time
 
 from source.context import get_db_connection, get_timescale_db_connection
 from source.tracing import record_stage
+from source.celery_client import get_client
 
 
 # ============================================================================
@@ -287,6 +288,27 @@ def fetch_execution_price_task(self, operation_id: int, symbol: str, executed_at
 
         record_stage(trace_id, "price_enrichment", status="completed",
                      metadata={"price": float(price), "operation_id": operation_id})
+
+        # Dispatch commission calculation for sell operations
+        try:
+            with get_db_connection() as db_client:
+                db_client.cursor.execute(
+                    "SELECT side FROM operations WHERE id = %s", (operation_id,)
+                )
+                side_row = db_client.cursor.fetchone()
+
+            if side_row and side_row[0] and side_row[0].lower() == "sell":
+                get_client().send_task(
+                    "commission.process",
+                    kwargs={
+                        "sell_operation_id": operation_id,
+                        "trace_id": trace_id,
+                    },
+                    queue="commission",
+                )
+                logger.info(f"PRICE_ENRICHER: Commission task dispatched for sell op {operation_id}")
+        except Exception as e:
+            logger.error(f"PRICE_ENRICHER: Failed to dispatch commission task for op {operation_id}: {e}")
 
         return {
             "status": "success",
