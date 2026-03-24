@@ -74,19 +74,9 @@ class SizingSpec:
 
         if self.max_amount_size is not None:
             max_cap = Decimal(str(self.max_amount_size))
-            if balance < max_cap:
-                return Decimal('0'), {
-                    "status": "insufficient_balance",
-                    "message": f"Insufficient balance to cover max_amount_size. Balance: {balance} {currency}, Required: {max_cap} {currency}",
-                    "sizing_context": {
-                        "size_mode": "percentage",
-                        "percent": self.percent,
-                        "max_amount_size": self.max_amount_size,
-                        "available": float(balance),
-                        "currency": currency,
-                    },
-                }
-            base = max_cap
+            # max_amount_size is a cap, not a minimum.
+            # If balance < cap, use balance as the base. If balance >= cap, cap it.
+            base = min(balance, max_cap)
 
         perc_decimal = Decimal(str(self.percent))
         size = base * perc_decimal

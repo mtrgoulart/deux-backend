@@ -7,6 +7,6 @@ SELECT
     sell_op.execution_price AS sell_price,
     spe.base_qty
 FROM spot_position_entries spe
-JOIN operations buy_op ON spe.buy_operation_id = buy_op.id
+JOIN operations buy_op ON spe.operation_id = buy_op.id
 JOIN operations sell_op ON spe.sell_operation_id = sell_op.id
 WHERE spe.sell_operation_id = %s;
