@@ -2,4 +2,4 @@
 SELECT
     id
 FROM instances
-WHERE user_id = %s AND status = 2;
+WHERE user_id = %s AND status = 2 AND participate_psl = TRUE;
