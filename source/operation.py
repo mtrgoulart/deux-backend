@@ -96,6 +96,14 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
         general_logger.info(f"OPERATION START | {exchange_name} | user:{user_id} | inst:{instance_id} | {symbol} | {side.upper()}")
         general_logger.info("-" * 80)
 
+        if base_currency is None or quote_currency is None:
+            msg = (
+                f"Invalid symbol '{symbol}': unable to resolve base/quote currency. "
+                f"Expected formats: 'BASE-QUOTE' (e.g. 'FET-USDT') or 'BASEQUOTE' with a known quote suffix."
+            )
+            general_logger.error(f"  Order FAILED: {msg}")
+            return {"status": "validation_error", "message": msg}
+
         if side == 'sell':
             # === SELL PATH: Position-based selling ===
             ccy = base_currency

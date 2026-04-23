@@ -356,12 +356,14 @@ class BinanceClient(BaseClient):
 
         except requests.exceptions.RequestException as e:
             general_logger.error(f"[Binance] Request error for {endpoint}: {e}")
-            if e.response:
+            # requests.Response.__bool__ returns self.ok (False for 4xx/5xx),
+            # so `if e.response:` silently skipped logging the server body on errors.
+            if e.response is not None:
                 general_logger.error(f"[Binance] Server response ({e.response.status_code}): {e.response.text}")
             return None
 
     def get_symbol_info(self, symbol):
-        """Fetch LOT_SIZE filter info for a symbol from Binance exchangeInfo."""
+        """Fetch LOT_SIZE filter info and quoteAssetPrecision for a symbol from Binance exchangeInfo."""
         try:
             response = self.session.get(f"{self.url}/api/v3/exchangeInfo?symbol={symbol}")
             response.raise_for_status()
@@ -369,13 +371,18 @@ class BinanceClient(BaseClient):
 
             for sym in data.get("symbols", []):
                 if sym.get("symbol") == symbol:
+                    info = {
+                        "stepSize": 1.0,
+                        "minQty": 0.0,
+                        "maxQty": 99999999.0,
+                        "quoteAssetPrecision": int(sym.get("quoteAssetPrecision", 8)),
+                    }
                     for f in sym.get("filters", []):
                         if f.get("filterType") == "LOT_SIZE":
-                            return {
-                                "stepSize": float(f.get("stepSize", "1")),
-                                "minQty": float(f.get("minQty", "0")),
-                                "maxQty": float(f.get("maxQty", "99999999"))
-                            }
+                            info["stepSize"] = float(f.get("stepSize", "1"))
+                            info["minQty"] = float(f.get("minQty", "0"))
+                            info["maxQty"] = float(f.get("maxQty", "99999999"))
+                    return info
         except Exception as e:
             general_logger.warning(f"[Binance] Failed to fetch symbol info for {symbol}: {e}")
         return None
@@ -410,7 +417,14 @@ class BinanceClient(BaseClient):
 
         if order_type.upper() == "MARKET":
             if side.upper() == "BUY":
-                # BUY: size is quote currency amount to spend (e.g., 100 USDT)
+                # BUY: size is quote currency amount to spend (e.g., 100 USDT).
+                # Binance rejects (-1111) if decimals exceed quoteAssetPrecision.
+                symbol_info = self.get_symbol_info(symbol)
+                if symbol_info:
+                    precision = symbol_info["quoteAssetPrecision"]
+                    factor = 10 ** precision
+                    size = math.floor(size * factor) / factor
+                    general_logger.info(f"[Binance] Truncated quoteOrderQty to {size} (quoteAssetPrecision={precision})")
                 params["quoteOrderQty"] = size
             elif side.upper() == "SELL":
                 # SELL: size is base currency amount to sell (e.g., 0.001 BTC)
