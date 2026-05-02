@@ -82,6 +82,7 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
     start_time = time.time()
     status = "FAILED"
     exchange_name = f"Exchange:{exchange_id}"
+    exchange_label = f"{exchange_name} (exchange_id={exchange_id}, api_key={api_key})"
     size = None
     ccy = None
     balance_raw = None
@@ -90,10 +91,16 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
         base_currency, quote_currency = parse_symbol(symbol)
         exchange_interface = get_exchange_interface(exchange_id, user_id, api_key)
         exchange_name = getattr(exchange_interface, 'exchange_name', exchange_name)
+        official_name = getattr(exchange_interface, 'official_name', exchange_name)
+        mode = "demo" if getattr(exchange_interface, 'is_demo', False) else "real"
+        exchange_label = (
+            f"{exchange_name} [{official_name}/{mode}] "
+            f"(exchange_id={exchange_id}, api_key={api_key})"
+        )
 
         # Log header
         general_logger.info("=" * 80)
-        general_logger.info(f"OPERATION START | {exchange_name} | user:{user_id} | inst:{instance_id} | {symbol} | {side.upper()}")
+        general_logger.info(f"OPERATION START | {exchange_label} | user:{user_id} | inst:{instance_id} | {symbol} | {side.upper()}")
         general_logger.info("-" * 80)
 
         if base_currency is None or quote_currency is None:
@@ -337,5 +344,5 @@ def execute_operation(user_id, api_key, exchange_id, perc_balance_operation, sym
     finally:
         elapsed = time.time() - start_time
         general_logger.info("=" * 80)
-        general_logger.info(f"OPERATION END | {exchange_name} | inst:{instance_id} | {symbol} | {side.upper()} | {status} | {elapsed:.2f}s")
+        general_logger.info(f"OPERATION END | {exchange_label} | inst:{instance_id} | {symbol} | {side.upper()} | {status} | {elapsed:.2f}s")
         general_logger.info("=" * 80)

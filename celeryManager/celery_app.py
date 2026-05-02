@@ -47,6 +47,7 @@ celery.conf.task_queues = (
     Queue('sharing', routing_key='sharing.#'),       # Para operações de compartilhamento
     Queue('pricing', routing_key='pricing.#'),       # Para enriquecimento de preços (TimescaleDB)
     Queue('commission', routing_key='commission.#'), # Para cálculo e registro de comissões
+    Queue('virtual', routing_key='virtual.#'),       # Para operações virtuais (simulação de estratégia)
 )
 
 # === ROTEAMENTO DAS TAREFAS (ÚNICA FONTE DA VERDADE) ===
@@ -62,6 +63,8 @@ celery.conf.task_routes = {
     'account.get_balance':          {'queue': 'ops',     'routing_key': 'ops.balance'},
     'price.fetch_execution_price':  {'queue': 'pricing', 'routing_key': 'pricing.fetch'},
     'commission.process':           {'queue': 'commission', 'routing_key': 'commission.process'},
+    'virtual.record_operation':     {'queue': 'virtual', 'routing_key': 'virtual.record'},
+    'virtual.enrich_price':         {'queue': 'virtual', 'routing_key': 'virtual.enrich'},
 }
 
 # === DESCOBERTA AUTOMÁTICA DE TAREFAS ===

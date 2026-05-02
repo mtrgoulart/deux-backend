@@ -164,29 +164,43 @@ class BingXInterface(ExchangeInterface):
                    moeda não for encontrada ou em caso de erro na comunicação
                    com a API.
         """
-        #general_logger.info(f"[BingXInterface] Buscando saldo para a moeda: {ccy}...")
-        
-        # 1. Chama o método do cliente para obter todos os saldos da conta spot
         balance_data = self.bingx_client.get_balance()
-        #general_logger.info(f"[BingXInterface] Balance atual para moeda {ccy}: {balance_data}...")
 
-        # 2. Verifica se a chamada à API foi bem-sucedida e retornou dados
-        if not balance_data:
-            print(f"[BingXInterface] Não foi possível obter os saldos da API.")
-            return 0.0
+        # Network/HTTP failure — client returned None
+        if balance_data is None:
+            general_logger.error(
+                f"[BingXInterface] No response from BingX balance endpoint "
+                f"(network/HTTP failure) user_id={self.user_id} ccy={ccy}"
+            )
+            raise RuntimeError(
+                f"BingX balance fetch failed: no response from API "
+                f"(user_id={self.user_id}, ccy={ccy})"
+            )
 
-        # 3. Navega de forma segura pela estrutura de dados da resposta
+        # API-level failure — BingX uses code=0 for success; anything else is an error
+        # (signature mismatch, IP not whitelisted, missing read permission, etc.)
+        code = balance_data.get("code")
+        if code != 0:
+            msg = balance_data.get("msg", "unknown")
+            general_logger.error(
+                f"[BingXInterface] BingX API error code={code} msg='{msg}' "
+                f"user_id={self.user_id} ccy={ccy} response={balance_data}"
+            )
+            raise RuntimeError(
+                f"BingX balance fetch failed: code={code} msg='{msg}' "
+                f"(user_id={self.user_id}, ccy={ccy})"
+            )
+
         balances = balance_data.get("data", {}).get("balances", [])
 
-        # 4. Procura pela moeda específica (ccy) na lista de saldos
         for asset in balances:
-            # Compara os símbolos em maiúsculas para evitar erros (ex: 'usdt' vs 'USDT')
             if asset.get('asset', '').upper() == ccy.upper():
-                # 5. Se encontrar, retorna o saldo 'free' convertido para float
                 return float(asset.get('free', 0.0))
 
-        # 6. Se o loop terminar e não encontrar a moeda, informa e retorna 0.0
-        print(f"[BingXInterface] Moeda '{ccy}' não encontrada na carteira spot ou saldo zerado.")
+        general_logger.info(
+            f"[BingXInterface] Coin '{ccy}' not held in spot wallet for "
+            f"user_id={self.user_id} (zero balance)"
+        )
         return 0.0
     
     def place_order(self, symbol: str, side: str, order_type: str, size: float, price: float=None, **kwargs) -> Optional[Dict[str, Any]]:
@@ -436,4 +450,6 @@ def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):
 
     interface = exchange_class(exchange_id, user_id, api_key)
     interface.exchange_name = exchange_name or f"Exchange:{exchange_id}"
+    interface.official_name = official_name
+    interface.is_demo = bool(is_demo)
     return interface

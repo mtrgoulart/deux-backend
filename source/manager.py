@@ -1,4 +1,5 @@
 from log.log import general_logger
+import os
 import time
 from .pp import Market, WebhookData, Operations
 from .models import OperationContext
@@ -209,6 +210,31 @@ class OperationHandler:
                 )
 
                 operation_task_id = async_result.id
+
+                # Fire-and-forget: record a virtual operation in parallel.
+                # Strategy-level signal log used to compute % return independent
+                # of whether the real trade succeeds. Failures here MUST NOT
+                # impact the real execution flow above.
+                # Kill switch: VIRTUAL_OPERATIONS_ENABLED=false disables dispatch.
+                if os.environ.get("VIRTUAL_OPERATIONS_ENABLED", "true").strip().lower() not in ("false", "0", "no"):
+                    try:
+                        get_client().send_task(
+                            "virtual.record_operation",
+                            kwargs={
+                                "signal": {
+                                    "instance_id": self.context.instance_id,
+                                    "user_id": self.context.user_id,
+                                    "symbol": self.context.symbol,
+                                    "side": self.context.side,
+                                    "trace_id": self.trace_id,
+                                }
+                            },
+                            queue="virtual",
+                        )
+                    except Exception as e:
+                        general_logger.warning(
+                            f"{log_prefix} Failed to dispatch virtual.record_operation: {e}"
+                        )
 
                 # Send copy trading distribution task if share_id exists
                 if self.context.share_id:

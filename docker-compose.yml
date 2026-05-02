@@ -120,6 +120,21 @@ services:
     depends_on:
       - webhook_pipeline
 
+  # WORKER PARA A FILA 'virtual' (registro de operações virtuais p/ % return da estratégia)
+  celery_worker_virtual:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: celery_worker_virtual
+    command: celery --app celeryManager.celery_app worker --concurrency=2 -Q virtual -n worker_virtual@%h --loglevel=info
+    networks:
+      - main_network
+    env_file:
+      - .env.prd
+    restart: always
+    depends_on:
+      - webhook_pipeline
+
 networks:
   # A aplicação também se conecta à rede externa 'main_network'
   main_network:
