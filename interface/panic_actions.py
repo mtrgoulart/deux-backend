@@ -15,25 +15,29 @@ STATUS_STOPPED = 1
 STATUS_RUNNING = 2
 
 
-def execute_panic_stop(user_id):
+def execute_panic_stop(user_id, environment='live'):
     """
     Execute panic stop: sell all positions, stop all instances, activate panic mode.
 
+    Scoped to a single environment — a live panic touches only live instances,
+    a demo panic only demo instances.
+
     Args:
         user_id: The user ID
+        environment: 'live' or 'demo'
 
     Returns:
         dict: Result with status and details
     """
     try:
         # 0. Skip if panic mode is already active
-        panic_state = _get_panic_state(user_id)
+        panic_state = _get_panic_state(user_id, environment)
         if panic_state and panic_state.get("is_panic_active"):
-            general_logger.info(f"[PanicStop] User {user_id} already in panic mode — skipping.")
+            general_logger.info(f"[PanicStop] User {user_id} ({environment}) already in panic mode — skipping.")
             return {"status": "skipped", "message": "Panic mode already active"}
 
-        # 1. Get all active (running) instances for the user
-        active_instance_ids = _get_active_instance_ids(user_id)
+        # 1. Get all active (running) instances for the user in this environment
+        active_instance_ids = _get_active_instance_ids(user_id, environment)
 
         if not active_instance_ids:
             general_logger.info(f"[PanicStop] User {user_id} has no active instances to stop.")
@@ -95,7 +99,7 @@ def execute_panic_stop(user_id):
             general_logger.info(f"[PanicStop] Instance {instance_id} stopped.")
 
         # 3. Activate panic mode
-        _activate_panic_mode(user_id, instances_stopped)
+        _activate_panic_mode(user_id, environment, instances_stopped)
 
         general_logger.info(f"[PanicStop] User {user_id} panic stop completed. {sell_orders_sent} sell orders sent, {len(instances_stopped)} instances stopped.")
 
@@ -111,23 +115,24 @@ def execute_panic_stop(user_id):
         return {"status": "error", "message": str(e)}
 
 
-def execute_resume(user_id, restart_instances):
+def execute_resume(user_id, environment, restart_instances):
     """
     Execute resume: exit panic mode, optionally restart instances.
 
     Args:
         user_id: The user ID
+        environment: 'live' or 'demo'
         restart_instances: Whether to restart the instances that were stopped
 
     Returns:
         dict: Result with status and details
     """
     try:
-        # 1. Check if user is in panic mode
-        panic_state = _get_panic_state(user_id)
+        # 1. Check if user is in panic mode for this environment
+        panic_state = _get_panic_state(user_id, environment)
 
         if not panic_state or not panic_state.get("is_panic_active"):
-            general_logger.info(f"[Resume] User {user_id} is not in panic mode.")
+            general_logger.info(f"[Resume] User {user_id} ({environment}) is not in panic mode.")
             return {"status": "success", "message": "User is not in panic mode", "instances_restarted": 0}
 
         instances_restarted = 0
@@ -146,7 +151,7 @@ def execute_resume(user_id, restart_instances):
                     general_logger.info(f"[Resume] Instance {instance_id} restarted.")
 
         # 3. Deactivate panic mode
-        _deactivate_panic_mode(user_id)
+        _deactivate_panic_mode(user_id, environment)
 
         action = "resume_restart" if restart_instances else "resume_no_restart"
         general_logger.info(f"[Resume] User {user_id} {action} completed. {instances_restarted} instances restarted.")
@@ -164,12 +169,12 @@ def execute_resume(user_id, restart_instances):
 
 # === Helper Functions ===
 
-def _get_active_instance_ids(user_id):
-    """Get list of active (running) instance IDs for a user."""
+def _get_active_instance_ids(user_id, environment='live'):
+    """Get list of active (running) instance IDs for a user in one environment."""
     query = load_query("select_active_instances_by_user.sql")
 
     with get_db_connection() as db_client:
-        result = db_client.fetch_data(query, (user_id,))
+        result = db_client.fetch_data(query, (user_id, environment))
         if result:
             return [row[0] for row in result]
         return []
@@ -203,12 +208,12 @@ def _update_instance_status(instance_id, user_id, status, starting=False):
         db_client.update_data(query, (status, instance_id, user_id))
 
 
-def _get_panic_state(user_id):
-    """Get current panic state for a user."""
+def _get_panic_state(user_id, environment='live'):
+    """Get current panic state for a user in one environment."""
     query = load_query("get_panic_state.sql")
 
     with get_db_connection() as db_client:
-        result = db_client.fetch_data(query, (user_id,))
+        result = db_client.fetch_data(query, (user_id, environment))
         if result:
             row = result[0]
             return {
@@ -220,18 +225,18 @@ def _get_panic_state(user_id):
         return None
 
 
-def _activate_panic_mode(user_id, instance_ids):
-    """Activate panic mode and record stopped instances."""
+def _activate_panic_mode(user_id, environment, instance_ids):
+    """Activate panic mode for an environment and record stopped instances."""
     query = load_query("activate_panic_mode.sql")
     instances_json = json.dumps(instance_ids)
 
     with get_db_connection() as db_client:
-        db_client.insert_data(query, (user_id, instances_json))
+        db_client.insert_data(query, (user_id, environment, instances_json))
 
 
-def _deactivate_panic_mode(user_id):
-    """Deactivate panic mode."""
+def _deactivate_panic_mode(user_id, environment):
+    """Deactivate panic mode for an environment."""
     query = load_query("deactivate_panic_mode.sql")
 
     with get_db_connection() as db_client:
-        db_client.update_data(query, (user_id,))
+        db_client.update_data(query, (user_id, environment))

@@ -135,15 +135,24 @@ def _handle_user_pattern(log_prefix, key, action, trace_id=None):
                      error="Invalid user key", is_terminal=True)
         return {"status": "error", "message": "Invalid user key"}
 
-    logger.info(f"{log_prefix} User signal authenticated. Delegating to logic queue for user_id={user_data['user_id']}.")
+    # Per-action panic keys bind their own action + environment (authoritative).
+    # Legacy keys have no bound action, so fall back to the message's process.
+    environment = user_data.get("environment", "live")
+    effective_action = user_data.get("action") or action
+
+    logger.info(
+        f"{log_prefix} User signal authenticated. user_id={user_data['user_id']}, "
+        f"env={environment}, action={effective_action}."
+    )
 
     record_stage(trace_id, "webhook_receipt", status="completed",
-                 metadata={"user_id": user_data['user_id']},
+                 metadata={"user_id": user_data['user_id'], "environment": environment},
                  user_id=user_data['user_id'])
 
     process_panic_task.delay(
         user_id=user_data["user_id"],
-        action=action,
+        action=effective_action,
+        environment=environment,
         original_key=key,
         trace_id=trace_id
     )

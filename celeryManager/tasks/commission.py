@@ -32,21 +32,42 @@ def _get_closed_entries_for_sell(sell_operation_id):
     return rows
 
 
+def _get_operation_environment(sell_operation_id):
+    """
+    Resolve the live/demo environment for an operation via its api_key.
+
+    Demo (paper-trading) sells still flow through this pipeline so the trial
+    shows what the platform would retain; the environment tag keeps those rows
+    distinguishable from real revenue. Defaults to 'live' if unresolved.
+    """
+    query = """
+        SELECT nak.environment
+        FROM operations o
+        JOIN neouser_apikeys nak ON o.api_key = nak.id
+        WHERE o.id = %s
+    """
+    with get_db_connection() as db_client:
+        db_client.cursor.execute(query, (sell_operation_id,))
+        row = db_client.cursor.fetchone()
+    return row[0] if row and row[0] else 'live'
+
+
 def _insert_commission_ledger(user_id, entry_id, sell_operation_id,
-                              profit, commission_rate, commission_amount, commission_token):
+                              profit, commission_rate, commission_amount,
+                              commission_token, environment='live'):
     """Insert a pending commission ledger entry. Returns ledger_id."""
     query = """
         INSERT INTO commission_ledger
             (user_id, position_entry_id, sell_operation_id,
-             profit, commission_rate, commission_amount, commission_token)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+             profit, commission_rate, commission_amount, commission_token, environment)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         RETURNING id
     """
     with get_db_connection() as db_client:
         db_client.cursor.execute(query, (
             user_id, entry_id, sell_operation_id,
             float(profit), float(commission_rate),
-            float(commission_amount), commission_token,
+            float(commission_amount), commission_token, environment,
         ))
         ledger_id = db_client.cursor.fetchone()[0]
         db_client.conn.commit()
@@ -80,6 +101,7 @@ def process_commission_task(self, sell_operation_id, trace_id=None):
 
         commission_rate = Decimal(rate_str)
         commission_token = _get_platform_config_value("commission_token") or "USDT"
+        environment = _get_operation_environment(sell_operation_id)
 
         # Fetch closed entries for this sell
         entries = _get_closed_entries_for_sell(sell_operation_id)
@@ -128,6 +150,7 @@ def process_commission_task(self, sell_operation_id, trace_id=None):
                 commission_rate=commission_rate,
                 commission_amount=commission_amount,
                 commission_token=commission_token,
+                environment=environment,
             )
 
             commissions_created += 1

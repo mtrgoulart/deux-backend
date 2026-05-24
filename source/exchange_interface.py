@@ -453,3 +453,10 @@ def get_exchange_interface(exchange_id: int, user_id: int, api_key: int):
     interface.official_name = official_name
     interface.is_demo = bool(is_demo)
     return interface
+
+
+# Registered here (not in the literal above) to avoid a circular import:
+# paper_trading imports ExchangeInterface from this module, so the import must
+# run after ExchangeInterface and EXCHANGE_REGISTRY are defined.
+from source.paper_trading import PaperTradingInterface  # noqa: E402
+EXCHANGE_REGISTRY["Paper"] = {"real": PaperTradingInterface, "demo": PaperTradingInterface}

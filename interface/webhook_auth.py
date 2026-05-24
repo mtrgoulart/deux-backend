@@ -35,22 +35,35 @@ def authenticate_signal(key):
 
 def authenticate_user_key(key):
     """
-    Authenticate user-level webhook key.
+    Authenticate a user-level (panic/resume) webhook key.
+
+    Resolves the new per-action panic signals first (which carry an environment
+    and a bound action); falls back to legacy user_webhook_keys (treated as the
+    live environment with no bound action).
 
     Returns:
-        dict: {user_id} or None if invalid
+        dict: {user_id, environment, action} or None if invalid
     """
-    query = load_query("select_user_by_webhook_key.sql")
-
+    # New per-action panic signals (env + bound action)
     try:
+        query = load_query("select_panic_signal_by_key.sql")
         with get_db_connection() as db_client:
             result = db_client.fetch_data(query, (key,))
+            if result:
+                row = result[0]
+                return {'user_id': row[0], 'environment': row[1], 'action': row[2]}
+    except Exception as e:
+        general_logger.error(f"Error resolving panic signal key: {str(e)}. Key details omitted for security.")
+
+    # Legacy fallback: single user_webhook_keys (live, no bound action)
+    try:
+        legacy_query = load_query("select_user_by_webhook_key.sql")
+        with get_db_connection() as db_client:
+            result = db_client.fetch_data(legacy_query, (key,))
             if not result:
                 general_logger.warning("Invalid user key received during authentication attempt.")
                 return None
-
-            return {'user_id': result[0][0]}
-
+            return {'user_id': result[0][0], 'environment': 'live', 'action': None}
     except Exception as e:
         general_logger.error(f"Error during user key authentication: {str(e)}. Key details omitted for security.")
         return None

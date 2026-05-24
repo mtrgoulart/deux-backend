@@ -10,15 +10,16 @@ from source.tracing import record_stage
 
 
 @shared_task(name="panic.processor", bind=True)
-def process_panic_signal(self, user_id, action, original_key, trace_id=None):
+def process_panic_signal(self, user_id, action, environment='live', original_key=None, trace_id=None):
     """
-    Process user-level panic/resume signals.
+    Process user-level panic/resume signals, scoped to one environment.
 
     Routes to appropriate handler based on process action.
 
     Args:
         user_id: The authenticated user ID
         action: The process action (panic_stop, resume_restart, resume_no_restart)
+        environment: 'live' or 'demo' — which environment the panic targets
         original_key: The original webhook key (for logging)
         trace_id: Optional trace ID for pipeline observability
     """
@@ -32,9 +33,9 @@ def process_panic_signal(self, user_id, action, original_key, trace_id=None):
 
     try:
         handlers = {
-            "panic_stop": lambda: execute_panic_stop(user_id),
-            "resume_restart": lambda: execute_resume(user_id, restart_instances=True),
-            "resume_no_restart": lambda: execute_resume(user_id, restart_instances=False),
+            "panic_stop": lambda: execute_panic_stop(user_id, environment),
+            "resume_restart": lambda: execute_resume(user_id, environment, restart_instances=True),
+            "resume_no_restart": lambda: execute_resume(user_id, environment, restart_instances=False),
         }
 
         handler = handlers.get(action)
